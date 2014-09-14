@@ -3,38 +3,36 @@ package com.the.todo;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 /**
  * Hello world!
  *
  */
 public class App extends Application {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		System.out.println("Hello World!");
 		launch(args);
 	}
 
 	@Override
-	public void start(Stage primaryStage) throws Exception {
-		primaryStage.setTitle("Hello World!");
-		Button btn = new Button();
-		btn.setText("Say 'Hello World'");
-		btn.setOnAction(new EventHandler<ActionEvent>() {
+	public void start(Stage stage) throws Exception {
+        String fxmlFile = "/fxml/hello.fxml";
+        
+        FXMLLoader loader = new FXMLLoader();
+        Parent rootNode = (Parent) loader.load(getClass().getResourceAsStream(fxmlFile));
 
-			@Override
-			public void handle(ActionEvent event) {
-				System.out.println("Hello World!");
-			}
-		});
+        Scene scene = new Scene(rootNode, 400, 200);
+        scene.getStylesheets().add("/styles/styles.css");
 
-		StackPane root = new StackPane();
-		root.getChildren().add(btn);
-		primaryStage.setScene(new Scene(root, 300, 250));
-		primaryStage.show();
-
+        stage.setTitle("Hello JavaFX and Maven");
+        stage.setScene(scene);
+        stage.show();
 	}
 }
