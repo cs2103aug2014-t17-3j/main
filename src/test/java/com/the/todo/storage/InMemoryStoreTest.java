@@ -1,8 +1,8 @@
 package com.the.todo.storage;
 
-import static org.junit.Assert.*;
-
 import java.util.Collection;
+
+import junit.framework.TestCase;
 
 import org.junit.After;
 import org.junit.Before;
@@ -10,13 +10,13 @@ import org.junit.Test;
 
 import com.the.todo.model.ToDo;
 
-public class InMemoryStoreTest {
+public class InMemoryStoreTest extends TestCase {
 
 	ToDo todo1;
 	ToDo todo2;
 	private ToDoStore emptyStore;
 	private ToDoStore populatedStore;
-	
+
 	@Before
 	public void setUp() throws Exception {
 		todo1 = new ToDo();
@@ -29,7 +29,7 @@ public class InMemoryStoreTest {
 		todo1 = populatedStore.save(todo1);
 		todo2 = populatedStore.save(todo2);
 	}
-	
+
 	@After
 	public void tearDown() throws Exception {
 		emptyStore = null;
