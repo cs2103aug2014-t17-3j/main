@@ -28,49 +28,48 @@
 
 package com.the.todo.storage;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.the.todo.model.ToDo;
 
 public class InMemoryStore implements ToDoStore {
 
-	private List<ToDo> store;
+	private Map<String, ToDo> store;
 
 	public InMemoryStore() {
-		this.store = Collections.synchronizedList(new ArrayList<ToDo>());
+		this.store = new HashMap<String, ToDo>();
 	}
 
 	@Override
 	public Collection<ToDo> getAll() {
-		return store;
+		return store.values();
 	}
 
 	@Override
-	public ToDo get(int id) {
+	public ToDo get(String id) {
 		return store.get(id);
 	}
 
 	@Override
 	public ToDo save(ToDo todo) {
-		store.add(todo);
+		store.put(todo.getId(), todo);
 		return todo;
 	}
 
 	@Override
-	public ToDo update(int id, ToDo todo) {
+	public ToDo update(String id, ToDo todo) {
 		ToDo old = store.get(id);
 		if (old == null) {
 			return null;
 		}
-		store.set(id, todo);
+		store.put(id, todo);
 		return todo;
 	}
 
 	@Override
-	public void delete(int id) {
+	public void delete(String id) {
 		store.remove(id);
 	}
 

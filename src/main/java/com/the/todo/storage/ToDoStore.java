@@ -36,13 +36,13 @@ public interface ToDoStore {
 
 	public Collection<ToDo> getAll();
 
-	public ToDo get(int id);
+	public ToDo get(String id);
 
 	public ToDo save(ToDo todo);
 
-	public ToDo update(int id, ToDo todo);
+	public ToDo update(String id, ToDo todo);
 
-	public void delete(int id);
+	public void delete(String id);
 
 	public int count();
 }

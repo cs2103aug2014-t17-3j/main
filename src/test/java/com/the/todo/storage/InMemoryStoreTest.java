@@ -19,10 +19,8 @@ public class InMemoryStoreTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		todo1 = new ToDo();
-		todo1.setTitle("remember the milk");
-		todo2 = new ToDo();
-		todo2.setTitle("do IVLE quiz!");
+		todo1 = new ToDo("1", "remember the milk");
+		todo2 = new ToDo("2", "do IVLE quiz!");
 		todo2.setCompleted(true);
 		emptyStore = new InMemoryStore();
 		populatedStore = new InMemoryStore();
@@ -46,32 +44,31 @@ public class InMemoryStoreTest {
 
 	@Test
 	public void testGet() {
-		assertEquals(todo1, populatedStore.get(0));
-		assertEquals(todo2, populatedStore.get(1));
+		assertEquals(todo1, populatedStore.get(todo1.getId()));
+		assertEquals(todo2, populatedStore.get(todo2.getId()));
 	}
 
 	@Test
 	public void testSave() {
-		ToDo todo = new ToDo();
-		todo.setTitle("testing");
+		ToDo todo = new ToDo("1", "Simple test");
 		todo = emptyStore.save(todo);
-		assertEquals(todo, emptyStore.get(0));
+		assertEquals(todo, emptyStore.get(todo.getId()));
 	}
 
 	@Test
 	public void testUpdate() {
 		ToDo todo;
-		todo = populatedStore.get(0);
+		todo = populatedStore.get(todo1.getId());
 		todo.setCompleted(true);
-		populatedStore.update(0, todo);
-		todo = populatedStore.get(0);
+		populatedStore.update(todo.getId(), todo);
+		todo = populatedStore.get(todo.getId());
 		assertEquals("remember the milk", todo.getTitle());
 		assertTrue(todo.isCompleted());
 	}
 
 	@Test
 	public void testDelete() {
-		populatedStore.delete(0);
+		populatedStore.delete(todo1.getId());
 		assertEquals(1, populatedStore.count());
 	}
 

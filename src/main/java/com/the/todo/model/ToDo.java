@@ -32,19 +32,24 @@ import org.joda.time.DateTime;
 
 public class ToDo {
 
-	private int id;
+	private String id;
 	private String title;
 	private String description;
 	private String category;
 	private DateTime startDate;
 	private DateTime endDate;
 	private boolean completed;
+	
+	public ToDo(String id, String title) {
+		this.id = id;
+		this.title = title;
+	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
