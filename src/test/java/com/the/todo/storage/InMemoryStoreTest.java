@@ -19,8 +19,8 @@ public class InMemoryStoreTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		todo1 = new ToDo("1", "remember the milk");
-		todo2 = new ToDo("2", "do IVLE quiz!");
+		todo1 = new ToDo("remember the milk");
+		todo2 = new ToDo("do IVLE quiz!");
 		todo2.setCompleted(true);
 		emptyStore = new InMemoryStore();
 		populatedStore = new InMemoryStore();
@@ -50,7 +50,7 @@ public class InMemoryStoreTest {
 
 	@Test
 	public void testSave() {
-		ToDo todo = new ToDo("1", "Simple test");
+		ToDo todo = new ToDo("Simple test");
 		todo = emptyStore.save(todo);
 		assertEquals(todo, emptyStore.get(todo.getId()));
 	}
@@ -69,7 +69,7 @@ public class InMemoryStoreTest {
 	@Test
 	public void testDelete() {
 		populatedStore.delete(todo1.getId());
-		assertEquals(1, populatedStore.count());
+		assertTrue(populatedStore.get(todo1.getId()).isDeleted());
 	}
 
 	@Test

@@ -35,6 +35,10 @@ import com.the.todo.model.ToDo;
 public interface ToDoStore {
 
 	public Collection<ToDo> getAll();
+	
+	public Collection<ToDo> getAllCompleted();
+	
+	public Collection<ToDo> getAllUncompleted();
 
 	public ToDo get(String id);
 

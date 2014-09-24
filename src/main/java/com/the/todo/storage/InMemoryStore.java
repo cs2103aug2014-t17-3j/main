@@ -48,13 +48,32 @@ public class InMemoryStore implements ToDoStore {
 	}
 
 	@Override
+	public Collection<ToDo> getAllCompleted() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<ToDo> getAllUncompleted() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public ToDo get(String id) {
 		return store.get(id);
 	}
 
 	@Override
 	public ToDo save(ToDo todo) {
-		store.put(todo.getId(), todo);
+		String id;
+		if (todo.getId().isEmpty()) {
+			id = String.valueOf(store.size() + 1);
+		} else {
+			id = todo.getId();
+		}
+		todo.setId(id);
+		store.put(String.valueOf(id), todo);
 		return todo;
 	}
 
@@ -70,7 +89,8 @@ public class InMemoryStore implements ToDoStore {
 
 	@Override
 	public void delete(String id) {
-		store.remove(id);
+		ToDo todo = store.get(id);
+		todo.setDeleted(true);
 	}
 
 	@Override

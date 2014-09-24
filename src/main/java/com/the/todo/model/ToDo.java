@@ -39,10 +39,17 @@ public class ToDo {
 	private DateTime startDate;
 	private DateTime endDate;
 	private boolean completed;
+	private boolean deleted;
+	
+ 	public ToDo(String title) {
+ 		this("", title);
+ 	}
 	
 	public ToDo(String id, String title) {
 		this.id = id;
 		this.title = title;
+		this.completed = false;
+		this.deleted = false;
 	}
 
 	public String getId() {
@@ -99,5 +106,13 @@ public class ToDo {
 
 	public void setCompleted(boolean completed) {
 		this.completed = completed;
+	}
+	
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 }
