@@ -6,37 +6,40 @@ import javafx.scene.control.TextField;
 
 public class HelloController {
 
+//	@FXML
+//	private TextField firstNameField;
+//	@FXML
+//	private TextField lastNameField;
 	@FXML
-	private TextField firstNameField;
-	@FXML
-	private TextField lastNameField;
-	@FXML
-	private Label messageLabel;
+	private Label mainLabel;
+	
 
 	public void sayHello() {
 
-		String firstName = firstNameField.getText();
-		String lastName = lastNameField.getText();
-
-		StringBuilder builder = new StringBuilder();
-
-		if (!firstName.isEmpty()) {
-			builder.append(firstName);
-		}
-
-		if (!lastName.isEmpty()) {
-			if (builder.length() > 0) {
-				builder.append(" ");
-			}
-			builder.append(lastName);
-		}
-
-		if (builder.length() > 0) {
-			String name = builder.toString();
-			messageLabel.setText("Hello " + name);
-		} else {
-			messageLabel.setText("Hello mysterious person");
-		}
+//		String firstName = firstNameField.getText();
+//		String lastName = lastNameField.getText();
+//
+//		StringBuilder builder = new StringBuilder();
+//
+//		if (!firstName.isEmpty()) {
+//			builder.append(firstName);
+//		}
+//
+//		if (!lastName.isEmpty()) {
+//			if (builder.length() > 0) {
+//				builder.append(" ");
+//			}
+//			builder.append(lastName);
+//		}
+//
+//		if (builder.length() > 0) {
+//			String name = builder.toString();
+//			messageLabel.setText("Hello " + name);
+//		} else {
+//			messageLabel.setText("Hello mysterious person");
+//		}
+		mainLabel.setText("Date"); 
 	}
-
+	
+	
 }
