@@ -1,45 +1,30 @@
 package com.the.todo;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 
 public class HelloController {
 
-//	@FXML
-//	private TextField firstNameField;
-//	@FXML
-//	private TextField lastNameField;
 	@FXML
 	private Label mainLabel;
+	@FXML
+	private VBox mainVBox;
 	
-
-	public void sayHello() {
-
-//		String firstName = firstNameField.getText();
-//		String lastName = lastNameField.getText();
-//
-//		StringBuilder builder = new StringBuilder();
-//
-//		if (!firstName.isEmpty()) {
-//			builder.append(firstName);
-//		}
-//
-//		if (!lastName.isEmpty()) {
-//			if (builder.length() > 0) {
-//				builder.append(" ");
-//			}
-//			builder.append(lastName);
-//		}
-//
-//		if (builder.length() > 0) {
-//			String name = builder.toString();
-//			messageLabel.setText("Hello " + name);
-//		} else {
-//			messageLabel.setText("Hello mysterious person");
-//		}
-		mainLabel.setText("Date"); 
+	@FXML
+	void initialize(){
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+		Date date = new Date();
+		mainLabel.setText(dateFormat.format(date));
 	}
 	
-	
+	public void sayHello() {
+		TextField text = new TextField("test");
+		mainVBox.getChildren().add(text);
+	}	
 }
