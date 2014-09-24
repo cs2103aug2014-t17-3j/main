@@ -40,7 +40,7 @@ public class CommandHandler {
 				ms.getAll();
 				break;
 			case "delete":
-				processDelete(inputs[1]);
+				ms.delete(inputs[1]);
 				break;
 			case "edit":
 				break;
@@ -61,10 +61,6 @@ public class CommandHandler {
 		LocalDate date = sp.stringProcess(input);
 		todo.setEndDate(date);
 		return todo;
-	}
-	private void processDelete(String id){
-	//	int index = Integer.parseInt(id);
-		ms.delete(id);
 	}
 	
 }
