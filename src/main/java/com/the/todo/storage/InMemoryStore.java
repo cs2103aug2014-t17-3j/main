@@ -49,13 +49,11 @@ public class InMemoryStore implements ToDoStore {
 
 	@Override
 	public Collection<ToDo> getAllCompleted() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Collection<ToDo> getAllUncompleted() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
