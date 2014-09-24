@@ -37,8 +37,10 @@ public class CommandHandler {
 				ToDo todo = processAdd(inputs[1]);
 				ms.save(todo);
 			case "read":
+				ms.getAll();
 				break;
 			case "delete":
+				processDelete(inputs[1]);
 				break;
 			case "edit":
 				break;
@@ -49,6 +51,7 @@ public class CommandHandler {
 			System.out.println("Title: " + todo.getTitle());
 			System.out.println("Date: " + todo.getEndDate());
 			System.out.println("Completed: " + todo.isCompleted());
+			System.out.println("Delete: " + todo.isDeleted());
 		}
 	}
 
@@ -59,4 +62,9 @@ public class CommandHandler {
 		todo.setEndDate(date);
 		return todo;
 	}
+	private void processDelete(String id){
+	//	int index = Integer.parseInt(id);
+		ms.delete(id);
+	}
+	
 }
