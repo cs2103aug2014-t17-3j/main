@@ -43,7 +43,7 @@ public class DateProcessor {
 
 	private static String[] date_formats = { "yyyy-MM-dd", "yyyy/MM/dd",
 			"dd/MM/yyyy", "dd-MM-yyyy", "yyyy MMMMM d", "yyyy d MMMMM",
-			"MMMMM d yyyy", "d MMMMM yyyy", "MMMMM d", "d MMMMM" };
+			"MMMMM d yyyy", "d MMMMM yyyy", "MMMMM d", "d MMMMM", "MM/dd/yyyy" };
 
 	public LocalDate stringProcess(String userInput) {
 		LocalDate date = null;
@@ -58,7 +58,7 @@ public class DateProcessor {
 		return date;
 	}
 
-	private LocalDate dateProcessing(String userInput) {
+	public LocalDate dateProcessing(String userInput) {
 		LocalDate date = null;
 		for (String input : userInput.split(" ")) {
 			for (String format : DateProcessor.date_formats) {
