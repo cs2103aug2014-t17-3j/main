@@ -29,6 +29,8 @@
 package com.the.todo.parser;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
@@ -45,9 +47,14 @@ public class DateProcessor {
 
 	public LocalDate stringProcess(String userInput) {
 		LocalDate date = null;
-		date = dateProcessing(userInput);
-		if (date == null)
+		if (userInput.isEmpty()) {
+			return date;
+		}
+		if (checkDigits(userInput)) {
+			date = dateProcessing(userInput);
+		} else {
 			date = nattyProcess(userInput);
+		}
 		return date;
 	}
 
@@ -75,4 +82,12 @@ public class DateProcessor {
 		return date;
 	}
 
+	private static boolean checkDigits(String s) {
+		Pattern pattern = Pattern.compile("\\d{2,}");
+		Matcher matcher = pattern.matcher(s);
+		if (matcher.find()) {
+			return true;
+		}
+		return false;
+	}
 }
