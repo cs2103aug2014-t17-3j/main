@@ -28,47 +28,49 @@
 
 package com.the.todo.parser;
 
+import static org.junit.Assert.*;
+
 import org.joda.time.LocalDate;
+import org.junit.Test;
 
-import com.the.todo.model.ToDo;
-import com.the.todo.storage.InMemoryStore;
+public class DateProcessorTest {
 
-public class CommandHandler {
+	private LocalDate date = null;
+	private LocalDate expectedDate = null;
+	private DateProcessor processingString = new DateProcessor();
 
-	private static InMemoryStore memoryStore = new InMemoryStore();
+	@Test
+	public void dateTest() {
+		date = processingString.stringProcess("");
+		assertNull(date);
 
-	public void commandProcess(String command) {
-		String[] inputs = command.split(" ", 2);
+		date = processingString.stringProcess("study on 29/9/2014");
+		expectedDate = new LocalDate(2014, 9, 29);
+		assertEquals(expectedDate, date);
 
-		switch (inputs[0].trim().toLowerCase()) {
-		case "add":
-			ToDo todo = processAdd(inputs[1]);
-			memoryStore.save(todo);
-		case "read":
-			memoryStore.getAll();
-			break;
-		case "delete":
-			memoryStore.delete(inputs[1]);
-			break;
-		case "edit":
-			break;
-		}
+		date = processingString.stringProcess("study on 2016/2/15");
+		expectedDate = new LocalDate(2016, 2, 15);
+		assertEquals(expectedDate, date);
 
-		for (ToDo todo : memoryStore.getAll()) {
-			System.out.println("ID: " + todo.getId());
-			System.out.println("Title: " + todo.getTitle());
-			System.out.println("Date: " + todo.getEndDate());
-			System.out.println("Completed: " + todo.isCompleted());
-			System.out.println("Delete: " + todo.isDeleted());
-		}
-	}
+		date = processingString.stringProcess("study on 11/28/2014");
+		expectedDate = new LocalDate(2014, 11, 28);
+		assertEquals(expectedDate, date);
 
-	private ToDo processAdd(String input) {
-		ToDo todo = new ToDo(input);
-		DateProcessor sp = new DateProcessor();
-		LocalDate date = sp.stringProcess(input);
-		todo.setEndDate(date);
-		return todo;
+		date = processingString.stringProcess("study on Christmas");
+		expectedDate = new LocalDate(2014, 12, 25);
+		assertEquals(expectedDate, date);
+
+		date = processingString.stringProcess("easter study");
+		expectedDate = new LocalDate(2015, 4, 5);
+		assertEquals(expectedDate, date);
+
+		// date = processingString.stringProcess("study on labor day");
+		// expectedDate = new LocalDate(2015, 5, 1);
+		// assertEquals(expectedDate, date);
+
+		// date = processingString.stringProcess("study on 29/2/2015");
+		// expectedDate = new LocalDate(2015, 2, 29);
+		// assertEquals(expectedDate, date);
 	}
 
 }

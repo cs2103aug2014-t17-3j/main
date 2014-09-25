@@ -28,47 +28,51 @@
 
 package com.the.todo.parser;
 
+import java.util.List;
+
 import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
-import com.the.todo.model.ToDo;
-import com.the.todo.storage.InMemoryStore;
+import com.joestelmach.natty.DateGroup;
+import com.joestelmach.natty.Parser;
 
-public class CommandHandler {
+public class DateProcessor {
 
-	private static InMemoryStore memoryStore = new InMemoryStore();
+	private static String[] date_formats = { "yyyy-MM-dd", "yyyy/MM/dd",
+			"dd/MM/yyyy", "dd-MM-yyyy", "yyyy MMMMM d", "yyyy d MMMMM",
+			"MMMMM d yyyy", "d MMMMM yyyy", "MMMMM d", "d MMMMM" };
 
-	public void commandProcess(String command) {
-		String[] inputs = command.split(" ", 2);
-
-		switch (inputs[0].trim().toLowerCase()) {
-		case "add":
-			ToDo todo = processAdd(inputs[1]);
-			memoryStore.save(todo);
-		case "read":
-			memoryStore.getAll();
-			break;
-		case "delete":
-			memoryStore.delete(inputs[1]);
-			break;
-		case "edit":
-			break;
-		}
-
-		for (ToDo todo : memoryStore.getAll()) {
-			System.out.println("ID: " + todo.getId());
-			System.out.println("Title: " + todo.getTitle());
-			System.out.println("Date: " + todo.getEndDate());
-			System.out.println("Completed: " + todo.isCompleted());
-			System.out.println("Delete: " + todo.isDeleted());
-		}
+	public LocalDate stringProcess(String userInput) {
+		LocalDate date = null;
+		date = dateProcessing(userInput);
+		if (date == null)
+			date = nattyProcess(userInput);
+		return date;
 	}
 
-	private ToDo processAdd(String input) {
-		ToDo todo = new ToDo(input);
-		DateProcessor sp = new DateProcessor();
-		LocalDate date = sp.stringProcess(input);
-		todo.setEndDate(date);
-		return todo;
+	private LocalDate dateProcessing(String userInput) {
+		LocalDate date = null;
+		for (String input : userInput.split(" ")) {
+			for (String format : DateProcessor.date_formats) {
+				try {
+					DateTimeFormatter dtf = DateTimeFormat.forPattern(format);
+					date = dtf.parseLocalDate(input);
+				} catch (Exception ex) {
+	
+				}
+			}
+		}
+		return date;
+	}
+
+	private LocalDate nattyProcess(String userInput) {
+		Parser parser = new Parser();
+
+		List<DateGroup> groups = parser.parse(userInput);
+		LocalDate date = new LocalDate(groups.get(0).getDates().get(0));
+
+		return date;
 	}
 
 }
