@@ -101,8 +101,16 @@ public class CommandParser {
 	private ToDo processAdd(String input) {
 		ToDo todo = new ToDo(input);
 		int subIndex = input.indexOf('+');
+		int endIndex;
+		String subString;
 		if (subIndex != -1) {
-			String subString = input.substring(subIndex).trim();
+			String beforeSubString = input.substring(subIndex).trim();
+			endIndex = beforeSubString.indexOf(" ");
+			if(endIndex != -1) {
+				subString = beforeSubString.substring(0, endIndex);
+			}else{
+				subString = input.substring(subIndex).trim();
+			}
 			todo.setCategory(subString);
 		}
 		LocalDate date = DateParser.parseDate(input);
