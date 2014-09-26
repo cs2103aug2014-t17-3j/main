@@ -38,7 +38,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 
-public class DateProcessor {
+public class DateParser {
 
 	private static String[] date_formats = { "yyyy-MM-dd", "yyyy/MM/dd",
 			"dd/MM/yyyy", "dd-MM-yyyy", "yyyy MMMMM d", "yyyy d MMMMM",
@@ -60,7 +60,7 @@ public class DateProcessor {
 	private static LocalDate formatParse(String userInput) {
 		LocalDate date = null;
 		for (String input : userInput.split(" ")) {
-			for (String format : DateProcessor.date_formats) {
+			for (String format : DateParser.date_formats) {
 				try {
 					DateTimeFormatter dtf = DateTimeFormat.forPattern(format);
 					date = dtf.parseLocalDate(input);

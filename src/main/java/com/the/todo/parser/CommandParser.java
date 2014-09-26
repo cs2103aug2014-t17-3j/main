@@ -33,7 +33,7 @@ import org.joda.time.LocalDate;
 import com.the.todo.model.ToDo;
 import com.the.todo.storage.InMemoryStore;
 
-public class CommandHandler {
+public class CommandParser {
 
 	private static InMemoryStore memoryStore = new InMemoryStore();
 
@@ -73,7 +73,7 @@ public class CommandHandler {
 	}
 
 	private ToDo processEdit(String input, ToDo todoUpdate) {
-		LocalDate date = DateProcessor.parseDate(input);
+		LocalDate date = DateParser.parseDate(input);
 		if (date == null) {
 			todoUpdate.setTitle(input);
 		} else {
@@ -85,7 +85,7 @@ public class CommandHandler {
 
 	private ToDo processAdd(String input) {
 		ToDo todo = new ToDo(input);
-		LocalDate date = DateProcessor.parseDate(input);
+		LocalDate date = DateParser.parseDate(input);
 		todo.setEndDate(date);
 		return todo;
 	}

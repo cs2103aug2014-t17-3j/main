@@ -33,33 +33,33 @@ import static org.junit.Assert.*;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 
-public class DateProcessorTest {
+public class DateParserTest {
 
 	private LocalDate date = null;
 	private LocalDate expectedDate = null;
 
 	@Test
 	public void dateTest() {
-		date = DateProcessor.parseDate("");
+		date = DateParser.parseDate("");
 		assertNull(date);
 
-		date = DateProcessor.parseDate("study on 29/9/2014");
+		date = DateParser.parseDate("study on 29/9/2014");
 		expectedDate = new LocalDate(2014, 9, 29);
 		assertEquals(expectedDate, date);
 
-		date = DateProcessor.parseDate("study on 2016/2/15");
+		date = DateParser.parseDate("study on 2016/2/15");
 		expectedDate = new LocalDate(2016, 2, 15);
 		assertEquals(expectedDate, date);
 
-		date = DateProcessor.parseDate("study on 11/28/2014");
+		date = DateParser.parseDate("study on 11/28/2014");
 		expectedDate = new LocalDate(2014, 11, 28);
 		assertEquals(expectedDate, date);
 
-		date = DateProcessor.parseDate("study on Christmas");
+		date = DateParser.parseDate("study on Christmas");
 		expectedDate = new LocalDate(2014, 12, 25);
 		assertEquals(expectedDate, date);
 
-		date = DateProcessor.parseDate("easter study");
+		date = DateParser.parseDate("easter study");
 		expectedDate = new LocalDate(2015, 4, 5);
 		assertEquals(expectedDate, date);
 
