@@ -84,6 +84,8 @@ public class CommandParser {
 
 	private ToDo processEdit(String input, ToDo todoUpdate) {
 		int subIndex = input.indexOf('+');
+		int endIndex;
+		String subString;
 		LocalDate date = DateParser.parseDate(input);
 		if (date == null) {
 			todoUpdate.setTitle(input);
@@ -92,7 +94,13 @@ public class CommandParser {
 			todoUpdate.setEndDate(date);
 		}
 		if (subIndex != -1) {
-			String subString = input.substring(subIndex).trim();
+			String beforeSubString = input.substring(subIndex).trim();
+			endIndex = beforeSubString.indexOf(" ");
+			if(endIndex != -1) {
+				subString = beforeSubString.substring(0, endIndex);
+			}else{
+				subString = input.substring(subIndex).trim();
+			}
 			todoUpdate.setCategory(subString);
 		}
 		return todoUpdate;
