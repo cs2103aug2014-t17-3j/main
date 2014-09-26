@@ -41,13 +41,49 @@ public class CommandParserTest {
 	@Test
 	public void testAddCategory() {
 		LocalDate expectedDate = calcNextFriday(new LocalDate());
-		cp.commandProcess("add remember to get present for jia yeeee next Friday +Birthday");
+		cp.commandProcess("add remember to get present next Friday +Birthday");
 		ms = cp.getMemoryStore();
 		
 		assertEquals(2, ms.count());
-		assertEquals("remember to get present for jia yeeee next Friday +Birthday", ms.get("2").getTitle());
+		assertEquals("remember to get present next Friday +Birthday", ms.get("2").getTitle());
 		assertEquals(expectedDate, ms.get("2").getEndDate());
 		assertEquals("+Birthday", ms.get("2").getCategory());
+	}
+	
+	@Test
+	public void testAddCategoryRandomPlace1() {
+		LocalDate expectedDate = calcNextFriday(new LocalDate());
+		cp.commandProcess("add remember to get present next Friday +Birthday");
+		ms = cp.getMemoryStore();
+		
+		assertEquals(2, ms.count());
+		assertEquals("remember to get present next Friday +Birthday", ms.get("2").getTitle());
+		assertEquals(expectedDate, ms.get("2").getEndDate());
+		assertEquals("+Birthday", ms.get("2").getCategory());		
+	}
+	
+	@Test
+	public void testAddCategoryRandomPlace2() {
+		LocalDate expectedDate = calcNextFriday(new LocalDate());
+		cp.commandProcess("add remember to get present +Birthday next Friday");
+		ms = cp.getMemoryStore();
+		
+		assertEquals(2, ms.count());
+		assertEquals("remember to get present +Birthday next Friday", ms.get("2").getTitle());
+		assertEquals(expectedDate, ms.get("2").getEndDate());
+		assertEquals("+Birthday", ms.get("2").getCategory());		
+	}
+	
+	@Test
+	public void testAddCategoryRandomPlace3() {
+		LocalDate expectedDate = calcNextFriday(new LocalDate());
+		cp.commandProcess("add +Birthday remember to get present next Friday");
+		ms = cp.getMemoryStore();
+		
+		assertEquals(2, ms.count());
+		assertEquals("+Birthday remember to get present next Friday", ms.get("2").getTitle());
+		assertEquals(expectedDate, ms.get("2").getEndDate());
+		assertEquals("+Birthday", ms.get("2").getCategory());		
 	}
 	
 	@Test
