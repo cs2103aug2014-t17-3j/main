@@ -28,17 +28,22 @@
 
 package com.the.todo.parser;
 
-import java.util.Scanner;
-
 import org.joda.time.LocalDate;
 
 import com.the.todo.model.ToDo;
 import com.the.todo.storage.InMemoryStore;
 
-public class CommandHandler {
+public class CommandParser {
 
-	private static InMemoryStore memoryStore = new InMemoryStore();
-	private static DateProcessor sp = new DateProcessor();
+	private static InMemoryStore memoryStore;
+	
+	public CommandParser() {
+		memoryStore = new InMemoryStore();
+	}
+
+	public InMemoryStore getMemoryStore() {
+		return memoryStore;
+	}
 
 	public void commandProcess(String command) {
 		String[] inputs = command.split(" ", 2);
@@ -65,7 +70,8 @@ public class CommandHandler {
 			}
 			break;
 		}
-
+		
+		System.out.println("-----------------------------");
 		for (ToDo todo : memoryStore.getAll()) {
 			System.out.println("ID: " + todo.getId());
 			System.out.println("Title: " + todo.getTitle());
@@ -76,10 +82,10 @@ public class CommandHandler {
 	}
 
 	private ToDo processEdit(String input, ToDo todoUpdate) {
-		LocalDate date = sp.stringProcess(input);
-		if(date == null){
+		LocalDate date = DateParser.parseDate(input);
+		if (date == null) {
 			todoUpdate.setTitle(input);
-		}else{
+		} else {
 			todoUpdate.setTitle(input);
 			todoUpdate.setEndDate(date);
 		}
@@ -88,8 +94,11 @@ public class CommandHandler {
 
 	private ToDo processAdd(String input) {
 		ToDo todo = new ToDo(input);
-		LocalDate date = sp.stringProcess(input);
-		todo.setEndDate(date);
+		LocalDate date = DateParser.parseDate(input);
+		if (date != null) {
+			todo.setEndDate(date);
+		}
+		
 		return todo;
 	}
 
