@@ -116,6 +116,42 @@ public class CommandParserTest {
 	}
 	
 	@Test
+	public void testUpdateCategoryRandomPlace1() {
+		LocalDate expectedDate = calcNextFriday(new LocalDate());
+		cp.commandProcess("edit 1 CS2103 IVLE quiz due on Friday +Homework");
+		ms = cp.getMemoryStore();
+		
+		assertEquals(1, ms.count());
+		assertEquals("CS2103 IVLE quiz due on Friday +Homework", ms.get("1").getTitle());
+		assertEquals(expectedDate, ms.get("1").getEndDate());
+		assertEquals("+Homework", ms.get("1").getCategory());
+	}
+	
+	@Test
+	public void testUpdateCategoryRandomPlace2() {
+		LocalDate expectedDate = calcNextFriday(new LocalDate());
+		cp.commandProcess("edit 1 +Homework CS2103 IVLE quiz due on Friday");
+		ms = cp.getMemoryStore();
+		
+		assertEquals(1, ms.count());
+		assertEquals("+Homework CS2103 IVLE quiz due on Friday", ms.get("1").getTitle());
+		assertEquals(expectedDate, ms.get("1").getEndDate());
+		assertEquals("+Homework", ms.get("1").getCategory());
+	}
+	
+	@Test
+	public void testUpdateCategoryRandomPlace3() {
+		LocalDate expectedDate = calcNextFriday(new LocalDate());
+		cp.commandProcess("edit 1 CS2103 IVLE quiz +Homework due on Friday");
+		ms = cp.getMemoryStore();
+		
+		assertEquals(1, ms.count());
+		assertEquals("CS2103 IVLE quiz +Homework due on Friday", ms.get("1").getTitle());
+		assertEquals(expectedDate, ms.get("1").getEndDate());
+		assertEquals("+Homework", ms.get("1").getCategory());
+	}	
+	
+	@Test
 	public void testDelete() {
 		cp.commandProcess("delete 1");
 		ms = cp.getMemoryStore();
