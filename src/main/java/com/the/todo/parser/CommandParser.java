@@ -69,6 +69,11 @@ public class CommandParser {
 				memoryStore.update(editInputs[0], todoUpdate);
 			}
 			break;
+		case "complete":
+			String inputComplete = inputs[1];
+			String[] completeInputs = inputComplete.trim().split(" ", 2);
+			ToDo todoComplete = memoryStore.get(completeInputs[0]);
+			todoComplete.setCompleted(true);
 		}
 
 		System.out.println("-----------------------------");
