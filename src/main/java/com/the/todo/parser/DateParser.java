@@ -74,13 +74,17 @@ public class DateParser {
 
 	private static LocalDate prettyTimeParse(String userInput) {
 		List<DateGroup> groups = new PrettyTimeParser().parseSyntax(userInput);
-		LocalDate date = new LocalDate(groups.get(0).getDates().get(0));
 
+		if (groups.size() == 0) {
+			return null;
+		}
+
+		LocalDate date = new LocalDate(groups.get(0).getDates().get(0));
 		return date;
 	}
 
 	private static boolean checkDigits(String s) {
-		Pattern pattern = Pattern.compile("\\d{2,}");
+		Pattern pattern = Pattern.compile("\b\\d+");
 		Matcher matcher = pattern.matcher(s);
 		if (matcher.find()) {
 			return true;

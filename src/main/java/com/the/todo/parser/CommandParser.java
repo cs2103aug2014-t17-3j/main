@@ -35,7 +35,15 @@ import com.the.todo.storage.InMemoryStore;
 
 public class CommandParser {
 
-	private static InMemoryStore memoryStore = new InMemoryStore();
+	private static InMemoryStore memoryStore;
+	
+	public CommandParser() {
+		memoryStore = new InMemoryStore();
+	}
+
+	public InMemoryStore getMemoryStore() {
+		return memoryStore;
+	}
 
 	public void commandProcess(String command) {
 		String[] inputs = command.split(" ", 2);
@@ -62,7 +70,8 @@ public class CommandParser {
 			}
 			break;
 		}
-
+		
+		System.out.println("-----------------------------");
 		for (ToDo todo : memoryStore.getAll()) {
 			System.out.println("ID: " + todo.getId());
 			System.out.println("Title: " + todo.getTitle());
@@ -86,7 +95,10 @@ public class CommandParser {
 	private ToDo processAdd(String input) {
 		ToDo todo = new ToDo(input);
 		LocalDate date = DateParser.parseDate(input);
-		todo.setEndDate(date);
+		if (date != null) {
+			todo.setEndDate(date);
+		}
+		
 		return todo;
 	}
 
