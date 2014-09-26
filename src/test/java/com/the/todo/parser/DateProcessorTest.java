@@ -37,38 +37,37 @@ public class DateProcessorTest {
 
 	private LocalDate date = null;
 	private LocalDate expectedDate = null;
-	private DateProcessor processingString = new DateProcessor();
 
 	@Test
 	public void dateTest() {
-		date = processingString.stringProcess("");
+		date = DateProcessor.parseDate("");
 		assertNull(date);
 
-		date = processingString.stringProcess("study on 29/9/2014");
+		date = DateProcessor.parseDate("study on 29/9/2014");
 		expectedDate = new LocalDate(2014, 9, 29);
 		assertEquals(expectedDate, date);
 
-		date = processingString.stringProcess("study on 2016/2/15");
+		date = DateProcessor.parseDate("study on 2016/2/15");
 		expectedDate = new LocalDate(2016, 2, 15);
 		assertEquals(expectedDate, date);
 
-		date = processingString.stringProcess("study on 11/28/2014");
+		date = DateProcessor.parseDate("study on 11/28/2014");
 		expectedDate = new LocalDate(2014, 11, 28);
 		assertEquals(expectedDate, date);
 
-		date = processingString.stringProcess("study on Christmas");
+		date = DateProcessor.parseDate("study on Christmas");
 		expectedDate = new LocalDate(2014, 12, 25);
 		assertEquals(expectedDate, date);
 
-		date = processingString.stringProcess("easter study");
+		date = DateProcessor.parseDate("easter study");
 		expectedDate = new LocalDate(2015, 4, 5);
 		assertEquals(expectedDate, date);
 
-		// date = processingString.stringProcess("study on labor day");
+		// date = DateProcessor.parseDate("study on labor day");
 		// expectedDate = new LocalDate(2015, 5, 1);
 		// assertEquals(expectedDate, date);
 
-		// date = processingString.stringProcess("study on 29/2/2015");
+		// date = DateProcessor.parseDate("study on 29/2/2015");
 		// expectedDate = new LocalDate(2015, 2, 29);
 		// assertEquals(expectedDate, date);
 	}

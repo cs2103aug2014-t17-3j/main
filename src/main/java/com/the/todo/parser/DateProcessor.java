@@ -37,7 +37,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 import org.ocpsoft.prettytime.nlp.parse.DateGroup;
-import org.ocpsoft.prettytime.shade.org.antlr.runtime.Parser;
 
 public class DateProcessor {
 
@@ -45,20 +44,20 @@ public class DateProcessor {
 			"dd/MM/yyyy", "dd-MM-yyyy", "yyyy MMMMM d", "yyyy d MMMMM",
 			"MMMMM d yyyy", "d MMMMM yyyy", "MMMMM d", "d MMMMM", "MM/dd/yyyy" };
 
-	public LocalDate stringProcess(String userInput) {
+	public static LocalDate parseDate(String userInput) {
 		LocalDate date = null;
 		if (userInput.isEmpty()) {
 			return date;
 		}
 		if (checkDigits(userInput)) {
-			date = dateProcessing(userInput);
+			date = formatParse(userInput);
 		} else {
-			date = nattyProcess(userInput);
+			date = prettyTimeParse(userInput);
 		}
 		return date;
 	}
 
-	public LocalDate dateProcessing(String userInput) {
+	private static LocalDate formatParse(String userInput) {
 		LocalDate date = null;
 		for (String input : userInput.split(" ")) {
 			for (String format : DateProcessor.date_formats) {
@@ -66,14 +65,14 @@ public class DateProcessor {
 					DateTimeFormatter dtf = DateTimeFormat.forPattern(format);
 					date = dtf.parseLocalDate(input);
 				} catch (Exception ex) {
-	
+
 				}
 			}
 		}
 		return date;
 	}
 
-	private LocalDate nattyProcess(String userInput) {
+	private static LocalDate prettyTimeParse(String userInput) {
 		List<DateGroup> groups = new PrettyTimeParser().parseSyntax(userInput);
 		LocalDate date = new LocalDate(groups.get(0).getDates().get(0));
 
@@ -88,4 +87,5 @@ public class DateProcessor {
 		}
 		return false;
 	}
+
 }
