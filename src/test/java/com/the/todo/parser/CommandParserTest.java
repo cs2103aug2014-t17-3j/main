@@ -39,6 +39,18 @@ public class CommandParserTest {
 	}
 	
 	@Test
+	public void testAddCategory() {
+		LocalDate expectedDate = calcNextFriday(new LocalDate());
+		cp.commandProcess("add remember to get present for jia yeeee next Friday +Birthday");
+		ms = cp.getMemoryStore();
+		
+		assertEquals(2, ms.count());
+		assertEquals("remember to get present for jia yeeee next Friday +Birthday", ms.get("2").getTitle());
+		assertEquals(expectedDate, ms.get("2").getEndDate());
+		assertEquals("+Birthday", ms.get("2").getCategory());
+	}
+	
+	@Test
 	public void testRead() {
 		ms = cp.getMemoryStore();
 		assertEquals(1, ms.count());
@@ -53,6 +65,18 @@ public class CommandParserTest {
 		assertEquals(1, ms.count());
 		assertEquals("CS2103 IVLE quiz due on Friday", ms.get("1").getTitle());
 		assertEquals(expectedDate, ms.get("1").getEndDate());
+	}
+	
+	@Test
+	public void testUpdateCategory() {
+		LocalDate expectedDate = calcNextFriday(new LocalDate());
+		cp.commandProcess("edit 1 CS2103 IVLE quiz due on Friday +Homework");
+		ms = cp.getMemoryStore();
+		
+		assertEquals(1, ms.count());
+		assertEquals("CS2103 IVLE quiz due on Friday +Homework", ms.get("1").getTitle());
+		assertEquals(expectedDate, ms.get("1").getEndDate());
+		assertEquals("+Homework", ms.get("1").getCategory());
 	}
 	
 	@Test

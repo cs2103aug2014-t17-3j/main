@@ -36,7 +36,7 @@ import com.the.todo.storage.InMemoryStore;
 public class CommandParser {
 
 	private static InMemoryStore memoryStore;
-	
+
 	public CommandParser() {
 		memoryStore = new InMemoryStore();
 	}
@@ -70,18 +70,20 @@ public class CommandParser {
 			}
 			break;
 		}
-		
+
 		System.out.println("-----------------------------");
 		for (ToDo todo : memoryStore.getAll()) {
 			System.out.println("ID: " + todo.getId());
 			System.out.println("Title: " + todo.getTitle());
 			System.out.println("Date: " + todo.getEndDate());
+			System.out.println("Category: " + todo.getCategory());
 			System.out.println("Completed: " + todo.isCompleted());
 			System.out.println("Delete: " + todo.isDeleted());
 		}
 	}
 
 	private ToDo processEdit(String input, ToDo todoUpdate) {
+		int subIndex = input.indexOf('+');
 		LocalDate date = DateParser.parseDate(input);
 		if (date == null) {
 			todoUpdate.setTitle(input);
@@ -89,16 +91,25 @@ public class CommandParser {
 			todoUpdate.setTitle(input);
 			todoUpdate.setEndDate(date);
 		}
+		if (subIndex != -1) {
+			String subString = input.substring(subIndex).trim();
+			todoUpdate.setCategory(subString);
+		}
 		return todoUpdate;
 	}
 
 	private ToDo processAdd(String input) {
 		ToDo todo = new ToDo(input);
+		int subIndex = input.indexOf('+');
+		if (subIndex != -1) {
+			String subString = input.substring(subIndex).trim();
+			todo.setCategory(subString);
+		}
 		LocalDate date = DateParser.parseDate(input);
 		if (date != null) {
 			todo.setEndDate(date);
 		}
-		
+
 		return todo;
 	}
 
