@@ -28,7 +28,7 @@
 
 package com.the.todo.model;
 
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 public class ToDo {
 
@@ -36,8 +36,8 @@ public class ToDo {
 	private String title;
 	private String description;
 	private String category;
-	private DateTime startDate;
-	private DateTime endDate;
+	private LocalDate startDate;
+	private LocalDate endDate;
 	private boolean completed;
 	private boolean deleted;
 	
@@ -84,19 +84,19 @@ public class ToDo {
 		this.category = category;
 	}
 
-	public DateTime getStartDate() {
+	public LocalDate getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(DateTime startDate) {
+	public void setStartDate(LocalDate startDate) {
 		this.startDate = startDate;
 	}
 
-	public DateTime getEndDate() {
+	public LocalDate getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(DateTime endDate) {
+	public void setEndDate(LocalDate endDate) {
 		this.endDate = endDate;
 	}
 
