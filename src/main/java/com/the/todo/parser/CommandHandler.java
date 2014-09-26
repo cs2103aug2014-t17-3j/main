@@ -28,6 +28,8 @@
 
 package com.the.todo.parser;
 
+import java.util.Scanner;
+
 import org.joda.time.LocalDate;
 
 import com.the.todo.model.ToDo;
@@ -36,6 +38,7 @@ import com.the.todo.storage.InMemoryStore;
 public class CommandHandler {
 
 	private static InMemoryStore memoryStore = new InMemoryStore();
+	private static DateProcessor sp = new DateProcessor();
 
 	public void commandProcess(String command) {
 		String[] inputs = command.split(" ", 2);
@@ -51,6 +54,15 @@ public class CommandHandler {
 			memoryStore.delete(inputs[1]);
 			break;
 		case "edit":
+			String input = inputs[1];
+			String[] editInputs = input.trim().split(" ", 2);
+			ToDo todoUpdate = memoryStore.get(editInputs[0]);
+			if (todoUpdate == null) {
+				System.out.println("No Such object");
+			} else {
+				todoUpdate = processEdit(editInputs[1], todoUpdate);
+				memoryStore.update(editInputs[0], todoUpdate);
+			}
 			break;
 		}
 
@@ -63,9 +75,19 @@ public class CommandHandler {
 		}
 	}
 
+	private ToDo processEdit(String input, ToDo todoUpdate) {
+		LocalDate date = sp.stringProcess(input);
+		if(date == null){
+			todoUpdate.setTitle(input);
+		}else{
+			todoUpdate.setTitle(input);
+			todoUpdate.setEndDate(date);
+		}
+		return todoUpdate;
+	}
+
 	private ToDo processAdd(String input) {
 		ToDo todo = new ToDo(input);
-		DateProcessor sp = new DateProcessor();
 		LocalDate date = sp.stringProcess(input);
 		todo.setEndDate(date);
 		return todo;
