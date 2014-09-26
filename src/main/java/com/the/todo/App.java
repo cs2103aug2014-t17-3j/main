@@ -35,5 +35,9 @@ public class App extends Application {
         stage.setTitle("Hello JavaFX and Maven");
         stage.setScene(scene);
         stage.show();
+    
+        
+        
+        
 	}
 }
