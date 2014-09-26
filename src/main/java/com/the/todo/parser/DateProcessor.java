@@ -35,9 +35,9 @@ import java.util.regex.Pattern;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-
-import com.joestelmach.natty.DateGroup;
-import com.joestelmach.natty.Parser;
+import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
+import org.ocpsoft.prettytime.nlp.parse.DateGroup;
+import org.ocpsoft.prettytime.shade.org.antlr.runtime.Parser;
 
 public class DateProcessor {
 
@@ -74,9 +74,7 @@ public class DateProcessor {
 	}
 
 	private LocalDate nattyProcess(String userInput) {
-		Parser parser = new Parser();
-
-		List<DateGroup> groups = parser.parse(userInput);
+		List<DateGroup> groups = new PrettyTimeParser().parseSyntax(userInput);
 		LocalDate date = new LocalDate(groups.get(0).getDates().get(0));
 
 		return date;
