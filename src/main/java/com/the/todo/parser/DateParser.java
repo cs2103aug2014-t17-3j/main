@@ -84,7 +84,7 @@ public class DateParser {
 	}
 
 	private static boolean checkDigits(String s) {
-		Pattern pattern = Pattern.compile("\b\\d+");
+		Pattern pattern = Pattern.compile("\\b\\d+");
 		Matcher matcher = pattern.matcher(s);
 		if (matcher.find()) {
 			return true;
