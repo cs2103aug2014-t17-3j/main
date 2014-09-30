@@ -88,9 +88,9 @@ public class CommandParser {
 	}
 
 	private ToDo processEdit(String input, ToDo todoUpdate) {
-		int subIndex = input.indexOf('+');
-		int endIndex;
-		String subString;
+//		int subIndex = input.indexOf('+');
+//		int endIndex;
+//		String subString;
 		LocalDate date = DateParser.parseDate(input);
 		if (date == null) {
 			todoUpdate.setTitle(input);
@@ -98,34 +98,36 @@ public class CommandParser {
 			todoUpdate.setTitle(input);
 			todoUpdate.setEndDate(date);
 		}
-		if (subIndex != -1) {
-			String beforeSubString = input.substring(subIndex).trim();
-			endIndex = beforeSubString.indexOf(" ");
-			if(endIndex != -1) {
-				subString = beforeSubString.substring(0, endIndex);
-			}else{
-				subString = input.substring(subIndex).trim();
-			}
-			todoUpdate.setCategory(subString);
-		}
+//		if (subIndex != -1) {
+//			String beforeSubString = input.substring(subIndex).trim();
+//			endIndex = beforeSubString.indexOf(" ");
+//			if(endIndex != -1) {
+//				subString = beforeSubString.substring(0, endIndex);
+//			}else{
+//				subString = input.substring(subIndex).trim();
+//			}
+//			todoUpdate.setCategory(subString);
+//		}
+		todoUpdate = CategoryParser.categoryParser(input, todoUpdate);
 		return todoUpdate;
 	}
 
 	private ToDo processAdd(String input) {
 		ToDo todo = new ToDo(input);
-		int subIndex = input.indexOf('+');
-		int endIndex;
-		String subString;
-		if (subIndex != -1) {
-			String beforeSubString = input.substring(subIndex).trim();
-			endIndex = beforeSubString.indexOf(" ");
-			if(endIndex != -1) {
-				subString = beforeSubString.substring(0, endIndex);
-			}else{
-				subString = input.substring(subIndex).trim();
-			}
-			todo.setCategory(subString);
-		}
+//		int subIndex = input.indexOf('+');
+//		int endIndex;
+//		String subString;
+//		if (subIndex != -1) {
+//			String beforeSubString = input.substring(subIndex).trim();
+//			endIndex = beforeSubString.indexOf(" ");
+//			if(endIndex != -1) {
+//				subString = beforeSubString.substring(0, endIndex);
+//			}else{
+//				subString = input.substring(subIndex).trim();
+//			}
+//			todo.setCategory(subString);
+//		}
+		todo = CategoryParser.categoryParser(input, todo);
 		LocalDate date = DateParser.parseDate(input);
 		if (date != null) {
 			todo.setEndDate(date);
