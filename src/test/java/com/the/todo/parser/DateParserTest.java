@@ -62,14 +62,15 @@ public class DateParserTest {
 		date = DateParser.parseDate("easter study");
 		expectedDate = new LocalDate(2015, 4, 5);
 		assertEquals(expectedDate, date);
-
-		// date = DateProcessor.parseDate("study on labor day");
-		// expectedDate = new LocalDate(2015, 5, 1);
-		// assertEquals(expectedDate, date);
-
-		// date = DateProcessor.parseDate("study on 29/2/2015");
-		// expectedDate = new LocalDate(2015, 2, 29);
-		// assertEquals(expectedDate, date);
+	}
+	
+	@Test
+	public void validTest(){
+		date = DateParser.parseDate("study on 29/2/2015");
+		assertFalse(DateParser.getIsValid());
+		
+		date = DateParser.parseDate("study on 1/5/2015");
+		assertTrue(DateParser.getIsValid());
 	}
 
 }

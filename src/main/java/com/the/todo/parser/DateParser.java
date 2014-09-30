@@ -43,6 +43,7 @@ public class DateParser {
 	private static String[] date_formats = { "yyyy-MM-dd", "yyyy/MM/dd",
 			"dd/MM/yyyy", "dd-MM-yyyy", "yyyy MMMMM d", "yyyy d MMMMM",
 			"MMMMM d yyyy", "d MMMMM yyyy", "MMMMM d", "d MMMMM", "MM/dd/yyyy" };
+	private static boolean isValid = false;
 
 	public static LocalDate parseDate(String userInput) {
 		LocalDate date = null;
@@ -64,8 +65,9 @@ public class DateParser {
 				try {
 					DateTimeFormatter dtf = DateTimeFormat.forPattern(format);
 					date = dtf.parseLocalDate(input);
+					isValid = true;
 				} catch (Exception ex) {
-
+					isValid = false;
 				}
 			}
 		}
@@ -90,6 +92,9 @@ public class DateParser {
 			return true;
 		}
 		return false;
+	}
+	public static boolean getIsValid(){
+		return isValid;
 	}
 
 }
