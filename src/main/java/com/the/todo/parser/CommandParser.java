@@ -64,6 +64,7 @@ public class CommandParser {
 			String[] completeInputs = inputComplete.trim().split(" ", 2);
 			ToDo todoComplete = todoStorage.get(completeInputs[0]);
 			todoComplete.setCompleted(true);
+			todoStorage.update(todoComplete.getId(), todoComplete);
 		}
 
 		System.out.println("-----------------------------");
@@ -79,14 +80,14 @@ public class CommandParser {
 
 	private static ToDo processEdit(String input, ToDo todoUpdate) {
 		LocalDate date = DateParser.parseDate(input);
-
+		
 		if (date == null) {
 			todoUpdate.setTitle(input);
 		} else {
 			todoUpdate.setTitle(input);
 			todoUpdate.setEndDate(date);
 		}
-
+		
 		todoUpdate = CategoryParser.categoryParser(input, todoUpdate);
 		return todoUpdate;
 	}
