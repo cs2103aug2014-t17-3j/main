@@ -31,53 +31,43 @@ package com.the.todo.parser;
 import org.joda.time.LocalDate;
 
 import com.the.todo.model.ToDo;
-import com.the.todo.storage.InMemoryStore;
+import com.the.todo.storage.ToDoStore;
 
 public class CommandParser {
 
-	private static InMemoryStore memoryStore;
-
-	public CommandParser() {
-		memoryStore = new InMemoryStore();
-	}
-
-	public InMemoryStore getMemoryStore() {
-		return memoryStore;
-	}
-
-	public void commandProcess(String command) {
+	public static void commandProcess(ToDoStore todoStorage, String command) {
 		String[] inputs = command.split(" ", 2);
 
 		switch (inputs[0].trim().toLowerCase()) {
 		case "add":
 			ToDo todo = processAdd(inputs[1]);
-			memoryStore.save(todo);
+			todoStorage.save(todo);
 		case "read":
-			memoryStore.getAll();
+			todoStorage.getAll();
 			break;
 		case "delete":
-			memoryStore.delete(inputs[1]);
+			todoStorage.delete(inputs[1]);
 			break;
 		case "edit":
 			String input = inputs[1];
 			String[] editInputs = input.trim().split(" ", 2);
-			ToDo todoUpdate = memoryStore.get(editInputs[0]);
+			ToDo todoUpdate = todoStorage.get(editInputs[0]);
 			if (todoUpdate == null) {
-				System.out.println("No Such object");
+				System.out.println("No such object");
 			} else {
 				todoUpdate = processEdit(editInputs[1], todoUpdate);
-				memoryStore.update(editInputs[0], todoUpdate);
+				todoStorage.update(editInputs[0], todoUpdate);
 			}
 			break;
 		case "complete":
 			String inputComplete = inputs[1];
 			String[] completeInputs = inputComplete.trim().split(" ", 2);
-			ToDo todoComplete = memoryStore.get(completeInputs[0]);
+			ToDo todoComplete = todoStorage.get(completeInputs[0]);
 			todoComplete.setCompleted(true);
 		}
 
 		System.out.println("-----------------------------");
-		for (ToDo todo : memoryStore.getAll()) {
+		for (ToDo todo : todoStorage.getAll()) {
 			System.out.println("ID: " + todo.getId());
 			System.out.println("Title: " + todo.getTitle());
 			System.out.println("Date: " + todo.getEndDate());
@@ -87,46 +77,23 @@ public class CommandParser {
 		}
 	}
 
-	private ToDo processEdit(String input, ToDo todoUpdate) {
-//		int subIndex = input.indexOf('+');
-//		int endIndex;
-//		String subString;
+	private static ToDo processEdit(String input, ToDo todoUpdate) {
 		LocalDate date = DateParser.parseDate(input);
+
 		if (date == null) {
 			todoUpdate.setTitle(input);
 		} else {
 			todoUpdate.setTitle(input);
 			todoUpdate.setEndDate(date);
 		}
-//		if (subIndex != -1) {
-//			String beforeSubString = input.substring(subIndex).trim();
-//			endIndex = beforeSubString.indexOf(" ");
-//			if(endIndex != -1) {
-//				subString = beforeSubString.substring(0, endIndex);
-//			}else{
-//				subString = input.substring(subIndex).trim();
-//			}
-//			todoUpdate.setCategory(subString);
-//		}
+
 		todoUpdate = CategoryParser.categoryParser(input, todoUpdate);
 		return todoUpdate;
 	}
 
-	private ToDo processAdd(String input) {
+	private static ToDo processAdd(String input) {
 		ToDo todo = new ToDo(input);
-//		int subIndex = input.indexOf('+');
-//		int endIndex;
-//		String subString;
-//		if (subIndex != -1) {
-//			String beforeSubString = input.substring(subIndex).trim();
-//			endIndex = beforeSubString.indexOf(" ");
-//			if(endIndex != -1) {
-//				subString = beforeSubString.substring(0, endIndex);
-//			}else{
-//				subString = input.substring(subIndex).trim();
-//			}
-//			todo.setCategory(subString);
-//		}
+
 		todo = CategoryParser.categoryParser(input, todo);
 		LocalDate date = DateParser.parseDate(input);
 		if (date != null) {
