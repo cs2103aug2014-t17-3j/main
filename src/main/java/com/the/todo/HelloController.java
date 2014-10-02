@@ -1,6 +1,6 @@
 package com.the.todo;
 
-
+import javafx.application.Platform;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,6 +39,13 @@ public class HelloController {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 		Date date = new Date();
 		mainLabel.setText(dateFormat.format(date));
+		
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				mainInput.requestFocus();
+			}
+		});
 				 
 	}
 	
