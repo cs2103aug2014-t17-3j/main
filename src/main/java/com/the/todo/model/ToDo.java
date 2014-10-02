@@ -115,4 +115,11 @@ public class ToDo {
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
 	}
+	
+	@Override
+	public String toString() {
+		return "ToDo [id=" + id + ", title=" + title + ", category=" + category
+				+ ", startDate=" + startDate + ", endDate=" + endDate
+				+ ", completed=" + completed + ", deleted=" + deleted + "]";
+	}
 }
