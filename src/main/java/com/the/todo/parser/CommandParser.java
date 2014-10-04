@@ -79,24 +79,25 @@ public class CommandParser {
 	}
 
 	private static ToDo processEdit(String input, ToDo todoUpdate) {
+		String category = CategoryParser.parse(input);
 		LocalDate date = DateParser.parseDate(input);
-		
-		if (date == null) {
-			todoUpdate.setTitle(input);
-		} else {
-			todoUpdate.setTitle(input);
+			
+		todoUpdate.setTitle(input);
+		todoUpdate.setCategory(category);
+		if (date != null) {
 			todoUpdate.setEndDate(date);
 		}
 		
-		todoUpdate = CategoryParser.categoryParser(input, todoUpdate);
 		return todoUpdate;
 	}
 
 	private static ToDo processAdd(String input) {
 		ToDo todo = new ToDo(input);
 
-		todo = CategoryParser.categoryParser(input, todo);
+		String category = CategoryParser.parse(input);
 		LocalDate date = DateParser.parseDate(input);
+		
+		todo.setCategory(category);
 		if (date != null) {
 			todo.setEndDate(date);
 		}
