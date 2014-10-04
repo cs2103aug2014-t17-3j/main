@@ -28,36 +28,79 @@
 
 package com.the.todo.parser;
 
-import org.joda.time.LocalDate;
-
+import com.the.todo.command.CommandStatus;
+import com.the.todo.command.ToDoAdd;
+import com.the.todo.command.ToDoCommand;
+import com.the.todo.command.ToDoDelete;
+import com.the.todo.command.ToDoEdit;
 import com.the.todo.model.ToDo;
 import com.the.todo.storage.ToDoStore;
+import com.the.todo.util.StringUtil;
 
 public class CommandParser {
 
-	public static void commandProcess(ToDoStore todoStorage, String command) {
+	private static ToDoCommand todoCommand;
+
+	private static enum CommandType {
+		ADD, READ, EDIT, DELETE, COMPLETE, INCOMPLETE, SEARCH, UNDO, INVALID
+	};
+
+	public static CommandStatus processCommand(ToDoStore todoStorage,
+			String userInput) {
+		CommandType command = getCommandType(userInput);
+		String todoTitle = getTitle(userInput);
+		ToDoCommand todoCommand = null;
+		CommandStatus commandStatus;
+
+		switch (command) {
+		case ADD:
+			todoCommand = new ToDoAdd(todoStorage, todoTitle);
+			break;
+		case READ:
+			break;
+		case EDIT:
+			todoCommand = new ToDoEdit(todoStorage, todoTitle);
+			break;
+		case DELETE:
+			todoCommand = new ToDoDelete(todoStorage, todoTitle);
+			break;
+		case COMPLETE:
+			break;
+		case SEARCH:
+			break;
+		case UNDO:
+			break;
+		case INVALID:
+			break;
+		default:
+			break;
+		}
+
+		commandStatus = todoCommand.execute();
+		return commandStatus;
+	}
+
+	public static void commandProcess(ToDoStore todoStorage, String command)
+			throws Exception {
 		String[] inputs = command.split(" ", 2);
 
 		switch (inputs[0].trim().toLowerCase()) {
 		case "add":
-			ToDo todo = processAdd(inputs[1]);
-			todoStorage.save(todo);
+			todoCommand = new ToDoAdd(todoStorage, inputs[1]);
+			todoCommand.execute();
+			// ToDo todo = processAdd(inputs[1]);
+			// todoStorage.save(todo);
+			break;
 		case "read":
 			todoStorage.getAll();
 			break;
 		case "delete":
-			todoStorage.delete(inputs[1]);
+			todoCommand = new ToDoDelete(todoStorage, inputs[1]);
+			todoCommand.execute();
 			break;
 		case "edit":
-			String input = inputs[1];
-			String[] editInputs = input.trim().split(" ", 2);
-			ToDo todoUpdate = todoStorage.get(editInputs[0]);
-			if (todoUpdate == null) {
-				System.out.println("No such object");
-			} else {
-				todoUpdate = processEdit(editInputs[1], todoUpdate);
-				todoStorage.update(editInputs[0], todoUpdate);
-			}
+			todoCommand = new ToDoEdit(todoStorage, inputs[1]);
+			todoCommand.execute();
 			break;
 		case "complete":
 			String inputComplete = inputs[1];
@@ -78,31 +121,41 @@ public class CommandParser {
 		}
 	}
 
-	private static ToDo processEdit(String input, ToDo todoUpdate) {
-		String category = CategoryParser.parse(input);
-		LocalDate date = DateParser.parseDate(input);
-			
-		todoUpdate.setTitle(input);
-		todoUpdate.setCategory(category);
-		if (date != null) {
-			todoUpdate.setEndDate(date);
+	private static CommandType getCommandType(String userInput) {
+
+		if (userInput.trim().isEmpty()) {
+			return CommandType.INVALID;
 		}
-		
-		return todoUpdate;
+
+		String[] splitInput = StringUtil.splitString(userInput, " ", 2);
+		String command = splitInput[0].toLowerCase();
+
+		switch (command) {
+		case "add":
+			return CommandType.ADD;
+		case "read":
+			return CommandType.READ;
+		case "edit":
+			return CommandType.EDIT;
+		case "delete":
+			return CommandType.DELETE;
+		case "complete":
+			return CommandType.COMPLETE;
+		case "incomplete":
+			return CommandType.INCOMPLETE;
+		case "search":
+			return CommandType.SEARCH;
+		case "undo":
+			return CommandType.UNDO;
+		default:
+			return CommandType.INVALID;
+		}
 	}
 
-	private static ToDo processAdd(String input) {
-		ToDo todo = new ToDo(input);
+	private static String getTitle(String userInput) {
+		String[] splitInput = StringUtil.splitString(userInput, " ", 2);
 
-		String category = CategoryParser.parse(input);
-		LocalDate date = DateParser.parseDate(input);
-		
-		todo.setCategory(category);
-		if (date != null) {
-			todo.setEndDate(date);
-		}
-
-		return todo;
+		return splitInput[1];
 	}
 
 }
