@@ -41,7 +41,7 @@ public class CommandParser {
 
 	private static ToDoCommand todoCommand;
 
-	private static enum CommandType {
+	public static enum CommandType {
 		ADD, READ, EDIT, DELETE, COMPLETE, INCOMPLETE, SEARCH, UNDO, INVALID
 	};
 
@@ -121,7 +121,7 @@ public class CommandParser {
 		}
 	}
 
-	private static CommandType getCommandType(String userInput) {
+	public static CommandType getCommandType(String userInput) {
 
 		if (userInput.trim().isEmpty()) {
 			return CommandType.INVALID;
@@ -152,7 +152,7 @@ public class CommandParser {
 		}
 	}
 
-	private static String getTitle(String userInput) {
+	public static String getTitle(String userInput) {
 		String[] splitInput = StringUtil.splitString(userInput, " ", 2);
 
 		return splitInput[1];
