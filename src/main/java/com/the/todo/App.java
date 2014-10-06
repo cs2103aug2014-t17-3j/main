@@ -48,7 +48,6 @@ import javafx.stage.StageStyle;
 public class App extends Application {
 
 	public static void main(String[] args) throws Exception {
-		System.out.println("Hello World!");
 		launch(args);
 	}
 
@@ -60,7 +59,7 @@ public class App extends Application {
 		Parent rootNode = (Parent) loader.load(getClass().getResourceAsStream(
 				fxmlFile));
 
-		Scene scene = new Scene(rootNode, 400, 200);
+		Scene scene = new Scene(rootNode, 800, 600);
 		scene.getStylesheets().add("/styles/styles.css");
 
 		final MainToDoController control = loader.getController();
@@ -71,7 +70,7 @@ public class App extends Application {
 			}
 		});
 
-		stage.setTitle("Hello JavaFX and Maven");
+		stage.setTitle("TheTODO");
 		stage.setScene(scene);
 		stage.show();
 
