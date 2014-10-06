@@ -17,7 +17,7 @@ public class CommandParserTest {
 	@Before
 	public void setUp() throws Exception {
 		ms = new InMemoryStore();
-		CommandParser.commandProcess(ms, "add CS2013 IVLE quiz");
+		CommandParser.processCommand(ms, "add CS2013 IVLE quiz");
 	}
 
 	@After
@@ -28,7 +28,7 @@ public class CommandParserTest {
 	@Test
 	public void testAdd() {
 		LocalDate expectedDate = new LocalDate(2014, 11, 11);
-		CommandParser.commandProcess(ms,
+		CommandParser.processCommand(ms,
 				"add remember to get milk on 11/11/2014");
 
 		assertEquals(2, ms.count());
@@ -40,7 +40,7 @@ public class CommandParserTest {
 	@Test
 	public void testAddCategory() {
 		LocalDate expectedDate = calcNextFriday(new LocalDate());
-		CommandParser.commandProcess(ms,
+		CommandParser.processCommand(ms,
 				"add remember to get present on Friday +Birthday");
 
 		assertEquals(2, ms.count());
@@ -53,7 +53,7 @@ public class CommandParserTest {
 	@Test
 	public void testAddCategoryRandomPlace1() {
 		LocalDate expectedDate = calcNextFriday(new LocalDate());
-		CommandParser.commandProcess(ms,
+		CommandParser.processCommand(ms,
 				"add remember to get present on Friday +Birthday");
 
 		assertEquals(2, ms.count());
@@ -66,7 +66,7 @@ public class CommandParserTest {
 	@Test
 	public void testAddCategoryRandomPlace2() {
 		LocalDate expectedDate = calcNextFriday(new LocalDate());
-		CommandParser.commandProcess(ms,
+		CommandParser.processCommand(ms,
 				"add remember to get present +Birthday on Friday");
 
 		assertEquals(2, ms.count());
@@ -79,7 +79,7 @@ public class CommandParserTest {
 	@Test
 	public void testAddCategoryRandomPlace3() {
 		LocalDate expectedDate = calcNextFriday(new LocalDate());
-		CommandParser.commandProcess(ms,
+		CommandParser.processCommand(ms,
 				"add +Birthday remember to get present on Friday");
 
 		assertEquals(2, ms.count());
@@ -97,7 +97,7 @@ public class CommandParserTest {
 	@Test
 	public void testUpdate() {
 		LocalDate expectedDate = calcNextFriday(new LocalDate());
-		CommandParser.commandProcess(ms,
+		CommandParser.processCommand(ms,
 				"edit 1 CS2103 IVLE quiz due on Friday");
 
 		assertEquals(1, ms.count());
@@ -108,7 +108,7 @@ public class CommandParserTest {
 	@Test
 	public void testUpdateCategory() {
 		LocalDate expectedDate = calcNextFriday(new LocalDate());
-		CommandParser.commandProcess(ms,
+		CommandParser.processCommand(ms,
 				"edit 1 CS2103 IVLE quiz due on Friday +Homework");
 
 		assertEquals(1, ms.count());
@@ -121,7 +121,7 @@ public class CommandParserTest {
 	@Test
 	public void testUpdateCategoryRandomPlace1() {
 		LocalDate expectedDate = calcNextFriday(new LocalDate());
-		CommandParser.commandProcess(ms,
+		CommandParser.processCommand(ms,
 				"edit 1 CS2103 IVLE quiz due on Friday +Homework");
 
 		assertEquals(1, ms.count());
@@ -134,7 +134,7 @@ public class CommandParserTest {
 	@Test
 	public void testUpdateCategoryRandomPlace2() {
 		LocalDate expectedDate = calcNextFriday(new LocalDate());
-		CommandParser.commandProcess(ms,
+		CommandParser.processCommand(ms,
 				"edit 1 +Homework CS2103 IVLE quiz due on Friday");
 
 		assertEquals(1, ms.count());
@@ -147,7 +147,7 @@ public class CommandParserTest {
 	@Test
 	public void testUpdateCategoryRandomPlace3() {
 		LocalDate expectedDate = calcNextFriday(new LocalDate());
-		CommandParser.commandProcess(ms,
+		CommandParser.processCommand(ms,
 				"edit 1 CS2103 IVLE quiz +Homework due on Friday");
 
 		assertEquals(1, ms.count());
@@ -159,7 +159,7 @@ public class CommandParserTest {
 
 	@Test
 	public void testDelete() {
-		CommandParser.commandProcess(ms, "delete 1");
+		CommandParser.processCommand(ms, "delete 1");
 
 		assertEquals(1, ms.count());
 		assertTrue(ms.get("1").isDeleted());
