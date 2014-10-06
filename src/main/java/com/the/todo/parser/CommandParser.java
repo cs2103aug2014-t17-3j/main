@@ -41,7 +41,7 @@ public class CommandParser {
 
 	private static ToDoCommand todoCommand;
 
-	public static enum CommandType {
+	private static enum CommandType {
 		ADD, READ, EDIT, DELETE, COMPLETE, INCOMPLETE, SEARCH, UNDO, INVALID
 	};
 
@@ -77,39 +77,7 @@ public class CommandParser {
 		}
 
 		commandStatus = todoCommand.execute();
-		return commandStatus;
-	}
-
-	public static void commandProcess(ToDoStore todoStorage, String command)
-			throws Exception {
-		String[] inputs = command.split(" ", 2);
-
-		switch (inputs[0].trim().toLowerCase()) {
-		case "add":
-			todoCommand = new ToDoAdd(todoStorage, inputs[1]);
-			todoCommand.execute();
-			// ToDo todo = processAdd(inputs[1]);
-			// todoStorage.save(todo);
-			break;
-		case "read":
-			todoStorage.getAll();
-			break;
-		case "delete":
-			todoCommand = new ToDoDelete(todoStorage, inputs[1]);
-			todoCommand.execute();
-			break;
-		case "edit":
-			todoCommand = new ToDoEdit(todoStorage, inputs[1]);
-			todoCommand.execute();
-			break;
-		case "complete":
-			String inputComplete = inputs[1];
-			String[] completeInputs = inputComplete.trim().split(" ", 2);
-			ToDo todoComplete = todoStorage.get(completeInputs[0]);
-			todoComplete.setCompleted(true);
-			todoStorage.update(todoComplete.getId(), todoComplete);
-		}
-
+		
 		System.out.println("-----------------------------");
 		for (ToDo todo : todoStorage.getAll()) {
 			System.out.println("ID: " + todo.getId());
@@ -119,9 +87,52 @@ public class CommandParser {
 			System.out.println("Completed: " + todo.isCompleted());
 			System.out.println("Delete: " + todo.isDeleted());
 		}
+		
+		return commandStatus;
 	}
 
-	public static CommandType getCommandType(String userInput) {
+//	public static void commandProcess(ToDoStore todoStorage, String command)
+//			throws Exception {
+//		String[] inputs = command.split(" ", 2);
+//
+//		switch (inputs[0].trim().toLowerCase()) {
+//		case "add":
+//			todoCommand = new ToDoAdd(todoStorage, inputs[1]);
+//			todoCommand.execute();
+//			// ToDo todo = processAdd(inputs[1]);
+//			// todoStorage.save(todo);
+//			break;
+//		case "read":
+//			todoStorage.getAll();
+//			break;
+//		case "delete":
+//			todoCommand = new ToDoDelete(todoStorage, inputs[1]);
+//			todoCommand.execute();
+//			break;
+//		case "edit":
+//			todoCommand = new ToDoEdit(todoStorage, inputs[1]);
+//			todoCommand.execute();
+//			break;
+//		case "complete":
+//			String inputComplete = inputs[1];
+//			String[] completeInputs = inputComplete.trim().split(" ", 2);
+//			ToDo todoComplete = todoStorage.get(completeInputs[0]);
+//			todoComplete.setCompleted(true);
+//			todoStorage.update(todoComplete.getId(), todoComplete);
+//		}
+//
+//		System.out.println("-----------------------------");
+//		for (ToDo todo : todoStorage.getAll()) {
+//			System.out.println("ID: " + todo.getId());
+//			System.out.println("Title: " + todo.getTitle());
+//			System.out.println("Date: " + todo.getEndDate());
+//			System.out.println("Category: " + todo.getCategory());
+//			System.out.println("Completed: " + todo.isCompleted());
+//			System.out.println("Delete: " + todo.isDeleted());
+//		}
+//	}
+
+	private static CommandType getCommandType(String userInput) {
 
 		if (userInput.trim().isEmpty()) {
 			return CommandType.INVALID;
@@ -152,9 +163,8 @@ public class CommandParser {
 		}
 	}
 
-	public static String getTitle(String userInput) {
+	private static String getTitle(String userInput) {
 		String[] splitInput = StringUtil.splitString(userInput, " ", 2);
-
 		return splitInput[1];
 	}
 
