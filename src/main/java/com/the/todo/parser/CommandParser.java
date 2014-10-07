@@ -31,6 +31,7 @@ package com.the.todo.parser;
 import com.the.todo.command.CommandStatus;
 import com.the.todo.command.ToDoAdd;
 import com.the.todo.command.ToDoCommand;
+import com.the.todo.command.ToDoComplete;
 import com.the.todo.command.ToDoDelete;
 import com.the.todo.command.ToDoEdit;
 import com.the.todo.model.ToDo;
@@ -65,6 +66,7 @@ public class CommandParser {
 			todoCommand = new ToDoDelete(todoStorage, todoTitle);
 			break;
 		case COMPLETE:
+			todoCommand = new ToDoComplete(todoStorage, todoTitle);
 			break;
 		case SEARCH:
 			break;
