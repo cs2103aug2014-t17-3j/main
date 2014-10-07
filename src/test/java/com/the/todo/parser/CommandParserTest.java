@@ -36,6 +36,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.the.todo.command.ToDoAdd;
 import com.the.todo.storage.InMemoryStore;
 
 public class CommandParserTest {
@@ -191,6 +192,14 @@ public class CommandParserTest {
 
 		assertEquals(1, ms.count());
 		assertTrue(ms.get("1").isDeleted());
+	}
+	
+	@Test
+	public void testComplete() {
+		CommandParser.processCommand(ms, "complete 1");
+
+		assertEquals(1, ms.count());
+		assertTrue(ms.get("1").isCompleted());
 	}
 
 	private LocalDate calcNextFriday(LocalDate d) {

@@ -25,14 +25,12 @@ public class ToDoComplete extends ToDoCommand{
 
 	@Override
 	protected CommandStatus performExecute() {
-		String todoId;
-		String[] todoStrings = StringUtil.splitString(input, " ", 2);
+		String todoId = input;
 
-		if (todoStrings.length != 2) {
+		if (todoId.length() != 1) {
 			return new CommandStatus(Status.ERROR, EXECUTE_ILLEGAL_ARGUMENT);
 		}
 
-		todoId = todoStrings[0];
 		this.todo = todoStorage.get(todoId);
 
 		if (this.todo == null) {
