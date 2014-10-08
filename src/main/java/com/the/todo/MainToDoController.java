@@ -57,7 +57,7 @@ public class MainToDoController {
 	private VBox mainVBox;
 	@FXML
 	private TextField mainInput;
-	
+
 	private static Logic appLogic;
 
 	@FXML
@@ -106,12 +106,17 @@ public class MainToDoController {
 		if (todoItems.isEmpty()) {
 			return;
 		}
-		
-		ArrayList<Label> itemsList = new ArrayList<Label>();
+
+		ArrayList<ToDoContainer> itemsList = new ArrayList<ToDoContainer>();
 
 		for (ToDo todo : todoItems) {
-			Label temp = new Label(todo.toString());
-			itemsList.add(temp);
+			try {
+				ToDoContainer temp = new ToDoContainer(todo);
+				itemsList.add(temp);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		mainVBox.getChildren().setAll(itemsList);
 	}
