@@ -3,7 +3,6 @@ package com.the.todo.command;
 import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
 import com.the.todo.storage.ToDoStore;
-import com.the.todo.util.StringUtil;
 
 public class ToDoComplete extends ToDoCommand{
 	

@@ -44,7 +44,6 @@ import javafx.scene.layout.VBox;
 
 import com.the.todo.command.CommandStatus;
 import com.the.todo.model.ToDo;
-import com.the.todo.parser.CommandParser;
 import com.the.todo.storage.InMemoryStore;
 
 public class MainToDoController {
@@ -58,8 +57,8 @@ public class MainToDoController {
 	private VBox mainVBox;
 	@FXML
 	private TextField mainInput;
-
-	private InMemoryStore memstore = new InMemoryStore();
+	
+	private static Logic appLogic;
 
 	@FXML
 	void initialize() {
@@ -74,6 +73,7 @@ public class MainToDoController {
 			}
 		});
 
+		appLogic = new Logic();
 	}
 
 	public void processInput() {
@@ -82,9 +82,8 @@ public class MainToDoController {
 		mainInput.clear();
 		mainVBox.getChildren().clear();
 
-		CommandStatus status = CommandParser
-				.processCommand(memstore, userInput);
-		updateUI(status.getMessage());
+		CommandStatus status = appLogic.processCommand(userInput);
+		updateUI(status.getMessage(), appLogic.getTodoCollection());
 	}
 
 	/**
@@ -104,6 +103,10 @@ public class MainToDoController {
 	public void updateUI(String label, Collection<ToDo> todoItems) {
 		updateUI(label);
 
+		if (todoItems.isEmpty()) {
+			return;
+		}
+		
 		ArrayList<Label> itemsList = new ArrayList<Label>();
 
 		for (ToDo todo : todoItems) {

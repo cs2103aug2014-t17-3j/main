@@ -26,28 +26,40 @@
  * THE SOFTWARE.
  */
 
-package com.the.todo.parser;
+package com.the.todo;
 
-import com.the.todo.command.CommandStatus;
-import com.the.todo.command.ToDoAdd;
-import com.the.todo.command.ToDoCommand;
-import com.the.todo.command.ToDoComplete;
-import com.the.todo.command.ToDoDelete;
-import com.the.todo.command.ToDoEdit;
+import java.util.Collection;
+
+import com.the.todo.command.*;
+import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
+import com.the.todo.storage.InMemoryStore;
 import com.the.todo.storage.ToDoStore;
 import com.the.todo.util.StringUtil;
 
-public class CommandParser {
-
-	private static ToDoCommand todoCommand;
-
+public class Logic {
+	
+	private ToDoStore todoStorage;
+	private Collection<ToDo> todoCollection;
+	
 	private static enum CommandType {
 		ADD, READ, EDIT, DELETE, COMPLETE, INCOMPLETE, SEARCH, UNDO, INVALID
 	};
 
-	public static CommandStatus processCommand(ToDoStore todoStorage,
-			String userInput) {
+	public Logic() {
+		todoStorage = new InMemoryStore();
+		todoCollection = todoStorage.getAll();
+	}
+	
+	public Collection<ToDo> getTodoCollection() {
+		return todoCollection;
+	}
+	
+	public ToDoStore getTodoStorage() {
+		return todoStorage;
+	}
+	
+	public CommandStatus processCommand(String userInput) {
 		CommandType command = getCommandType(userInput);
 		String todoTitle = getTitle(userInput);
 		ToDoCommand todoCommand = null;
@@ -58,6 +70,7 @@ public class CommandParser {
 			todoCommand = new ToDoAdd(todoStorage, todoTitle);
 			break;
 		case READ:
+			todoCommand = new ToDoRead(todoStorage, todoCollection);
 			break;
 		case EDIT:
 			todoCommand = new ToDoEdit(todoStorage, todoTitle);
@@ -78,7 +91,11 @@ public class CommandParser {
 			break;
 		}
 
-		commandStatus = todoCommand.execute();
+		if (command != CommandType.INVALID) {
+			commandStatus = todoCommand.execute();
+		} else {
+			commandStatus = new CommandStatus(Status.INVALID, "Invalid command.");
+		}
 		
 		System.out.println("-----------------------------");
 		for (ToDo todo : todoStorage.getAll()) {
@@ -92,49 +109,8 @@ public class CommandParser {
 		
 		return commandStatus;
 	}
-
-//	public static void commandProcess(ToDoStore todoStorage, String command)
-//			throws Exception {
-//		String[] inputs = command.split(" ", 2);
-//
-//		switch (inputs[0].trim().toLowerCase()) {
-//		case "add":
-//			todoCommand = new ToDoAdd(todoStorage, inputs[1]);
-//			todoCommand.execute();
-//			// ToDo todo = processAdd(inputs[1]);
-//			// todoStorage.save(todo);
-//			break;
-//		case "read":
-//			todoStorage.getAll();
-//			break;
-//		case "delete":
-//			todoCommand = new ToDoDelete(todoStorage, inputs[1]);
-//			todoCommand.execute();
-//			break;
-//		case "edit":
-//			todoCommand = new ToDoEdit(todoStorage, inputs[1]);
-//			todoCommand.execute();
-//			break;
-//		case "complete":
-//			String inputComplete = inputs[1];
-//			String[] completeInputs = inputComplete.trim().split(" ", 2);
-//			ToDo todoComplete = todoStorage.get(completeInputs[0]);
-//			todoComplete.setCompleted(true);
-//			todoStorage.update(todoComplete.getId(), todoComplete);
-//		}
-//
-//		System.out.println("-----------------------------");
-//		for (ToDo todo : todoStorage.getAll()) {
-//			System.out.println("ID: " + todo.getId());
-//			System.out.println("Title: " + todo.getTitle());
-//			System.out.println("Date: " + todo.getEndDate());
-//			System.out.println("Category: " + todo.getCategory());
-//			System.out.println("Completed: " + todo.isCompleted());
-//			System.out.println("Delete: " + todo.isDeleted());
-//		}
-//	}
-
-	private static CommandType getCommandType(String userInput) {
+	
+	private CommandType getCommandType(String userInput) {
 
 		if (userInput.trim().isEmpty()) {
 			return CommandType.INVALID;
@@ -164,10 +140,15 @@ public class CommandParser {
 			return CommandType.INVALID;
 		}
 	}
-
+	
 	private static String getTitle(String userInput) {
 		String[] splitInput = StringUtil.splitString(userInput, " ", 2);
+		
+		if (splitInput.length == 1) {
+			return "";
+		}
+		
 		return splitInput[1];
 	}
-
+	
 }
