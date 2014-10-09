@@ -104,7 +104,7 @@ public class ToDoEdit extends ToDoCommand {
 			todo.setCategory(category);
 		}
 		
-		if (!title.isEmpty()) {
+		if (!title.isEmpty() && date == null) {
 			todo.setTitle(title);
 		}
 
