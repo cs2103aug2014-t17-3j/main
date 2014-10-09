@@ -28,6 +28,7 @@
 
 package com.the.todo.storage;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +45,15 @@ public class InMemoryStore implements ToDoStore {
 
 	@Override
 	public Collection<ToDo> getAll() {
-		return store.values();
+		Collection<ToDo> todoCollection = new ArrayList<ToDo>();
+		
+		for (ToDo todo : store.values()) {
+			if (!todo.isDeleted()) {
+				todoCollection.add(todo);
+			}
+		}
+		
+		return todoCollection;
 	}
 
 	@Override
