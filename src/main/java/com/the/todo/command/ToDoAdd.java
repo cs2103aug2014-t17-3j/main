@@ -72,10 +72,13 @@ public class ToDoAdd extends ToDoCommand {
 	}
 
 	private ToDo createToDo(String input) {
-		ToDo todo = new ToDo(input);
+		ToDo todo = new ToDo();
+		
 		String category = CategoryParser.parse(input);
+		String title = CategoryParser.removeCategory(input, category);
 		LocalDate date = DateParser.parseDate(input);
 
+		todo.setTitle(title);
 		todo.setCategory(category);
 		if (date != null) {
 			todo.setEndDate(date);

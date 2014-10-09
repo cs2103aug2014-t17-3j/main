@@ -48,5 +48,13 @@ public class CategoryParser {
 
 		return category;
 	}
+	
+	public static String removeCategory(String input, String category) {
+		if (category != null) {
+			return input.replace(category, "").replaceAll("( )+", " ").trim();
+		} else {
+			return input;
+		}
+	}
 
 }

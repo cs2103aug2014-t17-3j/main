@@ -41,6 +41,10 @@ public class ToDo {
 	private boolean completed;
 	private boolean deleted;
 	
+	public ToDo() {
+		this("");
+	}
+	
  	public ToDo(String title) {
  		this("", title);
  	}

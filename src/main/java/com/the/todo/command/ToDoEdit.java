@@ -93,12 +93,19 @@ public class ToDoEdit extends ToDoCommand {
 
 	private ToDo editToDo(ToDo todo, String input) {
 		String category = CategoryParser.parse(input);
+		String title = CategoryParser.removeCategory(input, category);
 		LocalDate date = DateParser.parseDate(input);
 
-		todo.setTitle(input);
-		todo.setCategory(category);
 		if (date != null) {
 			todo.setEndDate(date);
+		}
+		
+		if (category != null) {
+			todo.setCategory(category);
+		}
+		
+		if (!title.isEmpty()) {
+			todo.setTitle(title);
 		}
 
 		return todo;
