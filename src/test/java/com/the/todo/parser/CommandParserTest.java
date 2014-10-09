@@ -38,6 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.the.todo.Logic;
+import com.the.todo.io.FileHandler;
 import com.the.todo.storage.ToDoStore;
 
 public class CommandParserTest {
@@ -47,6 +48,7 @@ public class CommandParserTest {
 
 	@Before
 	public void setUp() throws Exception {
+		FileHandler.writeFile("thetodo.json", "");
 		appLogic = new Logic();
 		appLogic.processCommand("add CS2013 IVLE quiz");
 		todoStorage = appLogic.getTodoStorage();
@@ -56,6 +58,7 @@ public class CommandParserTest {
 	public void tearDown() throws Exception {
 		appLogic = null;
 		todoStorage = null;
+		FileHandler.writeFile("thetodo.json", "");
 	}
 
 	@Test

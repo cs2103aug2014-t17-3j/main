@@ -52,9 +52,9 @@ public class InMemoryStore implements ToDoStore {
 	}
 	
 	public InMemoryStore(String fileName) {
+		this.fileName = fileName;
 		this.gson = Converters.registerLocalDate(new GsonBuilder()).serializeNulls().create();
 		this.store = readFromFile();
-		this.fileName = fileName;
 	}
 
 	@Override
