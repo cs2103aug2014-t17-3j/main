@@ -26,27 +26,47 @@
  * THE SOFTWARE.
  */
 
-package com.the.todo.parser;
+package com.the.todo.command;
 
-public class CategoryParser {
+import com.the.todo.command.CommandStatus.Status;
+import com.the.todo.model.ToDo;
+import com.the.todo.storage.ToDoStore;
 
-	public static String parse(String input) {
-		String category;
-		int categoryStartIndex = input.indexOf("+");
-		int categoryEndIndex = input.indexOf(" ", categoryStartIndex + 1);
+public class ToDoDelete extends ToDoCommand {
 
-		if (categoryStartIndex == -1) {
-			category = null;
-		} else {
-			if (categoryEndIndex == -1) {
-				category = input.substring(categoryStartIndex).trim();
-			} else {
-				category = input
-						.substring(categoryStartIndex, categoryEndIndex).trim();
-			}
+	private static final String EXECUTE_DOES_NOT_EXIST = "It seems like ToDo %s does not exist.";
+	private static final String EXECUTE_ILLEGAL_ARGUMENT = "Mmm ... Seems like you are missing some argument.";
+	private static final String EXECUTE_ERROR = "An error occured while deleting ToDo.";
+	private static final String EXECUTE_SUCCESS = "A great success deleting ToDo: %s";
+
+	private ToDoStore todoStorage;
+	private String id;
+
+	public ToDoDelete(ToDoStore todoStorage, String id) {
+		super();
+		this.todoStorage = todoStorage;
+		this.id = id;
+		this.undoable = true;
+	}
+
+	@Override
+	protected CommandStatus performExecute() {
+
+		ToDo todo = todoStorage.get(this.id);
+
+		if (todo == null) {
+			return new CommandStatus(Status.ERROR, String.format(
+					EXECUTE_DOES_NOT_EXIST, this.id));
 		}
 
-		return category;
+		todoStorage.delete(todo.getId());
+		return new CommandStatus(Status.SUCCESS, String.format(EXECUTE_SUCCESS,
+				todo.getId()));
+	}
+
+	@Override
+	protected CommandStatus performUndo() {
+		return new CommandStatus(Status.INVALID);
 	}
 
 }

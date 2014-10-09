@@ -26,27 +26,33 @@
  * THE SOFTWARE.
  */
 
-package com.the.todo.parser;
+package com.the.todo.command;
 
-public class CategoryParser {
+import java.util.Collection;
 
-	public static String parse(String input) {
-		String category;
-		int categoryStartIndex = input.indexOf("+");
-		int categoryEndIndex = input.indexOf(" ", categoryStartIndex + 1);
+import com.the.todo.command.CommandStatus.Status;
+import com.the.todo.model.ToDo;
+import com.the.todo.storage.ToDoStore;
 
-		if (categoryStartIndex == -1) {
-			category = null;
-		} else {
-			if (categoryEndIndex == -1) {
-				category = input.substring(categoryStartIndex).trim();
-			} else {
-				category = input
-						.substring(categoryStartIndex, categoryEndIndex).trim();
-			}
-		}
+public class ToDoRead extends ToDoCommand {
+	
+	ToDoStore todoStorage;
+	Collection<ToDo> todoCollection;
 
-		return category;
+	public ToDoRead(ToDoStore todoStorage, Collection<ToDo> todoCollection) {
+		this.todoStorage = todoStorage;
+		this.todoCollection = todoCollection;
+	}
+
+	@Override
+	protected CommandStatus performExecute() {
+		todoCollection = todoStorage.getAll();
+		return new CommandStatus(Status.SUCCESS, "");
+	}
+
+	@Override
+	protected CommandStatus performUndo() {
+		return null;
 	}
 
 }

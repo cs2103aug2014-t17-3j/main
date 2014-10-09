@@ -26,27 +26,16 @@
  * THE SOFTWARE.
  */
 
-package com.the.todo.parser;
+package com.the.todo.util;
 
-public class CategoryParser {
+public class StringUtil {
 
-	public static String parse(String input) {
-		String category;
-		int categoryStartIndex = input.indexOf("+");
-		int categoryEndIndex = input.indexOf(" ", categoryStartIndex + 1);
-
-		if (categoryStartIndex == -1) {
-			category = null;
-		} else {
-			if (categoryEndIndex == -1) {
-				category = input.substring(categoryStartIndex).trim();
-			} else {
-				category = input
-						.substring(categoryStartIndex, categoryEndIndex).trim();
-			}
-		}
-
-		return category;
+	public static String[] splitString(String input, String regex) {
+		return splitString(input, regex, 0);
+	}
+	
+	public static String[] splitString(String input, String regex, int limit) {
+		return input.trim().split(regex, limit);
 	}
 
 }

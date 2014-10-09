@@ -26,27 +26,36 @@
  * THE SOFTWARE.
  */
 
-package com.the.todo.parser;
+package com.the.todo.command;
 
-public class CategoryParser {
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-	public static String parse(String input) {
-		String category;
-		int categoryStartIndex = input.indexOf("+");
-		int categoryEndIndex = input.indexOf(" ", categoryStartIndex + 1);
+public abstract class ToDoCommand {
 
-		if (categoryStartIndex == -1) {
-			category = null;
-		} else {
-			if (categoryEndIndex == -1) {
-				category = input.substring(categoryStartIndex).trim();
-			} else {
-				category = input
-						.substring(categoryStartIndex, categoryEndIndex).trim();
-			}
-		}
+	protected static final Logger logger = LogManager
+			.getLogger(ToDoCommand.class.getName());
 
-		return category;
+	protected boolean successful = false;
+	protected boolean undoable = false;
+
+	public ToDoCommand() {
+
 	}
 
+	public CommandStatus execute() {
+		return performExecute();
+	}
+
+	protected abstract CommandStatus performExecute();
+
+	public CommandStatus undo() {
+		return performUndo();
+	}
+
+	protected abstract CommandStatus performUndo();
+
+	public boolean isUndoable() {
+		return undoable;
+	}
 }

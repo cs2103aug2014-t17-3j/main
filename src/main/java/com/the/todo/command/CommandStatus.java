@@ -26,27 +26,36 @@
  * THE SOFTWARE.
  */
 
-package com.the.todo.parser;
+package com.the.todo.command;
 
-public class CategoryParser {
+public class CommandStatus {
 
-	public static String parse(String input) {
-		String category;
-		int categoryStartIndex = input.indexOf("+");
-		int categoryEndIndex = input.indexOf(" ", categoryStartIndex + 1);
+	public enum Status {
+		SUCCESS, ERROR, INVALID
+	}
 
-		if (categoryStartIndex == -1) {
-			category = null;
-		} else {
-			if (categoryEndIndex == -1) {
-				category = input.substring(categoryStartIndex).trim();
-			} else {
-				category = input
-						.substring(categoryStartIndex, categoryEndIndex).trim();
-			}
-		}
+	private Status status;
+	private String message;
 
-		return category;
+	public CommandStatus(Status status) {
+		this(status, "");
+	}
+
+	public CommandStatus(Status status, String message) {
+		this.status = status;
+		this.message = message;
+	}
+
+	public Status getStatus() {
+		return status;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
 	}
 
 }
