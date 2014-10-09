@@ -11,26 +11,17 @@
   <items>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
          <children>
-            <AnchorPane layoutX="85.0" prefHeight="50.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-               <children>
-                  <Label fx:id="mainLabel" contentDisplay="CENTER" graphicTextGap="5.0" layoutX="177.0" layoutY="17.0" prefHeight="50.0" prefWidth="353.0" text="Label" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-               </children>
-            </AnchorPane>
-            <AnchorPane prefHeight="50.0" prefWidth="200.0" style="-fx-background-color: #000000;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-               <children>
-                  <Button layoutX="287.0" layoutY="2.0" mnemonicParsing="false" prefWidth="60.0" text="Button" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                  <TextField fx:id="mainInput" focusTraversable="false" layoutX="14.0" layoutY="2.0" onAction="#processInput" prefHeight="50.0" promptText="Enter your command here" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="60.0" AnchorPane.topAnchor="0.0" />
-               </children>
-            </AnchorPane>
-            <ScrollPane layoutX="16.0" layoutY="139.0" pannable="true" prefHeight="398.0" prefWidth="592.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+            <Label fx:id="mainLabel" contentDisplay="CENTER" graphicTextGap="5.0" prefHeight="50.0" prefWidth="353.0" style="-fx-background-color: #000000;" text="Label" textFill="WHITE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <ScrollPane id="mainScrollpane" layoutX="16.0" layoutY="139.0" pannable="true" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
               <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="294.0" prefWidth="588.0">
+                <AnchorPane>
                      <children>
-                        <VBox fx:id="mainVBox" prefHeight="298.0" prefWidth="592.0" AnchorPane.bottomAnchor="-3.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="0.0" />
+                        <VBox fx:id="mainVBox" />
                      </children>
                   </AnchorPane>
               </content>
             </ScrollPane>
+            <TextField fx:id="mainInput" focusTraversable="false" onAction="#processInput" prefHeight="50.0" promptText="Enter your command here" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
          </children>
       </AnchorPane>
   </items>
