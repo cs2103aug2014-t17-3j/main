@@ -28,25 +28,23 @@
 
 package com.the.todo.storage;
 
-import java.util.Collection;
+import java.util.List;
 
 import com.the.todo.model.ToDo;
 
 public interface ToDoStore {
 
-	public Collection<ToDo> getAll();
+	public List<ToDo> getAll();
 	
-	public Collection<ToDo> getAllCompleted();
+	public List<ToDo> getAllCompleted();
 	
-	public Collection<ToDo> getAllUncompleted();
+	public List<ToDo> getAllUncompleted();
 
-	public ToDo get(String id);
+	public ToDo get(ToDo todo);
 
 	public ToDo save(ToDo todo);
 
-	public ToDo update(String id, ToDo todo);
-
-	public void delete(String id);
+	public void delete(ToDo todo);
 
 	public int count();
 }

@@ -29,75 +29,48 @@
 package com.the.todo.storage;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import com.the.todo.model.ToDo;
 
 public class InMemoryStore implements ToDoStore {
 
-	private Map<String, ToDo> store;
+	private List<ToDo> store;
 
 	public InMemoryStore() {
-		this.store = new HashMap<String, ToDo>();
+		this.store = new ArrayList<ToDo>();
 	}
 
 	@Override
-	public Collection<ToDo> getAll() {
-		Collection<ToDo> todoCollection = new ArrayList<ToDo>();
-		
-		for (ToDo todo : store.values()) {
-			if (!todo.isDeleted()) {
-				todoCollection.add(todo);
-			}
-		}
-		
-		return todoCollection;
+	public List<ToDo> getAll() {		
+		return store;
 	}
 
 	@Override
-	public Collection<ToDo> getAllCompleted() {
+	public List<ToDo> getAllCompleted() {
 		return null;
 	}
 
 	@Override
-	public Collection<ToDo> getAllUncompleted() {
+	public List<ToDo> getAllUncompleted() {
 		return null;
 	}
-
+	
 	@Override
-	public ToDo get(String id) {
-		return store.get(id);
+	public ToDo get(ToDo todo) {
+		int index = store.indexOf(todo);
+		return store.get(index);
 	}
 
 	@Override
 	public ToDo save(ToDo todo) {
-		String id;
-		if (todo.getId().isEmpty()) {
-			id = String.valueOf(store.size() + 1);
-		} else {
-			id = todo.getId();
-		}
-		todo.setId(id);
-		store.put(String.valueOf(id), todo);
+		store.add(todo);
 		return todo;
 	}
 
 	@Override
-	public ToDo update(String id, ToDo todo) {
-		ToDo old = store.get(id);
-		if (old == null) {
-			return null;
-		}
-		store.put(id, todo);
-		return todo;
-	}
-
-	@Override
-	public void delete(String id) {
-		ToDo todo = store.get(id);
-		todo.setDeleted(true);
+	public void delete(ToDo todo) {
+		store.remove(todo);
 	}
 
 	@Override

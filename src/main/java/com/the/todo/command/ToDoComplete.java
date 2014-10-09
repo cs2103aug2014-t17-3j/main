@@ -13,28 +13,20 @@ public class ToDoComplete extends ToDoCommand{
 
 	private ToDoStore todoStorage;
 	private ToDo todo;
-	private String input;
 
-	public ToDoComplete(ToDoStore todoStorage, String input) {
+	public ToDoComplete(ToDoStore todoStorage, ToDo todo) {
 		super();
 		this.todoStorage = todoStorage;
-		this.input = input;
+		this.todo = todo;
 		this.undoable = true;
 	}
 
 	@Override
 	protected CommandStatus performExecute() {
-		String todoId = input;
-
-		if (todoId.length() != 1) {
-			return new CommandStatus(Status.ERROR, EXECUTE_ILLEGAL_ARGUMENT);
-		}
-
-		this.todo = todoStorage.get(todoId);
 
 		if (this.todo == null) {
 			return new CommandStatus(Status.ERROR, String.format(
-					EXECUTE_DOES_NOT_EXIST, todoId));
+					EXECUTE_DOES_NOT_EXIST, ""));
 		}
 
 		this.todo = isCompleteToDo(this.todo);
@@ -42,10 +34,10 @@ public class ToDoComplete extends ToDoCommand{
 		if (this.todo == null) {
 			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
 		}
-
-		todoStorage.update(this.todo.getId(), this.todo);
+		
+		//todoStorage.save(this.todo.getId(), this.todo);
 		return new CommandStatus(Status.SUCCESS, String.format(EXECUTE_SUCCESS,
-				todo.getId()));
+				""));
 	}
 
 	@Override
@@ -55,9 +47,7 @@ public class ToDoComplete extends ToDoCommand{
 	}
 	
 	private ToDo isCompleteToDo(ToDo todo) {
-		
 		todo.setCompleted(true);
-
 		return todo;
 	}
 

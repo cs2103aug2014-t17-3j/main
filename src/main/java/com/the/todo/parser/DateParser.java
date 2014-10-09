@@ -95,7 +95,7 @@ public class DateParser {
 		return date;
 	}
 
-	private static boolean checkDigits(String s) {
+	public static boolean checkDigits(String s) {
 		Pattern pattern = Pattern.compile("\\b\\d+");
 		Matcher matcher = pattern.matcher(s);
 		if (matcher.find()) {
@@ -103,6 +103,7 @@ public class DateParser {
 		}
 		return false;
 	}
+	
 	public static boolean getIsValid(){
 		return isValid;
 	}

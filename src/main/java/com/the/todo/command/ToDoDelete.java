@@ -40,28 +40,26 @@ public class ToDoDelete extends ToDoCommand {
 	private static final String EXECUTE_SUCCESS = "A great success deleting ToDo: %s";
 
 	private ToDoStore todoStorage;
-	private String id;
+	private ToDo todo;
 
-	public ToDoDelete(ToDoStore todoStorage, String id) {
+	public ToDoDelete(ToDoStore todoStorage, ToDo todo) {
 		super();
 		this.todoStorage = todoStorage;
-		this.id = id;
+		this.todo = todo;
 		this.undoable = true;
 	}
 
 	@Override
 	protected CommandStatus performExecute() {
 
-		ToDo todo = todoStorage.get(this.id);
-
 		if (todo == null) {
 			return new CommandStatus(Status.ERROR, String.format(
-					EXECUTE_DOES_NOT_EXIST, this.id));
+					EXECUTE_DOES_NOT_EXIST, ""));
 		}
 
-		todoStorage.delete(todo.getId());
+		todoStorage.delete(todo);
 		return new CommandStatus(Status.SUCCESS, String.format(EXECUTE_SUCCESS,
-				todo.getId()));
+				todo.getTitle()));
 	}
 
 	@Override
