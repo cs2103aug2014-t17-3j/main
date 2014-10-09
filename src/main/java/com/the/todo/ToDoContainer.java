@@ -56,6 +56,7 @@ public class ToDoContainer extends AnchorPane {
 	}
 	
 	private void setDate (LocalDate date){
+		if (date != null)
 		todoDate.setText(date.toString());
 	}
 	
