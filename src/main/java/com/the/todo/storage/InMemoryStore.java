@@ -46,8 +46,8 @@ public class InMemoryStore implements ToDoStore {
 	private List<ToDo> store;
 
 	public InMemoryStore() {
-		this.store = readFromFile();
 		this.gson = Converters.registerLocalDate(new GsonBuilder()).serializeNulls().create();
+		this.store = readFromFile();
 	}
 
 	@Override

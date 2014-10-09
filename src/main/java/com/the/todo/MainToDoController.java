@@ -66,7 +66,6 @@ public class MainToDoController {
 	void initialize() {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 		Date date = new Date();
-		mainLabel.setText(dateFormat.format(date));
 
 		Platform.runLater(new Runnable() {
 			@Override
@@ -76,6 +75,7 @@ public class MainToDoController {
 		});
 
 		appLogic = new Logic();
+		updateUI(dateFormat.format(date), appLogic.getTodoList());
 	}
 
 	public void processInput() {
