@@ -2,6 +2,8 @@ package com.the.todo;
 
 import java.io.IOException;
 
+import org.joda.time.LocalDate;
+
 import com.the.todo.model.ToDo;
 
 import javafx.scene.layout.AnchorPane;
@@ -40,6 +42,7 @@ public class ToDoContainer extends AnchorPane {
 		} else {
 			setID(todo.getId());
 			setTitle(todo.getTitle());	
+			setDate(todo.getEndDate()); 
 		}
 		
 	}
@@ -52,8 +55,8 @@ public class ToDoContainer extends AnchorPane {
 		todoTitle.setText(title);
 	}
 	
-	private void setDate (String date){
-		todoDate.setText(date);
+	private void setDate (LocalDate date){
+		todoDate.setText(date.toString());
 	}
 	
 	private void setMisc (String misc){

@@ -111,8 +111,10 @@ public class MainToDoController {
 
 		for (ToDo todo : todoItems) {
 			try {
+				if (todo.isDeleted() == false ){ 
 				ToDoContainer temp = new ToDoContainer(todo);
 				itemsList.add(temp);
+				} 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
