@@ -103,6 +103,7 @@ public class Logic {
 
 		if (command != CommandType.INVALID) {
 			commandStatus = todoCommand.execute();
+			todoStorage.saveToFile();
 			todoList = todoStorage.getAll();
 		} else {
 			commandStatus = new CommandStatus(Status.INVALID, "Invalid command.");

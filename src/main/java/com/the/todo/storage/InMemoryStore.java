@@ -28,17 +28,26 @@
 
 package com.the.todo.storage;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fatboyindustrial.gsonjodatime.Converters;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.the.todo.io.FileHandler;
 import com.the.todo.model.ToDo;
 
 public class InMemoryStore implements ToDoStore {
 
+	private Gson gson;
 	private List<ToDo> store;
 
 	public InMemoryStore() {
-		this.store = new ArrayList<ToDo>();
+		this.store = readFromFile();
+		this.gson = Converters.registerLocalDate(new GsonBuilder()).serializeNulls().create();
 	}
 
 	@Override
@@ -76,6 +85,33 @@ public class InMemoryStore implements ToDoStore {
 	@Override
 	public int count() {
 		return store.size();
+	}
+	
+	private List<ToDo> readFromFile() {
+		String contents = null;
+		try {
+			contents = FileHandler.readFile("");
+		} catch (IOException ex) {
+			System.out.println(ex.getMessage());
+		}
+		
+		if (contents.isEmpty()) {
+			return new ArrayList<ToDo>();
+		}
+		
+		Type collectionType = new TypeToken<List<ToDo>>() {}.getType();
+		List<ToDo> todos = gson.fromJson(contents, collectionType);
+		
+		return todos;
+	}
+	
+	@Override
+	public void saveToFile() {
+		try {
+			FileHandler.writeFile("", gson.toJson(this.store));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

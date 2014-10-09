@@ -39,11 +39,11 @@ import java.util.Scanner;
 
 public class FileHandler {
 
-	final static String FILE_NAME = "todo.json";
+	final static String FILE_NAME = "thetodo.json"; // TODO: Accept custom filename.
 	final static Charset ENCODING = StandardCharsets.UTF_8;
 
 	public static String readFile(String fileName) throws IOException {
-		Path path = Paths.get(fileName);
+		Path path = Paths.get(FILE_NAME);
 		StringBuilder stringBuilder = new StringBuilder();
 
 		try (Scanner scanner = new Scanner(path, ENCODING.name())) {
@@ -57,7 +57,7 @@ public class FileHandler {
 
 	public static void writeFile(String fileName, String contents)
 			throws IOException {
-		Path path = Paths.get(fileName);
+		Path path = Paths.get(FILE_NAME);
 		try (BufferedWriter writer = Files.newBufferedWriter(path, ENCODING)) {
 			writer.write(contents);
 		}

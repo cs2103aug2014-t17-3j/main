@@ -47,4 +47,6 @@ public interface ToDoStore {
 	public void delete(ToDo todo);
 
 	public int count();
+	
+	public void saveToFile();
 }
