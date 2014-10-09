@@ -41,6 +41,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
+import javafx.scene.control.ScrollPane;
 
 import com.the.todo.command.CommandStatus;
 import com.the.todo.model.ToDo;
@@ -57,6 +58,8 @@ public class MainToDoController {
 	private VBox mainVBox;
 	@FXML
 	private TextField mainInput;
+	@FXML
+	private ScrollPane mainScrollpane;
 
 	private static Logic appLogic;
 
@@ -126,7 +129,13 @@ public class MainToDoController {
 			if (keyevent.getCode() == reservedKeyCode) {
 
 				// TODO Implement actions for reserved keys
-
+				/*if (keyevent.getCode() == KeyCode.UP) {
+					mainScrollpane.setVvalue(mainScrollpane.getVvalue()-1);
+				}
+				if (keyevent.getCode() == KeyCode.DOWN) {
+					mainScrollpane.setVvalue(mainScrollpane.getVvalue()+1);
+				}*/
+				
 				keyevent.consume();
 				break;
 			}
