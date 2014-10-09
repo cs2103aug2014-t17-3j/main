@@ -44,10 +44,17 @@ public class InMemoryStore implements ToDoStore {
 
 	private Gson gson;
 	private List<ToDo> store;
+	private final String fileName;
 
 	public InMemoryStore() {
+		this.store = new ArrayList<ToDo>();
+		this.fileName = null;
+	}
+	
+	public InMemoryStore(String fileName) {
 		this.gson = Converters.registerLocalDate(new GsonBuilder()).serializeNulls().create();
 		this.store = readFromFile();
+		this.fileName = fileName;
 	}
 
 	@Override
@@ -90,7 +97,7 @@ public class InMemoryStore implements ToDoStore {
 	private List<ToDo> readFromFile() {
 		String contents = null;
 		try {
-			contents = FileHandler.readFile("");
+			contents = FileHandler.readFile(this.fileName);
 		} catch (IOException ex) {
 			System.out.println(ex.getMessage());
 		}
@@ -108,7 +115,7 @@ public class InMemoryStore implements ToDoStore {
 	@Override
 	public void saveToFile() {
 		try {
-			FileHandler.writeFile("", gson.toJson(this.store));
+			FileHandler.writeFile(this.fileName, gson.toJson(this.store));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

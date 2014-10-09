@@ -48,12 +48,14 @@ public class Logic {
 	private ToDoStore todoStorage;
 	private List<ToDo> todoList;
 	
+	private static final String FILENAME = "thetodo.json";
+	
 	private static enum CommandType {
 		ADD, READ, EDIT, DELETE, COMPLETE, INCOMPLETE, SEARCH, UNDO, INVALID
 	};
 
 	public Logic() {
-		todoStorage = new InMemoryStore();
+		todoStorage = new InMemoryStore(FILENAME);
 		todoList = todoStorage.getAll();
 	}
 	
