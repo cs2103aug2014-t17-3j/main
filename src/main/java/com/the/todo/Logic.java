@@ -28,7 +28,6 @@
 
 package com.the.todo;
 
-import java.util.Collection;
 import java.util.List;
 
 import com.the.todo.command.CommandStatus;
@@ -81,30 +80,15 @@ public class Logic {
 			break;
 		case EDIT:
 			int id = Integer.valueOf(userInput.split(" ", 3)[1]);
-			ToDo taskToEdit;
-			try {
-				taskToEdit = todoList.get(id - 1);
-			} catch (IndexOutOfBoundsException ex) {
-				taskToEdit = null;
-			}
+			ToDo taskToEdit = getToDo(id);
 			todoCommand = new ToDoEdit(todoStorage, taskToEdit, todoTitleOrId);
 			break;
 		case DELETE:
-			ToDo taskToDelete;
-			try {
-				taskToDelete = todoList.get(Integer.valueOf(todoTitleOrId) - 1);
-			} catch (IndexOutOfBoundsException ex) {
-				taskToDelete = null;
-			}
+			ToDo taskToDelete = getToDo(Integer.valueOf(todoTitleOrId));
 			todoCommand = new ToDoDelete(todoStorage, taskToDelete);
 			break;
 		case COMPLETE:
-			ToDo taskToComplete;
-			try {
-				taskToComplete = todoList.get(Integer.valueOf(todoTitleOrId) - 1);
-			} catch (IndexOutOfBoundsException ex) {
-				taskToComplete = null;
-			}
+			ToDo taskToComplete = getToDo(Integer.valueOf(todoTitleOrId));
 			todoCommand = new ToDoComplete(todoStorage, taskToComplete);
 			break;
 		case SEARCH:
@@ -175,6 +159,16 @@ public class Logic {
 		}
 		
 		return splitInput[1];
+	}
+	
+	private ToDo getToDo(int id) {
+		ToDo todo;
+		try {
+			todo = todoList.get(id - 1);
+		} catch (IndexOutOfBoundsException ex) {
+			todo = null;
+		}
+		return todo;
 	}
 	
 }

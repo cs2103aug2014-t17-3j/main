@@ -28,6 +28,9 @@
 
 package com.the.todo.command;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.joda.time.LocalDate;
 
 import com.the.todo.command.CommandStatus.Status;
@@ -92,20 +95,27 @@ public class ToDoEdit extends ToDoCommand {
 	private ToDo editToDo(ToDo todo, String input) {
 		String category = CategoryParser.parse(input);
 		String title = CategoryParser.removeCategory(input, category);
-		LocalDate date = DateParser.parseDate(input);
+		LocalDate date = DateParser.parseDate(title);
 		
-		String oldRelativeDate = DateParser.getRelativeDate(todo.getTitle());
-		String newRelativeDate = DateParser.getRelativeDate(input);
-		
-		if (oldRelativeDate != null && newRelativeDate != null) {
-			todo.setTitle(input.replace(oldRelativeDate, newRelativeDate));
-		} else if (oldRelativeDate == null && newRelativeDate != null) {
-			todo.setTitle(todo.getTitle() + " " + newRelativeDate);
+		if (DateParser.parseDate(todo.getTitle()) == null) {
+			if (date != null && !checkSpaces(title)) {
+				todo.setTitle(todo.getTitle() + " " + title);
+				todo.setEndDate(date);
+			} else {
+				todo.setTitle(title);
+				todo.setEndDate(date);
+			}
+		} else {
+			if (!DateParser.checkDigits(todo.getTitle())) {
+				String oldRelativeDate = DateParser.getRelativeDate(todo.getTitle());
+				String newRelativeDate = DateParser.getRelativeDate(title);
+				todo.setTitle(input.replace(oldRelativeDate, newRelativeDate));
+			}
 		}
 
-		if (date != null) {
-			todo.setEndDate(date);
-		}
+//		if (date != null) {
+//			todo.setEndDate(date);
+//		}
 		
 		if (category != null) {
 			todo.setCategory(category);
@@ -116,6 +126,15 @@ public class ToDoEdit extends ToDoCommand {
 		}
 
 		return todo;
+	}
+	
+	private boolean checkSpaces(String input) {
+		Pattern pattern = Pattern.compile("\\s+");
+		Matcher matcher = pattern.matcher(input);
+		if (matcher.find()) {
+			return true;
+		}
+		return false;
 	}
 
 }
