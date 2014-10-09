@@ -63,7 +63,7 @@ public class ToDoAdd extends ToDoCommand {
 
 		todoStorage.save(todo);
 		return new CommandStatus(Status.SUCCESS, String.format(EXECUTE_SUCCESS,
-				todo.getId()));
+				todo.getTitle()));
 	}
 
 	@Override

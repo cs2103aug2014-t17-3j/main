@@ -48,9 +48,10 @@ public class ToDoEdit extends ToDoCommand {
 	private ToDo todo;
 	private String input;
 
-	public ToDoEdit(ToDoStore todoStorage, String input) {
+	public ToDoEdit(ToDoStore todoStorage, ToDo todo, String input) {
 		super();
 		this.todoStorage = todoStorage;
+		this.todo = todo;
 		this.input = input;
 		this.undoable = true;
 	}
@@ -58,7 +59,6 @@ public class ToDoEdit extends ToDoCommand {
 	@Override
 	protected CommandStatus performExecute() {
 
-		String todoId;
 		String todoTitle;
 		String[] todoStrings = StringUtil.splitString(input, " ", 2);
 
@@ -66,13 +66,11 @@ public class ToDoEdit extends ToDoCommand {
 			return new CommandStatus(Status.ERROR, EXECUTE_ILLEGAL_ARGUMENT);
 		}
 
-		todoId = todoStrings[0];
 		todoTitle = todoStrings[1];
-		this.todo = todoStorage.get(todoId);
 
 		if (this.todo == null) {
 			return new CommandStatus(Status.ERROR, String.format(
-					EXECUTE_DOES_NOT_EXIST, todoId));
+					EXECUTE_DOES_NOT_EXIST, ""));
 		}
 
 		this.todo = editToDo(this.todo, todoTitle);
@@ -81,9 +79,9 @@ public class ToDoEdit extends ToDoCommand {
 			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
 		}
 
-		todoStorage.update(this.todo.getId(), this.todo);
+		//todoStorage.update(this.todo.getId(), this.todo);
 		return new CommandStatus(Status.SUCCESS, String.format(EXECUTE_SUCCESS,
-				todo.getId()));
+				""));
 	}
 
 	@Override

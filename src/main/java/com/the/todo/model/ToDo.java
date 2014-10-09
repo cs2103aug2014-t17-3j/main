@@ -32,7 +32,6 @@ import org.joda.time.LocalDate;
 
 public class ToDo {
 
-	private String id;
 	private String title;
 	private String description;
 	private String category;
@@ -46,23 +45,10 @@ public class ToDo {
 	}
 	
  	public ToDo(String title) {
- 		this("", title);
- 	}
-	
-	public ToDo(String id, String title) {
-		this.id = id;
 		this.title = title;
 		this.completed = false;
 		this.deleted = false;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
+ 	}
 
 	public String getTitle() {
 		return title;
@@ -122,7 +108,7 @@ public class ToDo {
 	
 	@Override
 	public String toString() {
-		return "ToDo [id=" + id + ", title=" + title + ", category=" + category
+		return "ToDo [title=" + title + ", category=" + category
 				+ ", startDate=" + startDate + ", endDate=" + endDate
 				+ ", completed=" + completed + ", deleted=" + deleted + "]";
 	}

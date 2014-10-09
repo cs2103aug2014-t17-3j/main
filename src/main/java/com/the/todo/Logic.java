@@ -29,9 +29,16 @@
 package com.the.todo;
 
 import java.util.Collection;
+import java.util.List;
 
-import com.the.todo.command.*;
+import com.the.todo.command.CommandStatus;
 import com.the.todo.command.CommandStatus.Status;
+import com.the.todo.command.ToDoAdd;
+import com.the.todo.command.ToDoCommand;
+import com.the.todo.command.ToDoComplete;
+import com.the.todo.command.ToDoDelete;
+import com.the.todo.command.ToDoEdit;
+import com.the.todo.command.ToDoRead;
 import com.the.todo.model.ToDo;
 import com.the.todo.storage.InMemoryStore;
 import com.the.todo.storage.ToDoStore;
@@ -40,7 +47,7 @@ import com.the.todo.util.StringUtil;
 public class Logic {
 	
 	private ToDoStore todoStorage;
-	private Collection<ToDo> todoCollection;
+	private List<ToDo> todoList;
 	
 	private static enum CommandType {
 		ADD, READ, EDIT, DELETE, COMPLETE, INCOMPLETE, SEARCH, UNDO, INVALID
@@ -48,11 +55,11 @@ public class Logic {
 
 	public Logic() {
 		todoStorage = new InMemoryStore();
-		todoCollection = todoStorage.getAll();
+		todoList = todoStorage.getAll();
 	}
 	
-	public Collection<ToDo> getTodoCollection() {
-		return todoCollection;
+	public List<ToDo> getTodoList() {
+		return todoList;
 	}
 	
 	public ToDoStore getTodoStorage() {
@@ -61,25 +68,44 @@ public class Logic {
 	
 	public CommandStatus processCommand(String userInput) {
 		CommandType command = getCommandType(userInput);
-		String todoTitle = getTitle(userInput);
+		String todoTitleOrId = getTitleOrId(userInput);
 		ToDoCommand todoCommand = null;
 		CommandStatus commandStatus;
 
 		switch (command) {
 		case ADD:
-			todoCommand = new ToDoAdd(todoStorage, todoTitle);
+			todoCommand = new ToDoAdd(todoStorage, todoTitleOrId);
 			break;
 		case READ:
-			todoCommand = new ToDoRead(todoStorage, todoCollection);
+			todoCommand = new ToDoRead(todoStorage, todoList);
 			break;
 		case EDIT:
-			todoCommand = new ToDoEdit(todoStorage, todoTitle);
+			int id = Integer.valueOf(userInput.split(" ", 3)[1]);
+			ToDo taskToEdit;
+			try {
+				taskToEdit = todoList.get(id - 1);
+			} catch (IndexOutOfBoundsException ex) {
+				taskToEdit = null;
+			}
+			todoCommand = new ToDoEdit(todoStorage, taskToEdit, todoTitleOrId);
 			break;
 		case DELETE:
-			todoCommand = new ToDoDelete(todoStorage, todoTitle);
+			ToDo taskToDelete;
+			try {
+				taskToDelete = todoList.get(Integer.valueOf(todoTitleOrId) - 1);
+			} catch (IndexOutOfBoundsException ex) {
+				taskToDelete = null;
+			}
+			todoCommand = new ToDoDelete(todoStorage, taskToDelete);
 			break;
 		case COMPLETE:
-			todoCommand = new ToDoComplete(todoStorage, todoTitle);
+			ToDo taskToComplete;
+			try {
+				taskToComplete = todoList.get(Integer.valueOf(todoTitleOrId) - 1);
+			} catch (IndexOutOfBoundsException ex) {
+				taskToComplete = null;
+			}
+			todoCommand = new ToDoComplete(todoStorage, taskToComplete);
 			break;
 		case SEARCH:
 			break;
@@ -93,14 +119,13 @@ public class Logic {
 
 		if (command != CommandType.INVALID) {
 			commandStatus = todoCommand.execute();
-			todoCollection = todoStorage.getAll();
+			todoList = todoStorage.getAll();
 		} else {
 			commandStatus = new CommandStatus(Status.INVALID, "Invalid command.");
 		}
 		
 		System.out.println("-----------------------------");
 		for (ToDo todo : todoStorage.getAll()) {
-			System.out.println("ID: " + todo.getId());
 			System.out.println("Title: " + todo.getTitle());
 			System.out.println("Date: " + todo.getEndDate());
 			System.out.println("Category: " + todo.getCategory());
@@ -142,7 +167,7 @@ public class Logic {
 		}
 	}
 	
-	private static String getTitle(String userInput) {
+	private static String getTitleOrId(String userInput) {
 		String[] splitInput = StringUtil.splitString(userInput, " ", 2);
 		
 		if (splitInput.length == 1) {

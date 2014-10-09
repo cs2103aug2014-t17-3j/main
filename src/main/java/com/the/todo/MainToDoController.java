@@ -31,21 +31,20 @@ package com.the.todo;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.ScrollPane;
 
 import com.the.todo.command.CommandStatus;
 import com.the.todo.model.ToDo;
-import com.the.todo.storage.InMemoryStore;
 
 public class MainToDoController {
 
@@ -86,7 +85,7 @@ public class MainToDoController {
 		mainVBox.getChildren().clear();
 
 		CommandStatus status = appLogic.processCommand(userInput);
-		updateUI(status.getMessage(), appLogic.getTodoCollection());
+		updateUI(status.getMessage(), appLogic.getTodoList());
 	}
 
 	/**
@@ -103,7 +102,7 @@ public class MainToDoController {
 	 * @param todoItems
 	 *            List of ToDo to be displayed in mainVbox
 	 */
-	public void updateUI(String label, Collection<ToDo> todoItems) {
+	public void updateUI(String label, List<ToDo> todoItems) {
 		updateUI(label);
 
 		if (todoItems.isEmpty()) {
@@ -111,11 +110,12 @@ public class MainToDoController {
 		}
 
 		ArrayList<ToDoContainer> itemsList = new ArrayList<ToDoContainer>();
-
+		int index = 1;
 		for (ToDo todo : todoItems) {
 			try {
-				ToDoContainer temp = new ToDoContainer(todo);
+				ToDoContainer temp = new ToDoContainer(index, todo);
 				itemsList.add(temp);
+				index++;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
