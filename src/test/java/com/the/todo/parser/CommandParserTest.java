@@ -75,7 +75,7 @@ public class CommandParserTest {
 		appLogic.processCommand("add remember to get present on Friday +Birthday");
 
 		assertEquals(2, todoStorage.count());
-		assertEquals("remember to get present on Friday +Birthday", todoStorage.get("2")
+		assertEquals("remember to get present on Friday", todoStorage.get("2")
 				.getTitle());
 		assertEquals(expectedDate, todoStorage.get("2").getEndDate());
 		assertEquals("+Birthday", todoStorage.get("2").getCategory());
@@ -87,7 +87,7 @@ public class CommandParserTest {
 		appLogic.processCommand("add remember to get present on Friday +Birthday");
 
 		assertEquals(2, todoStorage.count());
-		assertEquals("remember to get present on Friday +Birthday", todoStorage.get("2")
+		assertEquals("remember to get present on Friday", todoStorage.get("2")
 				.getTitle());
 		assertEquals(expectedDate, todoStorage.get("2").getEndDate());
 		assertEquals("+Birthday", todoStorage.get("2").getCategory());
@@ -99,7 +99,7 @@ public class CommandParserTest {
 		appLogic.processCommand("add remember to get present +Birthday on Friday");
 
 		assertEquals(2, todoStorage.count());
-		assertEquals("remember to get present +Birthday on Friday", todoStorage.get("2")
+		assertEquals("remember to get present on Friday", todoStorage.get("2")
 				.getTitle());
 		assertEquals(expectedDate, todoStorage.get("2").getEndDate());
 		assertEquals("+Birthday", todoStorage.get("2").getCategory());
@@ -111,7 +111,7 @@ public class CommandParserTest {
 		appLogic.processCommand("add +Birthday remember to get present on Friday");
 
 		assertEquals(2, todoStorage.count());
-		assertEquals("+Birthday remember to get present on Friday", todoStorage.get("2")
+		assertEquals("remember to get present on Friday", todoStorage.get("2")
 				.getTitle());
 		assertEquals(expectedDate, todoStorage.get("2").getEndDate());
 		assertEquals("+Birthday", todoStorage.get("2").getCategory());
@@ -138,7 +138,7 @@ public class CommandParserTest {
 		appLogic.processCommand("edit 1 CS2103 IVLE quiz due on Friday +Homework");
 
 		assertEquals(1, todoStorage.count());
-		assertEquals("CS2103 IVLE quiz due on Friday +Homework", todoStorage.get("1")
+		assertEquals("CS2103 IVLE quiz due on Friday", todoStorage.get("1")
 				.getTitle());
 		assertEquals(expectedDate, todoStorage.get("1").getEndDate());
 		assertEquals("+Homework", todoStorage.get("1").getCategory());
@@ -150,7 +150,7 @@ public class CommandParserTest {
 		appLogic.processCommand("edit 1 CS2103 IVLE quiz due on Friday +Homework");
 
 		assertEquals(1, todoStorage.count());
-		assertEquals("CS2103 IVLE quiz due on Friday +Homework", todoStorage.get("1")
+		assertEquals("CS2103 IVLE quiz due on Friday", todoStorage.get("1")
 				.getTitle());
 		assertEquals(expectedDate, todoStorage.get("1").getEndDate());
 		assertEquals("+Homework", todoStorage.get("1").getCategory());
@@ -162,7 +162,7 @@ public class CommandParserTest {
 		appLogic.processCommand("edit 1 +Homework CS2103 IVLE quiz due on Friday");
 
 		assertEquals(1, todoStorage.count());
-		assertEquals("+Homework CS2103 IVLE quiz due on Friday", todoStorage.get("1")
+		assertEquals("CS2103 IVLE quiz due on Friday", todoStorage.get("1")
 				.getTitle());
 		assertEquals(expectedDate, todoStorage.get("1").getEndDate());
 		assertEquals("+Homework", todoStorage.get("1").getCategory());
@@ -174,7 +174,7 @@ public class CommandParserTest {
 		appLogic.processCommand("edit 1 CS2103 IVLE quiz +Homework due on Friday");
 
 		assertEquals(1, todoStorage.count());
-		assertEquals("CS2103 IVLE quiz +Homework due on Friday", todoStorage.get("1")
+		assertEquals("CS2103 IVLE quiz due on Friday", todoStorage.get("1")
 				.getTitle());
 		assertEquals(expectedDate, todoStorage.get("1").getEndDate());
 		assertEquals("+Homework", todoStorage.get("1").getCategory());

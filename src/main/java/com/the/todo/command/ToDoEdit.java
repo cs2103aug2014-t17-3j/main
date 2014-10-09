@@ -95,6 +95,15 @@ public class ToDoEdit extends ToDoCommand {
 		String category = CategoryParser.parse(input);
 		String title = CategoryParser.removeCategory(input, category);
 		LocalDate date = DateParser.parseDate(input);
+		
+		String oldRelativeDate = DateParser.getRelativeDate(todo.getTitle());
+		String newRelativeDate = DateParser.getRelativeDate(input);
+		
+		if (oldRelativeDate != null && newRelativeDate != null) {
+			todo.setTitle(input.replace(oldRelativeDate, newRelativeDate));
+		} else if (oldRelativeDate == null && newRelativeDate != null) {
+			todo.setTitle(todo.getTitle() + " " + newRelativeDate);
+		}
 
 		if (date != null) {
 			todo.setEndDate(date);

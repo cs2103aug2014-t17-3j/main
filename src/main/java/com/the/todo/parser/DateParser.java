@@ -73,6 +73,16 @@ public class DateParser {
 		}
 		return date;
 	}
+	
+	public static String getRelativeDate(String userInput) {
+		List<DateGroup> groups = new PrettyTimeParser().parseSyntax(userInput);
+		
+		if (groups.size() == 0) {
+			return null;
+		}
+		
+		return groups.get(0).getText();
+	}
 
 	private static LocalDate prettyTimeParse(String userInput) {
 		List<DateGroup> groups = new PrettyTimeParser().parseSyntax(userInput);
