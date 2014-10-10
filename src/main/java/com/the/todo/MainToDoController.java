@@ -36,12 +36,16 @@ import java.util.List;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
+import javafx.scene.input.MouseEvent;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 
 import com.the.todo.command.CommandStatus;
 import com.the.todo.model.ToDo;
@@ -59,6 +63,8 @@ public class MainToDoController {
 	private TextField mainInput;
 	@FXML
 	private ScrollPane mainScrollpane;
+	@FXML
+	private Button minimizeButton;
 
 	private static Logic appLogic;
 
@@ -74,8 +80,11 @@ public class MainToDoController {
 			}
 		});
 
+		initMinimizeButton();
+		
 		appLogic = new Logic();
 		updateUI(dateFormat.format(date), appLogic.getTodoList());
+
 	}
 
 	public void processInput() {
@@ -129,16 +138,37 @@ public class MainToDoController {
 			if (keyevent.getCode() == reservedKeyCode) {
 
 				// TODO Implement actions for reserved keys
-				/*if (keyevent.getCode() == KeyCode.UP) {
-					mainScrollpane.setVvalue(mainScrollpane.getVvalue()-1);
-				}
-				if (keyevent.getCode() == KeyCode.DOWN) {
-					mainScrollpane.setVvalue(mainScrollpane.getVvalue()+1);
-				}*/
-				
+				/*
+				 * if (keyevent.getCode() == KeyCode.UP) {
+				 * mainScrollpane.setVvalue(mainScrollpane.getVvalue()-1); } if
+				 * (keyevent.getCode() == KeyCode.DOWN) {
+				 * mainScrollpane.setVvalue(mainScrollpane.getVvalue()+1); }
+				 */
+
 				keyevent.consume();
 				break;
 			}
 		}
+	}
+
+	private void initMinimizeButton() {
+		minimizeButton.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				minimizeButton.setOpacity(1);
+			}
+		});
+		minimizeButton.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				minimizeButton.setOpacity(0.5);
+			}
+		});
+		minimizeButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				// TODO stage.toBack();
+			}
+		});
 	}
 }

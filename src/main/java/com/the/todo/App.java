@@ -53,6 +53,8 @@ public class App extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
+		
+		stage.initStyle(StageStyle.UNDECORATED);
 		String fxmlFile = "/fxml/MainToDo.fxml";
 
 		FXMLLoader loader = new FXMLLoader();
