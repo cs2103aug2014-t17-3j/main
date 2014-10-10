@@ -55,7 +55,7 @@ import com.the.todo.model.ToDo;
 public class MainToDoController {
 
 	private static final KeyCode[] RESERVED_KEYS = { KeyCode.UP, KeyCode.DOWN,
-			KeyCode.LEFT, KeyCode.RIGHT ,KeyCode.A,KeyCode.R,KeyCode.D,KeyCode.S };
+			KeyCode.LEFT, KeyCode.RIGHT  };
 
 	@FXML
 	private Label mainLabel,promptLabel;
@@ -98,8 +98,23 @@ public class MainToDoController {
 
 		CommandStatus status = appLogic.processCommand(userInput);
 		updateUI(status.getMessage(), appLogic.getTodoList());
+		showPrompt(status.getMessage());} 
+	
+	
+	public void showPrompt(String str){ 
 		promptLabel.setVisible(true);
-		promptLabel.setText(status.getMessage());	
+		promptLabel.setText(str);	
+		t= new Timer();
+		t.schedule(new TimerTask(){
+			@Override
+			public void run(){
+				Platform.runLater(new Runnable(){
+					public void run(){
+						promptLabel.setVisible(false);
+					}
+				});
+			}
+		}, 1000);
 		
 	}		
 	

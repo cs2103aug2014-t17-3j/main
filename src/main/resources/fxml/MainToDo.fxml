@@ -27,7 +27,7 @@
                <font>
                   <Font size="9.0" />
                </font></Button>
-            <Label fx:id="promptLabel" style="-fx-background-color: grey; -fx-border-style: dashed;" text="HELLO" textFill="WHITE" AnchorPane.bottomAnchor="55.0" AnchorPane.leftAnchor="250.0">
+            <Label fx:id="promptLabel" style="-fx-background-color: grey; -fx-border-style: dashed;" text="HELLO" textFill="WHITE" visible="false" AnchorPane.bottomAnchor="55.0" AnchorPane.leftAnchor="250.0">
                <effect>
                   <BoxBlur iterations="0">
                      <input>
