@@ -33,6 +33,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -53,10 +55,10 @@ import com.the.todo.model.ToDo;
 public class MainToDoController {
 
 	private static final KeyCode[] RESERVED_KEYS = { KeyCode.UP, KeyCode.DOWN,
-			KeyCode.LEFT, KeyCode.RIGHT };
+			KeyCode.LEFT, KeyCode.RIGHT ,KeyCode.A,KeyCode.R,KeyCode.D,KeyCode.S };
 
 	@FXML
-	private Label mainLabel;
+	private Label mainLabel,promptLabel;
 	@FXML
 	private VBox mainVBox;
 	@FXML
@@ -67,7 +69,7 @@ public class MainToDoController {
 	private Button minimizeButton;
 
 	private static Logic appLogic;
-
+	Timer t;
 	@FXML
 	void initialize() {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -88,6 +90,7 @@ public class MainToDoController {
 	}
 
 	public void processInput() {
+		
 		String userInput = mainInput.getText();
 
 		mainInput.clear();
@@ -95,8 +98,13 @@ public class MainToDoController {
 
 		CommandStatus status = appLogic.processCommand(userInput);
 		updateUI(status.getMessage(), appLogic.getTodoList());
-	}
+		promptLabel.setVisible(true);
+		promptLabel.setText(status.getMessage());	
+		
+	}		
+	
 
+			
 	/**
 	 * @param label
 	 *            Text to be displayed by mainLabel
@@ -132,9 +140,11 @@ public class MainToDoController {
 		}
 		mainVBox.getChildren().setAll(itemsList);
 	}
-
+	
+	
 	public void processKeyEvents(KeyEvent keyevent) {
 		for (KeyCode reservedKeyCode : RESERVED_KEYS) {
+			
 			if (keyevent.getCode() == reservedKeyCode) {
 
 				// TODO Implement actions for reserved keys
@@ -144,7 +154,7 @@ public class MainToDoController {
 				 * (keyevent.getCode() == KeyCode.DOWN) {
 				 * mainScrollpane.setVvalue(mainScrollpane.getVvalue()+1); }
 				 */
-
+				promptLabel.setVisible(false);	
 				keyevent.consume();
 				break;
 			}
@@ -171,4 +181,5 @@ public class MainToDoController {
 			}
 		});
 	}
+	
 }
