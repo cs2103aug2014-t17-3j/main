@@ -28,12 +28,12 @@
 
 #mainLabel {
 	-fx-background-color:  #333333;
-	-fx-content-display: center;
 	-fx-font-size: 14;
 	-fx-font-family: "Lucida Grande", sans-serif;
 	-fx-font-weight: bold;
 	-fx-label-padding: 10;
 	-fx-text-fill: white;
+	-fx-alignment: center-left;
 }
 
 #minimizeButton {
@@ -41,8 +41,11 @@
 	-fx-border-radius: 15;
 	-fx-border-color:  white;
 	-fx-text-fill: white;
-	-fx-content-display: center;
+	-fx-alignment: center;
 	-fx-opacity: 0.6;
+}
+#minimizeButton:hover {
+	-fx-opacity: 1;
 }
 
 #promptLabel {

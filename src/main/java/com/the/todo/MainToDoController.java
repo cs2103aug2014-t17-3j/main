@@ -82,8 +82,6 @@ public class MainToDoController {
 			}
 		});
 
-		initMinimizeButton();
-		
 		appLogic = new Logic();
 		updateUI(dateFormat.format(date), appLogic.getTodoList());
 
@@ -175,26 +173,4 @@ public class MainToDoController {
 			}
 		}
 	}
-
-	private void initMinimizeButton() {
-		minimizeButton.setOnMouseEntered(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent event) {
-				minimizeButton.setOpacity(1);
-			}
-		});
-		minimizeButton.setOnMouseExited(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent event) {
-				minimizeButton.setOpacity(0.5);
-			}
-		});
-		minimizeButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				// TODO stage.toBack();
-			}
-		});
-	}
-	
 }
