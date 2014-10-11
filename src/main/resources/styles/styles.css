@@ -54,3 +54,6 @@
 	-fx-text-fill: white;
 }
 
+#mainScrollpane {
+	-fx-background-color: transparent;
+}

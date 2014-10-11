@@ -22,7 +22,7 @@
                   </AnchorPane>
               </content>
             </ScrollPane>
-            <TextField fx:id="mainInput" onAction="#processInput" prefHeight="45.0" promptText="Enter your command here" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" />
+            <TextField fx:id="mainInput" onAction="#processInput" prefHeight="40.0" promptText="Enter your command here" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
             <Button id="minimizeButton" fx:id="minimizeButton" layoutX="552.0" mnemonicParsing="false" text="X" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
             </Button>
             <Label id="promptLabel" fx:id="promptLabel" text="HELLO" visible="false" AnchorPane.bottomAnchor="55.0" AnchorPane.leftAnchor="250.0">
