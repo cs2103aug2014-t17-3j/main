@@ -44,12 +44,14 @@ import com.the.todo.storage.ToDoStore;
 import com.the.todo.util.StringUtil;
 
 public class Logic {
-	
+
 	private ToDoStore todoStorage;
 	private List<ToDo> todoList;
-	
+
+	private static Logic logic = null;
+
 	private static final String FILENAME = "thetodo.json";
-	
+
 	private static enum CommandType {
 		ADD, READ, EDIT, DELETE, COMPLETE, INCOMPLETE, SEARCH, UNDO, INVALID
 	};
@@ -58,15 +60,23 @@ public class Logic {
 		todoStorage = new InMemoryStore(FILENAME);
 		todoList = todoStorage.getAll();
 	}
-	
+
+	public static Logic getInstance() {
+		if (logic == null) {
+			logic = new Logic();
+		}
+
+		return logic;
+	}
+
 	public List<ToDo> getTodoList() {
 		return todoList;
 	}
-	
+
 	public ToDoStore getTodoStorage() {
 		return todoStorage;
 	}
-	
+
 	public CommandStatus processCommand(String userInput) {
 		CommandType command = getCommandType(userInput);
 		String todoTitleOrId = getTitleOrId(userInput);
@@ -108,9 +118,10 @@ public class Logic {
 			todoStorage.saveToFile();
 			todoList = todoStorage.getAll();
 		} else {
-			commandStatus = new CommandStatus(Status.INVALID, "Invalid command.");
+			commandStatus = new CommandStatus(Status.INVALID,
+					"Invalid command.");
 		}
-		
+
 		System.out.println("-----------------------------");
 		for (ToDo todo : todoStorage.getAll()) {
 			System.out.println("Title: " + todo.getTitle());
@@ -119,10 +130,10 @@ public class Logic {
 			System.out.println("Completed: " + todo.isCompleted());
 			System.out.println("Delete: " + todo.isDeleted());
 		}
-		
+
 		return commandStatus;
 	}
-	
+
 	private CommandType getCommandType(String userInput) {
 
 		if (userInput.trim().isEmpty()) {
@@ -153,17 +164,17 @@ public class Logic {
 			return CommandType.INVALID;
 		}
 	}
-	
+
 	private static String getTitleOrId(String userInput) {
 		String[] splitInput = StringUtil.splitString(userInput, " ", 2);
-		
+
 		if (splitInput.length == 1) {
 			return "";
 		}
-		
+
 		return splitInput[1];
 	}
-	
+
 	private ToDo getToDo(int id) {
 		ToDo todo;
 		try {
@@ -173,5 +184,5 @@ public class Logic {
 		}
 		return todo;
 	}
-	
+
 }

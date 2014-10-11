@@ -74,7 +74,7 @@ public class MainToDoController {
 			}
 		});
 
-		appLogic = new Logic();
+		appLogic = Logic.getInstance();
 		updateUI(dateFormat.format(date), appLogic.getTodoList());
 	}
 
