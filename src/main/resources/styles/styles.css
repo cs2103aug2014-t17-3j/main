@@ -26,19 +26,28 @@
  * THE SOFTWARE.
  */
 
-.button:hover{
-    -fx-base: #395bae;
+#mainLabel {
+	-fx-background-color:  #333333;
+	-fx-content-display: center;
+	-fx-font-size: 14;
+	-fx-font-family: "Lucida Grande", sans-serif;
+	-fx-font-weight: bold;
+	-fx-label-padding: 10;
+	-fx-text-fill: white;
 }
 
-/* Component specific styles */
-
-
-.main-panel {
-    -fx-background-image: url("../images/background.jpg");
+#minimizeButton {
+	-fx-background-color: transparent;
+	-fx-border-radius: 15;
+	-fx-border-color:  white;
+	-fx-text-fill: white;
+	-fx-content-display: center;
+	-fx-opacity: 0.6;
 }
 
-.hello-message {
-    -fx-text-fill: #AA0000;
-    -fx-font-weight: bold;
-    -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
+#promptLabel {
+	-fx-background-color: grey;
+	-fx-border-style: dashed;
+	-fx-text-fill: white;
 }
+
