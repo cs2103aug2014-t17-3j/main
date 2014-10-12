@@ -55,10 +55,10 @@ import com.the.todo.model.ToDo;
 public class MainToDoController {
 
 	private static final KeyCode[] RESERVED_KEYS = { KeyCode.UP, KeyCode.DOWN,
-			KeyCode.LEFT, KeyCode.RIGHT  };
+			KeyCode.LEFT, KeyCode.RIGHT };
 
 	@FXML
-	private Label mainLabel,promptLabel;
+	private Label mainLabel, promptLabel;
 	@FXML
 	private VBox mainVBox;
 	@FXML
@@ -70,6 +70,7 @@ public class MainToDoController {
 
 	private static Logic appLogic;
 	Timer t;
+
 	@FXML
 	void initialize() {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -88,7 +89,7 @@ public class MainToDoController {
 	}
 
 	public void processInput() {
-		
+
 		String userInput = mainInput.getText();
 
 		mainInput.clear();
@@ -96,28 +97,26 @@ public class MainToDoController {
 
 		CommandStatus status = appLogic.processCommand(userInput);
 		updateUI(status.getMessage(), appLogic.getTodoList());
-		showPrompt(status.getMessage());} 
-	
-	
-	public void showPrompt(String str){ 
+		showPrompt(status.getMessage());
+	}
+
+	public void showPrompt(String str) {
 		promptLabel.setVisible(true);
-		promptLabel.setText(str);	
-		t= new Timer();
-		t.schedule(new TimerTask(){
+		promptLabel.setText(str);
+		t = new Timer();
+		t.schedule(new TimerTask() {
 			@Override
-			public void run(){
-				Platform.runLater(new Runnable(){
-					public void run(){
+			public void run() {
+				Platform.runLater(new Runnable() {
+					public void run() {
 						promptLabel.setVisible(false);
 					}
 				});
 			}
 		}, 1000);
-		
-	}		
-	
 
-			
+	}
+
 	/**
 	 * @param label
 	 *            Text to be displayed by mainLabel
@@ -153,11 +152,10 @@ public class MainToDoController {
 		}
 		mainVBox.getChildren().setAll(itemsList);
 	}
-	
-	
+
 	public void processKeyEvents(KeyEvent keyevent) {
 		for (KeyCode reservedKeyCode : RESERVED_KEYS) {
-			
+
 			if (keyevent.getCode() == reservedKeyCode) {
 
 				// TODO Implement actions for reserved keys
@@ -167,7 +165,7 @@ public class MainToDoController {
 				 * (keyevent.getCode() == KeyCode.DOWN) {
 				 * mainScrollpane.setVvalue(mainScrollpane.getVvalue()+1); }
 				 */
-				promptLabel.setVisible(false);	
+				promptLabel.setVisible(false);
 				keyevent.consume();
 				break;
 			}

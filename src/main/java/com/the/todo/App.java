@@ -29,19 +29,17 @@
 package com.the.todo;
 
 import javafx.application.Application;
-
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-
 import javafx.fxml.FXMLLoader;
-
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.KeyCode;
-
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -70,6 +68,15 @@ public class App extends Application {
 			public void handle(KeyEvent event) {
 				control.processKeyEvents(event);
 			}
+		});
+		
+		stage.focusedProperty().addListener(new ChangeListener<Boolean>() {
+		    @Override
+		    public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) {
+		        if (t && !t1) {
+		            stage.setIconified(true);
+		        }
+		    }
 		});
 
 		stage.setTitle("TheTODO");
