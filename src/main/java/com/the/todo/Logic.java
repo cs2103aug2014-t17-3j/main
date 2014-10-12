@@ -29,6 +29,7 @@
 package com.the.todo;
 
 import java.util.List;
+import java.util.Stack;
 
 import com.the.todo.command.CommandStatus;
 import com.the.todo.command.CommandStatus.Status;
@@ -38,6 +39,7 @@ import com.the.todo.command.ToDoComplete;
 import com.the.todo.command.ToDoDelete;
 import com.the.todo.command.ToDoEdit;
 import com.the.todo.command.ToDoRead;
+import com.the.todo.command.ToDoUndo;
 import com.the.todo.model.ToDo;
 import com.the.todo.storage.InMemoryStore;
 import com.the.todo.storage.ToDoStore;
@@ -47,9 +49,9 @@ public class Logic {
 
 	private ToDoStore todoStorage;
 	private List<ToDo> todoList;
+	private Stack<ToDoCommand> undoStack;
 
 	private static Logic logic = null;
-
 	private static final String FILENAME = "thetodo.json";
 
 	private static enum CommandType {
@@ -59,6 +61,8 @@ public class Logic {
 	public Logic() {
 		todoStorage = new InMemoryStore(FILENAME);
 		todoList = todoStorage.getAll();
+		
+		undoStack = new Stack<ToDoCommand>();
 	}
 
 	public static Logic getInstance() {
@@ -106,6 +110,7 @@ public class Logic {
 		case SEARCH:
 			break;
 		case UNDO:
+			todoCommand = new ToDoUndo(todoStorage, undoStack);
 			break;
 		case INVALID:
 			break;
@@ -117,6 +122,10 @@ public class Logic {
 			commandStatus = todoCommand.execute();
 			todoStorage.saveToFile();
 			todoList = todoStorage.getAll();
+			
+			if (todoCommand.isUndoable() && commandStatus.getStatus() == Status.SUCCESS) {
+				undoStack.push(todoCommand);
+			}
 		} else {
 			commandStatus = new CommandStatus(Status.INVALID,
 					"Invalid command.");

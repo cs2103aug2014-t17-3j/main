@@ -68,12 +68,14 @@ public class ToDoAdd extends ToDoCommand {
 
 	@Override
 	protected CommandStatus performUndo() {
-		return new CommandStatus(Status.INVALID);
+		todoStorage.delete(todo);
+		return new CommandStatus(Status.SUCCESS, String.format(
+				"Task successfully removed: %s", todo.getTitle()));
 	}
 
 	private ToDo createToDo(String input) {
 		ToDo todo = new ToDo();
-		
+
 		String category = CategoryParser.parse(input);
 		String title = CategoryParser.removeCategory(input, category);
 		LocalDate date = DateParser.parseDate(input);
