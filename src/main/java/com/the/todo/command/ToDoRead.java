@@ -28,7 +28,7 @@
 
 package com.the.todo.command;
 
-import java.util.Collection;
+import java.util.List;
 
 import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
@@ -37,16 +37,17 @@ import com.the.todo.storage.ToDoStore;
 public class ToDoRead extends ToDoCommand {
 	
 	ToDoStore todoStorage;
-	Collection<ToDo> todoCollection;
+	List<ToDo> todoList;
 
-	public ToDoRead(ToDoStore todoStorage, Collection<ToDo> todoCollection) {
+	public ToDoRead(ToDoStore todoStorage, List<ToDo> todoList) {
 		this.todoStorage = todoStorage;
-		this.todoCollection = todoCollection;
+		this.todoList = todoList;
+		this.undoable = false;
 	}
 
 	@Override
 	protected CommandStatus performExecute() {
-		todoCollection = todoStorage.getAll();
+		todoList = todoStorage.getAll();
 		return new CommandStatus(Status.SUCCESS, "");
 	}
 
