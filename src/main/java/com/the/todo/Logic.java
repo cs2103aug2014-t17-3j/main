@@ -39,7 +39,7 @@ import com.the.todo.command.ToDoDelete;
 import com.the.todo.command.ToDoEdit;
 import com.the.todo.command.ToDoRead;
 import com.the.todo.model.ToDo;
-import com.the.todo.storage.InMemoryStore;
+import com.the.todo.storage.JsonFileStore;
 import com.the.todo.storage.ToDoStore;
 import com.the.todo.util.StringUtil;
 
@@ -57,7 +57,7 @@ public class Logic {
 	};
 
 	public Logic() {
-		todoStorage = new InMemoryStore(FILENAME);
+		todoStorage = new JsonFileStore(FILENAME);
 		todoList = todoStorage.getAll();
 	}
 

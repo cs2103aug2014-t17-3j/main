@@ -28,17 +28,33 @@
 
 package com.the.todo.storage;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fatboyindustrial.gsonjodatime.Converters;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.the.todo.io.FileHandler;
 import com.the.todo.model.ToDo;
 
-public class InMemoryStore implements ToDoStore {
+public class JsonFileStore implements ToDoStore {
 
+	private Gson gson;
 	private List<ToDo> store;
+	private final String fileName;
 
-	public InMemoryStore() {
+	public JsonFileStore() {
 		this.store = new ArrayList<ToDo>();
+		this.fileName = null;
+	}
+	
+	public JsonFileStore(String fileName) {
+		this.fileName = fileName;
+		this.gson = Converters.registerLocalDate(new GsonBuilder()).serializeNulls().create();
+		this.store = readFromFile();
 	}
 
 	@Override
@@ -77,9 +93,32 @@ public class InMemoryStore implements ToDoStore {
 	public int count() {
 		return store.size();
 	}
-
+	
+	private List<ToDo> readFromFile() {
+		String contents = null;
+		try {
+			contents = FileHandler.readFile(this.fileName);
+		} catch (IOException ex) {
+			System.out.println(ex.getMessage());
+		}
+		
+		if (contents.isEmpty()) {
+			return new ArrayList<ToDo>();
+		}
+		
+		Type collectionType = new TypeToken<List<ToDo>>() {}.getType();
+		List<ToDo> todos = gson.fromJson(contents, collectionType);
+		
+		return todos;
+	}
+	
 	@Override
 	public void saveToFile() {
+		try {
+			FileHandler.writeFile(this.fileName, gson.toJson(this.store));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
