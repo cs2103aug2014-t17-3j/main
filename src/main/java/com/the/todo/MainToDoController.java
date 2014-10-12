@@ -46,6 +46,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
@@ -151,6 +152,11 @@ public class MainToDoController {
 			}
 		}
 		mainVBox.getChildren().setAll(itemsList);
+	}
+	
+	public void minimizeWindow () {
+		Stage stage = (Stage) minimizeButton.getScene().getWindow();
+		stage.setIconified(true);
 	}
 
 	public void processKeyEvents(KeyEvent keyevent) {
