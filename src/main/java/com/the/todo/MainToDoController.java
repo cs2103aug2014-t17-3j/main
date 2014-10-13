@@ -155,8 +155,8 @@ public class MainToDoController {
 	}
 	
 	public void minimizeWindow () {
-		 minimizeButton.getScene().getWindow().hide();
-		
+		Stage stage = (Stage) minimizeButton.getScene().getWindow();
+		stage.setIconified(true);
 	}
 
 	public void processKeyEvents(KeyEvent keyevent) {
