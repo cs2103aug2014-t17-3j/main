@@ -38,9 +38,8 @@
 
 #minimizeButton {
 	-fx-background-color: transparent;
-	-fx-border-radius: 15;
-	-fx-border-color:  white;
-	-fx-text-fill: white;
+	-fx-graphic: url(../images/x_button.png);
+	-fx-content-display: graphic-only;
 	-fx-alignment: center;
 	-fx-opacity: 0.6;
 }
