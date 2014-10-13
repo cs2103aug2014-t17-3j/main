@@ -51,7 +51,7 @@ public class ToDoEdit extends ToDoCommand {
 	private static enum FieldType {
 		TITLE, CATEGORY, STARTDATE, ENDDATE, STARTTIME, ENDTIME, PRIORITY, INVALID
 	};
-	
+
 	private static enum TaskType {
 		FLOATTASK, TIMETASK, DATETASK
 	};
@@ -101,6 +101,42 @@ public class ToDoEdit extends ToDoCommand {
 		return new CommandStatus(Status.INVALID);
 	}
 
+	// private ToDo editToDo(ToDo todo, String input) {
+	// String category = CategoryParser.parse(input);
+	// String title = CategoryParser.removeCategory(input, category);
+	// LocalDate date = DateParser.parseDate(title);
+	//
+	// if (DateParser.parseDate(todo.getTitle()) == null) {
+	// if (date != null && !checkSpaces(title)) {
+	// todo.setTitle(todo.getTitle() + " " + title);
+	// todo.setEndDate(date);
+	// } else {
+	// todo.setTitle(title);
+	// todo.setEndDate(date);
+	// }
+	// } else {
+	// if (!DateParser.checkDigits(todo.getTitle())) {
+	// String oldRelativeDate = DateParser.getRelativeDate(todo.getTitle());
+	// String newRelativeDate = DateParser.getRelativeDate(title);
+	// todo.setTitle(input.replace(oldRelativeDate, newRelativeDate));
+	// }
+	// }
+	//
+	// // if (date != null) {
+	// // todo.setEndDate(date);
+	// // }
+	//
+	// if (category != null) {
+	// todo.setCategory(category);
+	// }
+	//
+	// if (!title.isEmpty() && date == null) {
+	// todo.setTitle(title);
+	// }
+	//
+	// return todo;
+	// }
+
 	private ToDo editToDo(ToDo todo, String input) {
 		int inputStartIndex;
 		int inputEndIndex;
@@ -112,13 +148,13 @@ public class ToDoEdit extends ToDoCommand {
 		LocalDateTime endDate = todo.getEndDate();
 		TaskType typeOfTaskBefore;
 		TaskType typeOfTaskAfter;
-		
+
 		typeOfTaskBefore = checkChangeTaskType(startDate, endDate);
 
 		while (!input.isEmpty()) {
 			inputStartIndex = input.indexOf("-");
 			inputEndIndex = input.indexOf("-", inputStartIndex + 1);
-			
+
 			if (inputStartIndex == -1) {
 				subStringInput = null;
 			} else {
@@ -128,7 +164,7 @@ public class ToDoEdit extends ToDoCommand {
 				} else {
 					subStringInput = input.substring(inputStartIndex).trim();
 				}
-				
+
 			}
 			splitSubInputArr = stringSplit(subStringInput, 2);
 			fieldType = splitSubInputArr[0];
@@ -139,8 +175,8 @@ public class ToDoEdit extends ToDoCommand {
 		startDate = todo.getStartDate();
 		endDate = todo.getEndDate();
 		typeOfTaskAfter = checkChangeTaskType(startDate, endDate);
-		if(typeOfTaskBefore != typeOfTaskAfter){
-			//change Task Type
+		if (typeOfTaskBefore != typeOfTaskAfter) {
+			// change Task Type
 		}
 
 		return todo;
@@ -148,14 +184,17 @@ public class ToDoEdit extends ToDoCommand {
 
 	private String[] stringSplit(String subStringInput, int numberOfParts) {
 		String[] splitSubInputArr;
-		splitSubInputArr = StringUtil.splitString(subStringInput, " ", numberOfParts);
+		splitSubInputArr = StringUtil.splitString(subStringInput, " ",
+				numberOfParts);
 		return splitSubInputArr;
 	}
 
-	private ToDo processFieldType(String fieldType, String remainingString, ToDo todo) {
+	private ToDo processFieldType(String fieldType, String remainingString,
+			ToDo todo) {
 		FieldType typeOfField = getFieldType(fieldType);
 		List<DateGroup> groups;
 		LocalDateTime date;
+
 		switch (typeOfField) {
 		case TITLE:
 			todo.setTitle(remainingString);
@@ -212,11 +251,11 @@ public class ToDoEdit extends ToDoCommand {
 			return FieldType.INVALID;
 		}
 	}
-	
-	private TaskType checkChangeTaskType(LocalDateTime startDate, LocalDateTime endDate) {
-		
-		if((startDate == null) && (endDate == null))
-		{
+
+	private TaskType checkChangeTaskType(LocalDateTime startDate,
+			LocalDateTime endDate) {
+
+		if ((startDate == null) && (endDate == null)) {
 			return TaskType.FLOATTASK;
 		} else if ((startDate == null) && (endDate != null)) {
 			return TaskType.TIMETASK;
