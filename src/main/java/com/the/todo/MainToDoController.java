@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -47,6 +48,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
@@ -70,11 +72,12 @@ public class MainToDoController {
 	private Button minimizeButton;
 
 	private static Logic appLogic;
-	Timer t;
+
+	private FadeTransition fadeOut;
 
 	@FXML
 	void initialize() {
-		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+		DateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy");
 		Date date = new Date();
 
 		Platform.runLater(new Runnable() {
@@ -83,6 +86,8 @@ public class MainToDoController {
 				mainInput.requestFocus();
 			}
 		});
+
+		fadeOut = new FadeTransition(Duration.millis(3000), promptLabel);
 
 		appLogic = new Logic();
 		updateUI(dateFormat.format(date), appLogic.getTodoList());
@@ -104,18 +109,9 @@ public class MainToDoController {
 	public void showPrompt(String str) {
 		promptLabel.setVisible(true);
 		promptLabel.setText(str);
-		t = new Timer();
-		t.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				Platform.runLater(new Runnable() {
-					public void run() {
-						promptLabel.setVisible(false);
-					}
-				});
-			}
-		}, 1000);
 
+		fadeOut.setToValue(0.0);
+		fadeOut.playFromStart();
 	}
 
 	/**
@@ -153,8 +149,8 @@ public class MainToDoController {
 		}
 		mainVBox.getChildren().setAll(itemsList);
 	}
-	
-	public void minimizeWindow () {
+
+	public void minimizeWindow() {
 		Stage stage = (Stage) minimizeButton.getScene().getWindow();
 		stage.hide();
 	}
