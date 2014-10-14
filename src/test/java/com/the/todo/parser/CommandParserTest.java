@@ -32,7 +32,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.joda.time.DateTimeConstants;
-import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+import org.joda.time.LocalDateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +46,13 @@ public class CommandParserTest {
 
 	private Logic appLogic;
 	private ToDoStore todoStorage;
-
+	
+	private static final int YEAR = LocalDateTime.now().getYear();
+	private static final int MONTH = LocalDateTime.now().getMonthOfYear();
+	private static final int DAY = LocalDateTime.now().getDayOfMonth();
+	private static final int HOUR = 0;
+	private static final int MIN = 0;
+	
 	@Before
 	public void setUp() throws Exception {
 		FileHandler.writeFile("thetodo.json", "");
@@ -63,7 +70,7 @@ public class CommandParserTest {
 
 	@Test
 	public void testAdd() {
-		LocalDate expectedDate = new LocalDate(2014, 11, 11);
+		LocalDateTime expectedDate = new LocalDateTime(2014, 11, 11, 0, 0);
 		appLogic.processCommand("add remember to get milk on 11/11/2014");
 		todoStorage = appLogic.getTodoStorage();
 
@@ -74,7 +81,7 @@ public class CommandParserTest {
 
 	@Test
 	public void testAddCategory() {
-		LocalDate expectedDate = calcNextFriday(new LocalDate());
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime(YEAR, MONTH, DAY, HOUR, MIN));
 		appLogic.processCommand("add remember to get present on Friday +Birthday");
 
 		assertEquals(2, todoStorage.count());
@@ -86,7 +93,7 @@ public class CommandParserTest {
 
 	@Test
 	public void testAddCategoryRandomPlace1() {
-		LocalDate expectedDate = calcNextFriday(new LocalDate());
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime(YEAR, MONTH, DAY, HOUR, MIN));
 		appLogic.processCommand("add remember to get present on Friday +Birthday");
 
 		assertEquals(2, todoStorage.count());
@@ -98,7 +105,7 @@ public class CommandParserTest {
 
 	@Test
 	public void testAddCategoryRandomPlace2() {
-		LocalDate expectedDate = calcNextFriday(new LocalDate());
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime(YEAR, MONTH, DAY, HOUR, MIN));
 		appLogic.processCommand("add remember to get present +Birthday on Friday");
 
 		assertEquals(2, todoStorage.count());
@@ -110,7 +117,7 @@ public class CommandParserTest {
 
 	@Test
 	public void testAddCategoryRandomPlace3() {
-		LocalDate expectedDate = calcNextFriday(new LocalDate());
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime(YEAR, MONTH, DAY, HOUR, MIN));
 		appLogic.processCommand("add +Birthday remember to get present on Friday");
 
 		assertEquals(2, todoStorage.count());
@@ -127,7 +134,7 @@ public class CommandParserTest {
 
 	@Test
 	public void testUpdate() {
-		LocalDate expectedDate = calcNextFriday(new LocalDate());
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime(YEAR, MONTH, DAY, HOUR, MIN));
 		appLogic.processCommand("edit 1 CS2103 IVLE quiz due on Friday");
 
 		assertEquals(1, todoStorage.count());
@@ -137,7 +144,7 @@ public class CommandParserTest {
 
 	@Test
 	public void testUpdateCategory() {
-		LocalDate expectedDate = calcNextFriday(new LocalDate());
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime(YEAR, MONTH, DAY, HOUR, MIN));
 		appLogic.processCommand("edit 1 CS2103 IVLE quiz due on Friday +Homework");
 
 		assertEquals(1, todoStorage.count());
@@ -149,7 +156,7 @@ public class CommandParserTest {
 
 	@Test
 	public void testUpdateCategoryRandomPlace1() {
-		LocalDate expectedDate = calcNextFriday(new LocalDate());
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime(YEAR, MONTH, DAY, HOUR, MIN));
 		appLogic.processCommand("edit 1 CS2103 IVLE quiz due on Friday +Homework");
 
 		assertEquals(1, todoStorage.count());
@@ -161,7 +168,7 @@ public class CommandParserTest {
 
 	@Test
 	public void testUpdateCategoryRandomPlace2() {
-		LocalDate expectedDate = calcNextFriday(new LocalDate());
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime(YEAR, MONTH, DAY, HOUR, MIN));
 		appLogic.processCommand("edit 1 +Homework CS2103 IVLE quiz due on Friday");
 
 		assertEquals(1, todoStorage.count());
@@ -173,7 +180,7 @@ public class CommandParserTest {
 
 	@Test
 	public void testUpdateCategoryRandomPlace3() {
-		LocalDate expectedDate = calcNextFriday(new LocalDate());
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime(YEAR, MONTH, DAY, HOUR, MIN));
 		appLogic.processCommand("edit 1 CS2103 IVLE quiz +Homework due on Friday");
 
 		assertEquals(1, todoStorage.count());
@@ -198,7 +205,7 @@ public class CommandParserTest {
 		assertTrue(todoStorage.getAll().get(0).isCompleted());
 	}
 
-	private LocalDate calcNextFriday(LocalDate d) {
+	private LocalDateTime calcNextFriday(LocalDateTime d) {
 		if (d.getDayOfWeek() >= DateTimeConstants.FRIDAY) {
 			d = d.plusWeeks(1);
 		}

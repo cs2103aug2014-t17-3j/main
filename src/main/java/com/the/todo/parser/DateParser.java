@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -73,14 +74,14 @@ public class DateParser {
 		}
 		return date;
 	}
-	
+
 	public static String getRelativeDate(String userInput) {
 		List<DateGroup> groups = new PrettyTimeParser().parseSyntax(userInput);
-		
+
 		if (groups.size() == 0) {
 			return null;
 		}
-		
+
 		return groups.get(0).getText();
 	}
 
@@ -91,7 +92,12 @@ public class DateParser {
 			return null;
 		}
 
-		LocalDateTime date = new LocalDateTime(groups.get(0).getDates().get(0));
+		LocalDate localDate = new LocalDate(groups.get(0).getDates().get(0));
+		int year = localDate.getYear();
+		int month = localDate.getMonthOfYear();
+		int day = localDate.getDayOfMonth();
+
+		LocalDateTime date = new LocalDateTime(year, month, day, 0, 0); // TODO : Handle time?
 		return date;
 	}
 
@@ -103,8 +109,8 @@ public class DateParser {
 		}
 		return false;
 	}
-	
-	public static boolean getIsValid(){
+
+	public static boolean getIsValid() {
 		return isValid;
 	}
 
