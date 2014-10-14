@@ -34,14 +34,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import com.the.todo.command.CommandStatus;
 import com.the.todo.model.ToDo;
@@ -52,19 +56,23 @@ public class MainToDoController {
 			KeyCode.LEFT, KeyCode.RIGHT };
 
 	@FXML
-	private Label mainLabel;
+	private Label mainLabel, promptLabel;
 	@FXML
 	private VBox mainVBox;
 	@FXML
 	private TextField mainInput;
 	@FXML
 	private ScrollPane mainScrollpane;
+	@FXML
+	private Button minimizeButton;
 
 	private static Logic appLogic;
 
+	private FadeTransition fadeOut;
+
 	@FXML
 	void initialize() {
-		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+		DateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy");
 		Date date = new Date();
 
 		Platform.runLater(new Runnable() {
@@ -74,11 +82,14 @@ public class MainToDoController {
 			}
 		});
 
-		appLogic = Logic.getInstance();
+		fadeOut = new FadeTransition(Duration.millis(3000), promptLabel);
+		appLogic = new Logic();
+
 		updateUI(dateFormat.format(date), appLogic.getTodoList());
 	}
 
 	public void processInput() {
+
 		String userInput = mainInput.getText();
 
 		mainInput.clear();
@@ -86,6 +97,15 @@ public class MainToDoController {
 
 		CommandStatus status = appLogic.processCommand(userInput);
 		updateUI(status.getMessage(), appLogic.getTodoList());
+		showPrompt(status.getMessage());
+	}
+
+	public void showPrompt(String str) {
+		promptLabel.setVisible(true);
+		promptLabel.setText(str);
+
+		fadeOut.setToValue(0.0);
+		fadeOut.playFromStart();
 	}
 
 	/**
@@ -124,18 +144,24 @@ public class MainToDoController {
 		mainVBox.getChildren().setAll(itemsList);
 	}
 
+	public void minimizeWindow() {
+		Stage stage = (Stage) minimizeButton.getScene().getWindow();
+		stage.hide();
+	}
+
 	public void processKeyEvents(KeyEvent keyevent) {
 		for (KeyCode reservedKeyCode : RESERVED_KEYS) {
+
 			if (keyevent.getCode() == reservedKeyCode) {
 
 				// TODO Implement actions for reserved keys
-				/*if (keyevent.getCode() == KeyCode.UP) {
-					mainScrollpane.setVvalue(mainScrollpane.getVvalue()-1);
-				}
-				if (keyevent.getCode() == KeyCode.DOWN) {
-					mainScrollpane.setVvalue(mainScrollpane.getVvalue()+1);
-				}*/
-				
+				/*
+				 * if (keyevent.getCode() == KeyCode.UP) {
+				 * mainScrollpane.setVvalue(mainScrollpane.getVvalue()-1); } if
+				 * (keyevent.getCode() == KeyCode.DOWN) {
+				 * mainScrollpane.setVvalue(mainScrollpane.getVvalue()+1); }
+				 */
+				promptLabel.setVisible(false);
 				keyevent.consume();
 				break;
 			}

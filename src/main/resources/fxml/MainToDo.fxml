@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
@@ -11,7 +12,7 @@
   <items>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
          <children>
-            <Label fx:id="mainLabel" contentDisplay="CENTER" graphicTextGap="5.0" prefHeight="50.0" prefWidth="353.0" style="-fx-background-color: #000000;" text="Label" textFill="WHITE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <Label id="mainLabel" fx:id="mainLabel" graphicTextGap="5.0" prefHeight="50.0" prefWidth="353.0" text="Label" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
             <ScrollPane id="mainScrollpane" layoutX="16.0" layoutY="139.0" pannable="true" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
               <content>
                 <AnchorPane>
@@ -21,7 +22,18 @@
                   </AnchorPane>
               </content>
             </ScrollPane>
-            <TextField fx:id="mainInput" focusTraversable="false" onAction="#processInput" prefHeight="50.0" promptText="Enter your command here" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+            <TextField fx:id="mainInput" onAction="#processInput" prefHeight="40.0" promptText="Enter your command here" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
+            <Button id="minimizeButton" fx:id="minimizeButton" layoutX="552.0" mnemonicParsing="false" onAction="#minimizeWindow" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+            </Button>
+            <Label id="promptLabel" fx:id="promptLabel" text="HELLO" visible="false" AnchorPane.bottomAnchor="55.0" AnchorPane.leftAnchor="250.0">
+               <effect>
+                  <BoxBlur iterations="0">
+                     <input>
+                        <Glow level="0.2" />
+                     </input>
+                  </BoxBlur>
+               </effect>
+            </Label>
          </children>
       </AnchorPane>
   </items>

@@ -26,19 +26,47 @@
  * THE SOFTWARE.
  */
 
-.button:hover{
-    -fx-base: #395bae;
+#mainLabel {
+	-fx-background-color:  #333333;
+	-fx-font-size: 14;
+	-fx-font-family: "Lucida Grande", sans-serif;
+	-fx-font-weight: bold;
+	-fx-label-padding: 10;
+	-fx-text-fill: white;
+	-fx-alignment: center-left;
 }
 
-/* Component specific styles */
-
-
-.main-panel {
-    -fx-background-image: url("../images/background.jpg");
+#minimizeButton {
+	-fx-background-color: transparent;
+	-fx-graphic: url(../images/x_button.png);
+	-fx-content-display: graphic-only;
+	-fx-alignment: center;
+	-fx-opacity: 0.6;
+}
+#minimizeButton:hover {
+	-fx-opacity: 1;
 }
 
-.hello-message {
-    -fx-text-fill: #AA0000;
-    -fx-font-weight: bold;
-    -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
+#promptLabel {
+	-fx-background-color: grey;
+	-fx-border-style: dashed;
+	-fx-text-fill: white;
+}
+
+#mainScrollpane {
+	-fx-background-color: transparent;
+}
+
+/* ToDoContainer styles */
+#root {
+	-fx-padding: 5;
+}
+
+#todoID {
+	-fx-alignment: center;
+	-fx-border-color: transparent darkred transparent transparent;
+}
+
+#todoTitle {
+	-fx-font-size: 14;
 }

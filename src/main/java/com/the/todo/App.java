@@ -28,24 +28,30 @@
 
 package com.the.todo;
 
+import java.io.IOException;
+
 import javafx.application.Application;
-
-import javafx.event.ActionEvent;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
-
 import javafx.fxml.FXMLLoader;
-
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.KeyCode;
-
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import javax.imageio.ImageIO;
+
 public class App extends Application {
+	
+	
+	private static final String MAIN_FXML = "/fxml/MainToDo.fxml";
+	private static final String MAIN_STYLE = "/styles/styles.css";
+	private static final String ICON_TRAY = "/images/ic_thetodo.jpg";
+	
+	private Stage primaryStage;
 
 	public static void main(String[] args) throws Exception {
 		launch(args);
@@ -53,14 +59,18 @@ public class App extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		String fxmlFile = "/fxml/MainToDo.fxml";
+		this.primaryStage = stage;
+		Platform.setImplicitExit(false);
+		javax.swing.SwingUtilities.invokeLater(this::addAppToTray);
+		
+		primaryStage.initStyle(StageStyle.UNDECORATED);
 
 		FXMLLoader loader = new FXMLLoader();
 		Parent rootNode = (Parent) loader.load(getClass().getResourceAsStream(
-				fxmlFile));
+				MAIN_FXML));
 
 		Scene scene = new Scene(rootNode, 800, 600);
-		scene.getStylesheets().add("/styles/styles.css");
+		scene.getStylesheets().add(MAIN_STYLE);
 
 		final MainToDoController control = loader.getController();
 		scene.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
@@ -69,10 +79,71 @@ public class App extends Application {
 				control.processKeyEvents(event);
 			}
 		});
+		
+		primaryStage.focusedProperty().addListener(new ChangeListener<Boolean>() {
+		    @Override
+		    public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) {
+		        if (t && !t1) {
+		        	//primaryStage.setIconified(true);
+		        	primaryStage.hide();
+		        }
+		    }
+		});
 
-		stage.setTitle("TheTODO");
-		stage.setScene(scene);
-		stage.show();
+		primaryStage.setTitle("TheTODO");
+		primaryStage.setScene(scene);
+		primaryStage.show();
 
+	}
+	
+	private void addAppToTray() {
+		try {
+			java.awt.Toolkit.getDefaultToolkit();
+
+			if (!java.awt.SystemTray.isSupported()) {
+				System.out.println("System tray is not supported.");
+				Platform.exit();
+			}
+
+			java.awt.SystemTray tray = java.awt.SystemTray.getSystemTray();
+			java.awt.Image image = ImageIO.read(getClass().getResourceAsStream(
+					ICON_TRAY));
+			java.awt.TrayIcon trayIcon = new java.awt.TrayIcon(image);
+
+			trayIcon.addActionListener(event -> Platform
+					.runLater(this::showStage));
+
+			java.awt.MenuItem openItem = new java.awt.MenuItem("hello, world");
+			openItem.addActionListener(event -> Platform
+					.runLater(this::showStage));
+
+			java.awt.Font defaultFont = java.awt.Font.decode(null);
+			java.awt.Font boldFont = defaultFont.deriveFont(java.awt.Font.BOLD);
+			openItem.setFont(boldFont);
+
+			java.awt.MenuItem exitItem = new java.awt.MenuItem("Quit");
+			exitItem.addActionListener(event -> {
+				Platform.exit();
+				tray.remove(trayIcon);
+			});
+
+			final java.awt.PopupMenu popup = new java.awt.PopupMenu();
+			popup.add(openItem);
+			popup.addSeparator();
+			popup.add(exitItem);
+			trayIcon.setPopupMenu(popup);
+
+			tray.add(trayIcon);
+		} catch (java.awt.AWTException | IOException e) {
+			System.out.println("Unable to init system tray");
+			e.printStackTrace();
+		}
+	}
+
+	private void showStage() {
+		if (primaryStage != null) {
+			primaryStage.show();
+			primaryStage.toFront();
+		}
 	}
 }
