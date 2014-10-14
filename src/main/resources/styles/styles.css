@@ -26,6 +26,7 @@
  * THE SOFTWARE.
  */
 
+/* mainLabel unused for now */
 #mainLabel {
 	-fx-background-color:  #333333;
 	-fx-font-size: 14;
@@ -51,6 +52,7 @@
 	-fx-background-color: grey;
 	-fx-border-style: dashed;
 	-fx-text-fill: white;
+	-fx-opacity: 0;
 }
 
 #mainScrollpane {

@@ -37,6 +37,7 @@ import java.util.List;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -56,7 +57,7 @@ public class MainToDoController {
 			KeyCode.LEFT, KeyCode.RIGHT };
 
 	@FXML
-	private Label mainLabel, promptLabel;
+	private Label promptLabel;
 	@FXML
 	private VBox mainVBox;
 	@FXML
@@ -84,36 +85,45 @@ public class MainToDoController {
 
 		fadeOut = new FadeTransition(Duration.millis(3000), promptLabel);
 		appLogic = new Logic();
-
-		updateUI(dateFormat.format(date), appLogic.getTodoList());
+		updateUI(appLogic.getTodoList());
 	}
 
 	public void processInput() {
-
 		String userInput = mainInput.getText();
 
-		mainInput.clear();
-		mainVBox.getChildren().clear();
-
 		CommandStatus status = appLogic.processCommand(userInput);
-		updateUI(status.getMessage(), appLogic.getTodoList());
-		showPrompt(status.getMessage());
+
+		switch (status.getStatus()) {
+		case SUCCESS:
+			updateUI(appLogic.getTodoList());
+			showPrompt(status.getMessage());
+			break;
+
+		case ERROR:
+			// Fallthrough
+
+		case INVALID:
+			// Fallthrough
+
+		default:
+			showPrompt(status.getMessage());
+			break;
+		}
 	}
 
 	public void showPrompt(String str) {
-		promptLabel.setVisible(true);
-		promptLabel.setText(str);
+		if (!str.isEmpty()) {
+			promptLabel.setText(str);
+			promptLabel.setOpacity(1);
 
-		fadeOut.setToValue(0.0);
-		fadeOut.playFromStart();
+			fadeOut.setToValue(0.0);
+			fadeOut.playFromStart();
+		}
 	}
 
-	/**
-	 * @param label
-	 *            Text to be displayed by mainLabel
-	 */
-	public void updateUI(String label) {
-		mainLabel.setText(label);
+	public void clearUI() {
+		mainInput.clear();
+		mainVBox.getChildren().clear();
 	}
 
 	/**
@@ -122,26 +132,29 @@ public class MainToDoController {
 	 * @param todoItems
 	 *            List of ToDo to be displayed in mainVbox
 	 */
-	public void updateUI(String label, List<ToDo> todoItems) {
-		updateUI(label);
+	public void updateUI(List<ToDo> todoItems) {
+		clearUI();
+
+		ArrayList<Node> contentsToDisplay = new ArrayList<Node>();
 
 		if (todoItems.isEmpty()) {
-			return;
-		}
-
-		ArrayList<ToDoContainer> itemsList = new ArrayList<ToDoContainer>();
-		int index = 1;
-		for (ToDo todo : todoItems) {
-			try {
-				ToDoContainer temp = new ToDoContainer(index, todo);
-				itemsList.add(temp);
-				index++;
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			Label temp = new Label("No items to show.");
+			contentsToDisplay.add(temp);
+		} else {
+			// Implement main label here (Date-ToDo, search, view)
+			int index = 1;
+			for (ToDo todo : todoItems) {
+				try {
+					ToDoContainer temp = new ToDoContainer(index, todo);
+					contentsToDisplay.add(temp);
+					index++;
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
-		mainVBox.getChildren().setAll(itemsList);
+		mainVBox.getChildren().setAll(contentsToDisplay);
 	}
 
 	public void minimizeWindow() {
