@@ -35,7 +35,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 
-import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 
 import com.the.todo.model.ToDo;
 
@@ -83,7 +83,7 @@ public class ToDoContainer extends AnchorPane {
 		todoTitle.setText(title);
 	}
 
-	private void setDate(LocalDate date) {
+	private void setDate(LocalDateTime date) {
 		if (date != null)
 			todoDate.setText(date.toString());
 	}

@@ -31,7 +31,7 @@ package com.the.todo.command;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 
 import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
@@ -95,7 +95,7 @@ public class ToDoEdit extends ToDoCommand {
 	private ToDo editToDo(ToDo todo, String input) {
 		String category = CategoryParser.parse(input);
 		String title = CategoryParser.removeCategory(input, category);
-		LocalDate date = DateParser.parseDate(title);
+		LocalDateTime date = DateParser.parseDate(title);
 		
 		if (DateParser.parseDate(todo.getTitle()) == null) {
 			if (date != null && !checkSpaces(title)) {

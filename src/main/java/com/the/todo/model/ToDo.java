@@ -28,27 +28,27 @@
 
 package com.the.todo.model;
 
-import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 
 public class ToDo {
 
 	private String title;
 	private String description;
 	private String category;
-	private LocalDate startDate;
-	private LocalDate endDate;
+	private LocalDateTime startDate;
+	private LocalDateTime endDate;
 	private boolean completed;
 	private boolean deleted;
-	
+
 	public ToDo() {
 		this("");
 	}
-	
- 	public ToDo(String title) {
+
+	public ToDo(String title) {
 		this.title = title;
 		this.completed = false;
 		this.deleted = false;
- 	}
+	}
 
 	public String getTitle() {
 		return title;
@@ -74,19 +74,19 @@ public class ToDo {
 		this.category = category;
 	}
 
-	public LocalDate getStartDate() {
+	public LocalDateTime getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(LocalDate startDate) {
+	public void setStartDate(LocalDateTime startDate) {
 		this.startDate = startDate;
 	}
 
-	public LocalDate getEndDate() {
+	public LocalDateTime getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(LocalDate endDate) {
+	public void setEndDate(LocalDateTime endDate) {
 		this.endDate = endDate;
 	}
 
@@ -97,7 +97,7 @@ public class ToDo {
 	public void setCompleted(boolean completed) {
 		this.completed = completed;
 	}
-	
+
 	public boolean isDeleted() {
 		return deleted;
 	}
@@ -105,7 +105,7 @@ public class ToDo {
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "ToDo [title=" + title + ", category=" + category

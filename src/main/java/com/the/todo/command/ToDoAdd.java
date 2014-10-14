@@ -28,7 +28,7 @@
 
 package com.the.todo.command;
 
-import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 
 import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
@@ -76,7 +76,7 @@ public class ToDoAdd extends ToDoCommand {
 		
 		String category = CategoryParser.parse(input);
 		String title = CategoryParser.removeCategory(input, category);
-		LocalDate date = DateParser.parseDate(input);
+		LocalDateTime date = DateParser.parseDate(input);
 
 		todo.setTitle(title);
 		todo.setCategory(category);

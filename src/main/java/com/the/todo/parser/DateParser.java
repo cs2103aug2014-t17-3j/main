@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
@@ -45,8 +45,8 @@ public class DateParser {
 			"MMMMM d yyyy", "d MMMMM yyyy", "MMMMM d", "d MMMMM", "MM/dd/yyyy" };
 	private static boolean isValid = false;
 
-	public static LocalDate parseDate(String userInput) {
-		LocalDate date = null;
+	public static LocalDateTime parseDate(String userInput) {
+		LocalDateTime date = null;
 		if (userInput.isEmpty()) {
 			return date;
 		}
@@ -58,13 +58,13 @@ public class DateParser {
 		return date;
 	}
 
-	private static LocalDate formatParse(String userInput) {
-		LocalDate date = null;
+	private static LocalDateTime formatParse(String userInput) {
+		LocalDateTime date = null;
 		for (String input : userInput.split(" ")) {
 			for (String format : DateParser.date_formats) {
 				try {
 					DateTimeFormatter dtf = DateTimeFormat.forPattern(format);
-					date = dtf.parseLocalDate(input);
+					date = dtf.parseLocalDateTime(input);
 					isValid = true;
 				} catch (Exception ex) {
 					isValid = false;
@@ -84,14 +84,14 @@ public class DateParser {
 		return groups.get(0).getText();
 	}
 
-	private static LocalDate prettyTimeParse(String userInput) {
+	private static LocalDateTime prettyTimeParse(String userInput) {
 		List<DateGroup> groups = new PrettyTimeParser().parseSyntax(userInput);
 
 		if (groups.size() == 0) {
 			return null;
 		}
 
-		LocalDate date = new LocalDate(groups.get(0).getDates().get(0));
+		LocalDateTime date = new LocalDateTime(groups.get(0).getDates().get(0));
 		return date;
 	}
 
