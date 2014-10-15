@@ -42,7 +42,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
@@ -100,6 +99,7 @@ public class MainToDoController {
 		processInput(userInput);
 		
 	}
+	//override
 	public void processInput(String userInput){ 
 		CommandStatus status = appLogic.processCommand(userInput);
 
@@ -166,11 +166,9 @@ public class MainToDoController {
 						@Override
 				        public void changed(ObservableValue<? extends String> ov,
 				            String old_val, String new_val) {
-				        	checkedStatus.set(new_val); 	
-				        //	processInput("Complete"+checkedStatus.
+				        	checkedStatus.set(new_val);
 				        	showPrompt(checkedStatus.toString());
-				        	//i.add(checkedStatus.toString().charAt(23));
-				        	processInput("complete " + checkedStatus.toString().charAt(23));
+				        	processInput("complete " + checkedStatus.toString().charAt(checkedStatus.toString().length()-2));
 				        }
 				    });
 					
@@ -184,9 +182,7 @@ public class MainToDoController {
 			}
 		}
 	mainVBox.getChildren().setAll(contentsToDisplay);	
-	ArrayList<Integer> arr = new ArrayList<Integer>(); 
-	
-	
+		
 
 	
 	
