@@ -36,14 +36,20 @@ import java.util.List;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -59,14 +65,15 @@ public class MainToDoController {
 	@FXML
 	private Label promptLabel;
 	@FXML
-	private VBox mainVBox;
+	private VBox mainVBox,bbb;
+	private HBox hBox;
 	@FXML
 	private TextField mainInput;
 	@FXML
 	private ScrollPane mainScrollpane;
 	@FXML
 	private Button minimizeButton;
-
+	private AnchorPane anPane;
 	private static Logic appLogic;
 
 	private FadeTransition fadeOut;
@@ -90,7 +97,10 @@ public class MainToDoController {
 
 	public void processInput() {
 		String userInput = mainInput.getText();
-
+		processInput(userInput);
+		
+	}
+	public void processInput(String userInput){ 
 		CommandStatus status = appLogic.processCommand(userInput);
 
 		switch (status.getStatus()) {
@@ -134,28 +144,56 @@ public class MainToDoController {
 	 */
 	public void updateUI(List<ToDo> todoItems) {
 		clearUI();
-
+		int index = 1;
+		
+		
 		ArrayList<Node> contentsToDisplay = new ArrayList<Node>();
+		ArrayList<Character> i= new ArrayList<Character>();
 
 		if (todoItems.isEmpty()) {
 			Label temp = new Label("No items to show.");
 			contentsToDisplay.add(temp);
 		} else {
 			// Implement main label here (Date-ToDo, search, view)
-			int index = 1;
+		
+			
 			for (ToDo todo : todoItems) {
 				try {
+					SimpleStringProperty checkedStatus= new SimpleStringProperty("");
 					ToDoContainer temp = new ToDoContainer(index, todo);
 					contentsToDisplay.add(temp);
+					temp.getCheckedStatus().addListener(new ChangeListener<String>() {
+						@Override
+				        public void changed(ObservableValue<? extends String> ov,
+				            String old_val, String new_val) {
+				        	checkedStatus.set(new_val); 	
+				        //	processInput("Complete"+checkedStatus.
+				        	showPrompt(checkedStatus.toString());
+				        	//i.add(checkedStatus.toString().charAt(23));
+				        	processInput("complete " + checkedStatus.toString().charAt(23));
+				        }
+				    });
+					
+					
 					index++;
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				
 			}
 		}
-		mainVBox.getChildren().setAll(contentsToDisplay);
-	}
+	mainVBox.getChildren().setAll(contentsToDisplay);	
+	ArrayList<Integer> arr = new ArrayList<Integer>(); 
+	
+	
+
+	
+	
+}
+	
+	
+	
 
 	public void minimizeWindow() {
 		Stage stage = (Stage) minimizeButton.getScene().getWindow();
@@ -174,7 +212,7 @@ public class MainToDoController {
 				 * (keyevent.getCode() == KeyCode.DOWN) {
 				 * mainScrollpane.setVvalue(mainScrollpane.getVvalue()+1); }
 				 */
-				promptLabel.setVisible(false);
+				
 				keyevent.consume();
 				break;
 			}
