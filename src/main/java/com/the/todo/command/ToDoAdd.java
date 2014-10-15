@@ -28,6 +28,11 @@
 
 package com.the.todo.command;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 
 import com.the.todo.command.CommandStatus.Status;
@@ -73,18 +78,49 @@ public class ToDoAdd extends ToDoCommand {
 
 	private ToDo createToDo(String input) {
 		ToDo todo = new ToDo();
+		StringTokenizer st = new StringTokenizer(input, " ");
+		LocalDateTime date;
+		List<String> splitArr = new LinkedList<String>();
 		
+		if(input.length() == 0) {
+			return null;
+		}
+		while (st.hasMoreTokens()) {
+			splitArr.add(st.nextToken());
+		}
+		System.out.println(splitArr);
+		for(int i = 0; i < splitArr.size(); i++) {
+			String searchWord = splitArr.get(i);
+			if(searchWord.contains("from")) {
+				date = DateParser.parseDate(splitArr.get(i+1));
+				if(date !=null) {
+					if(splitArr.get(i+2).contains("to")) {
+						todo.setStartDate(date);
+						date = DateParser.parseDate(splitArr.get(i+3));
+						todo.setEndDate(date);
+						input = input.replace(splitArr.get(i+3), "");
+						input = input.replace("to", "");
+						input = input.replace(splitArr.get(i+1), "");
+						input = input.replace("from", "");
+					}else {
+						todo.setEndDate(date);
+					}
+				}
+			}else if(searchWord.contains("on")){
+				date = DateParser.parseDate(splitArr.get(i+1));
+				if(date != null) {
+					todo.setEndDate(date);
+					input = input.replace(splitArr.get(i+1), "");
+					input = input.replace("on", "");
+				}
+			}
+		}
 		String category = CategoryParser.parse(input);
-		String title = CategoryParser.removeCategory(input, category);
-		LocalDateTime date = DateParser.parseDate(input);
+		String title = CategoryParser.removeCategory(input, category).trim();
 
 		todo.setTitle(title);
 		todo.setCategory(category);
-		if (date != null) {
-			todo.setEndDate(date);
-		}
 
 		return todo;
 	}
-
 }

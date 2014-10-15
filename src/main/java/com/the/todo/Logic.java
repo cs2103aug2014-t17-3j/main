@@ -125,7 +125,8 @@ public class Logic {
 		System.out.println("-----------------------------");
 		for (ToDo todo : todoStorage.getAll()) {
 			System.out.println("Title: " + todo.getTitle());
-			System.out.println("Date: " + todo.getEndDate());
+			System.out.println("Start Date: " + todo.getStartDate());
+			System.out.println("End Date: " + todo.getEndDate());
 			System.out.println("Category: " + todo.getCategory());
 			System.out.println("Completed: " + todo.isCompleted());
 			System.out.println("Delete: " + todo.isDeleted());
