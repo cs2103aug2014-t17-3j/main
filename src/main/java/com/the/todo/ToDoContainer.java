@@ -30,8 +30,12 @@ package com.the.todo;
 
 import java.io.IOException;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 
@@ -49,15 +53,20 @@ public class ToDoContainer extends AnchorPane {
 	private Label todoDate;
 	@FXML
 	private Label todoMisc;
+	@FXML 
+	private CheckBox completeChkBox; 
 
 	public ToDoContainer() {
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(
 				"/fxml/todoContainer.fxml"));
 		fxmlLoader.setRoot(this);
 		fxmlLoader.setController(this);
+		//super.setPrefWidth(1000);
+		
 
 		try {
 			fxmlLoader.load();
+			
 		} catch (IOException exception) {
 			throw new RuntimeException(exception);
 		}
@@ -71,6 +80,7 @@ public class ToDoContainer extends AnchorPane {
 			setID(id);
 			setTitle(todo.getTitle());
 			setDate(todo.getEndDate());
+			setComplete(todo.isCompleted());
 		}
 
 	}
@@ -91,6 +101,14 @@ public class ToDoContainer extends AnchorPane {
 	private void setMisc(String misc) {
 		todoMisc.setText(misc);
 	}
+	private void setComplete(Boolean isCompleted){
+		if(isCompleted){
+			completeChkBox.setSelected(true);
+			this.setDisable(true);
+		} 
+		else 
+			completeChkBox.setSelected(false);
+	}
 
 	/**
 	 * Checks whether a given ToDo object is valid. A ToDo is valid only if its
@@ -106,4 +124,5 @@ public class ToDoContainer extends AnchorPane {
 
 		return true;
 	}
+	
 }

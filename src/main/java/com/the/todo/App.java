@@ -50,6 +50,8 @@ public class App extends Application {
 	private static final String MAIN_FXML = "/fxml/MainToDo.fxml";
 	private static final String MAIN_STYLE = "/styles/styles.css";
 	private static final String ICON_TRAY = "/images/ic_thetodo.jpg";
+	private static final int MAIN_FRAME_HEIGHT = 800;
+	private static final int MAIN_FRAME_WIDTH = 600;
 	
 	private Stage primaryStage;
 
@@ -69,7 +71,7 @@ public class App extends Application {
 		Parent rootNode = (Parent) loader.load(getClass().getResourceAsStream(
 				MAIN_FXML));
 
-		Scene scene = new Scene(rootNode, 800, 600);
+		Scene scene = new Scene(rootNode, MAIN_FRAME_HEIGHT, MAIN_FRAME_WIDTH);
 		scene.getStylesheets().add(MAIN_STYLE);
 
 		final MainToDoController control = loader.getController();
