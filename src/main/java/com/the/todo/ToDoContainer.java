@@ -61,8 +61,7 @@ public class ToDoContainer extends AnchorPane {
 				"/fxml/todoContainer.fxml"));
 		fxmlLoader.setRoot(this);
 		fxmlLoader.setController(this);
-		//super.setPrefWidth(1000);
-		
+			
 
 		try {
 			fxmlLoader.load();
