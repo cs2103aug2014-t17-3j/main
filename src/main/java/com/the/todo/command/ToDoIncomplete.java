@@ -29,7 +29,8 @@ public class ToDoIncomplete extends ToDoCommand{
 					EXECUTE_DOES_NOT_EXIST, ""));
 		}
 
-		this.todo = isCompleteToDo(this.todo);
+		this.todo = isIncompleteToDo(this.todo);
+		System.out.println("Im here");
 
 		if (this.todo == null) {
 			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
@@ -46,7 +47,7 @@ public class ToDoIncomplete extends ToDoCommand{
 		return null;
 	}
 	
-	private ToDo isCompleteToDo(ToDo todo) {
+	private ToDo isIncompleteToDo(ToDo todo) {
 		todo.setCompleted(false);
 		return todo;
 	}

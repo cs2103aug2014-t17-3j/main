@@ -36,7 +36,6 @@ import java.util.List;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -47,8 +46,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -59,20 +56,19 @@ import com.the.todo.model.ToDo;
 public class MainToDoController {
 
 	private static final KeyCode[] RESERVED_KEYS = { KeyCode.UP, KeyCode.DOWN,
-			KeyCode.LEFT, KeyCode.RIGHT };
+		KeyCode.LEFT, KeyCode.RIGHT };
 
 	@FXML
 	private Label promptLabel;
 	@FXML
-	private VBox mainVBox,bbb;
-	private HBox hBox;
+	private VBox mainVBox;	
 	@FXML
 	private TextField mainInput;
 	@FXML
 	private ScrollPane mainScrollpane;
 	@FXML
 	private Button minimizeButton;
-	private AnchorPane anPane;
+
 	private static Logic appLogic;
 
 	private FadeTransition fadeOut;
@@ -97,7 +93,7 @@ public class MainToDoController {
 	public void processInput() {
 		String userInput = mainInput.getText();
 		processInput(userInput);
-		
+
 	}
 	//override
 	public void processInput(String userInput){ 
@@ -145,8 +141,8 @@ public class MainToDoController {
 	public void updateUI(List<ToDo> todoItems) {
 		clearUI();
 		int index = 1;
-		
-		
+
+
 		ArrayList<Node> contentsToDisplay = new ArrayList<Node>();
 		ArrayList<Character> i= new ArrayList<Character>();
 
@@ -155,41 +151,37 @@ public class MainToDoController {
 			contentsToDisplay.add(temp);
 		} else {
 			// Implement main label here (Date-ToDo, search, view)
-		
-			
+
+
 			for (ToDo todo : todoItems) {
 				try {
-					SimpleStringProperty checkedStatus= new SimpleStringProperty("");
 					ToDoContainer temp = new ToDoContainer(index, todo);
 					contentsToDisplay.add(temp);
-					temp.getCheckedStatus().addListener(new ChangeListener<String>() {
+					temp.getCheckedProperty().addListener(new ChangeListener<Boolean>() {
 						@Override
-				        public void changed(ObservableValue<? extends String> ov,
-				            String old_val, String new_val) {
-				        	checkedStatus.set(new_val);
-				        	showPrompt(checkedStatus.toString());
-				        	processInput("complete " + checkedStatus.toString().charAt(checkedStatus.toString().length()-2));
-				        }
-				    });
-					
-					
+						public void changed(ObservableValue<? extends Boolean> ov,
+								Boolean old_val, Boolean new_val) {
+							if (new_val)						
+								processInput("complete " + temp.getID());
+							else 
+								processInput("incomplete "+ temp.getID());
+						}
+					});
+
 					index++;
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 			}
 		}
-	mainVBox.getChildren().setAll(contentsToDisplay);	
+		mainVBox.getChildren().setAll(contentsToDisplay);	
 		
+	}
 
-	
-	
-}
-	
-	
-	
+
+
 
 	public void minimizeWindow() {
 		Stage stage = (Stage) minimizeButton.getScene().getWindow();
@@ -208,7 +200,7 @@ public class MainToDoController {
 				 * (keyevent.getCode() == KeyCode.DOWN) {
 				 * mainScrollpane.setVvalue(mainScrollpane.getVvalue()+1); }
 				 */
-				
+
 				keyevent.consume();
 				break;
 			}
