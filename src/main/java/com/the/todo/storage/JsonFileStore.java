@@ -53,7 +53,7 @@ public class JsonFileStore implements ToDoStore {
 	
 	public JsonFileStore(String fileName) {
 		this.fileName = fileName;
-		this.gson = Converters.registerLocalDate(new GsonBuilder()).serializeNulls().create();
+		this.gson = Converters.registerLocalDateTime(new GsonBuilder()).serializeNulls().create();
 		this.store = readFromFile();
 	}
 
