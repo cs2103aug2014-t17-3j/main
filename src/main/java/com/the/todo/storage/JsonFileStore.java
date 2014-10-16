@@ -50,15 +50,16 @@ public class JsonFileStore implements ToDoStore {
 		this.store = new ArrayList<ToDo>();
 		this.fileName = null;
 	}
-	
+
 	public JsonFileStore(String fileName) {
 		this.fileName = fileName;
-		this.gson = Converters.registerLocalDateTime(new GsonBuilder()).serializeNulls().create();
+		this.gson = Converters.registerLocalDateTime(new GsonBuilder())
+				.serializeNulls().setPrettyPrinting().create();
 		this.store = readFromFile();
 	}
 
 	@Override
-	public List<ToDo> getAll() {		
+	public List<ToDo> getAll() {
 		return store;
 	}
 
@@ -71,7 +72,7 @@ public class JsonFileStore implements ToDoStore {
 	public List<ToDo> getAllUncompleted() {
 		return null;
 	}
-	
+
 	@Override
 	public ToDo get(ToDo todo) {
 		int index = store.indexOf(todo);
@@ -93,7 +94,7 @@ public class JsonFileStore implements ToDoStore {
 	public int count() {
 		return store.size();
 	}
-	
+
 	private List<ToDo> readFromFile() {
 		String contents = null;
 		try {
@@ -101,17 +102,18 @@ public class JsonFileStore implements ToDoStore {
 		} catch (IOException ex) {
 			System.out.println(ex.getMessage());
 		}
-		
+
 		if (contents.isEmpty()) {
 			return new ArrayList<ToDo>();
 		}
-		
-		Type collectionType = new TypeToken<List<ToDo>>() {}.getType();
+
+		Type collectionType = new TypeToken<List<ToDo>>() {
+		}.getType();
 		List<ToDo> todos = gson.fromJson(contents, collectionType);
-		
+
 		return todos;
 	}
-	
+
 	@Override
 	public void saveToFile() {
 		try {

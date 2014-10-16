@@ -32,15 +32,15 @@ import org.joda.time.LocalDateTime;
 
 public class ToDo implements Comparable<ToDo> {
 
+	public static final LocalDateTime INVALID_DATE = new LocalDateTime(Integer.MAX_VALUE);
+	
 	public static enum Type {
 		FLOATING, DEADLINE, TIMED
 	};
-
-	public static final LocalDateTime INVALID_DATE = new LocalDateTime(Integer.MAX_VALUE);
 	private static int nextId = 0; 
 
-	private Type type;
 	private int id;
+	private Type type;
 	private String title;
 	private String description;
 	private String category;
