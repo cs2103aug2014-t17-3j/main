@@ -28,10 +28,14 @@
 
 package com.the.todo.parser;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.joda.time.DateTimeFieldType;
+import org.joda.time.IllegalFieldValueException;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -40,11 +44,6 @@ import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 
 public class DateParser {
 
-	private static String[] date_formats = { "yyyy-MM-dd", "yyyy/MM/dd",
-			"dd/MM/yyyy", "dd-MM-yyyy", "yyyy MMMMM d", "yyyy d MMMMM",
-			"MMMMM d yyyy", "d MMMMM yyyy", "MMMMM d", "d MMMMM", "MM/dd/yyyy" };
-	private static boolean isValid = false;
-
 	public static LocalDateTime parseDate(String userInput) {
 		LocalDateTime date = null;
 		if (userInput.isEmpty()) {
@@ -52,6 +51,7 @@ public class DateParser {
 		}
 		if (checkDigits(userInput)) {
 			date = formatParse(userInput);
+			date = prettyTimeParse(date.toString());
 		} else {
 			date = prettyTimeParse(userInput);
 		}
@@ -60,27 +60,40 @@ public class DateParser {
 
 	private static LocalDateTime formatParse(String userInput) {
 		LocalDateTime date = null;
-		for (String input : userInput.split(" ")) {
-			for (String format : DateParser.date_formats) {
-				try {
-					DateTimeFormatter dtf = DateTimeFormat.forPattern(format);
-					date = dtf.parseLocalDateTime(input);
-					isValid = true;
-				} catch (Exception ex) {
-					isValid = false;
-				}
+		String editedDate = "";
+		StringTokenizer st;
+		int dashIndex = userInput.indexOf('-');
+		List<String> dateSplit = new ArrayList<String>();
+
+		if (dashIndex == -1) {
+			st = new StringTokenizer(userInput, "/");
+			while (st.hasMoreTokens()) {
+				dateSplit.add(st.nextToken());
 			}
+		} else {
+			st = new StringTokenizer(userInput, "-");
+			while (st.hasMoreTokens()) {
+				dateSplit.add(st.nextToken());
+			}
+		}
+		editedDate = dateSplit.get(2) + "/" + dateSplit.get(1) + "/"
+				+ dateSplit.get(0);
+		try {
+			date = LocalDateTime.parse(editedDate,
+					DateTimeFormat.forPattern("yyyy/MM/dd"));
+		} catch (IllegalFieldValueException e) {
+			throw new IllegalFieldValueException(DateTimeFieldType.era(), e.getMessage());
 		}
 		return date;
 	}
-	
+
 	public static String getRelativeDate(String userInput) {
 		List<DateGroup> groups = new PrettyTimeParser().parseSyntax(userInput);
-		
+
 		if (groups.size() == 0) {
 			return null;
 		}
-		
+
 		return groups.get(0).getText();
 	}
 
@@ -102,10 +115,6 @@ public class DateParser {
 			return true;
 		}
 		return false;
-	}
-	
-	public static boolean getIsValid(){
-		return isValid;
 	}
 
 }
