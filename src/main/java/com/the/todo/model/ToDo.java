@@ -30,24 +30,52 @@ package com.the.todo.model;
 
 import org.joda.time.LocalDateTime;
 
-public class ToDo {
+public class ToDo implements Comparable<ToDo> {
 
+	public static enum Type {
+		FLOATING, DEADLINE, TIMED
+	};
+
+	public static final LocalDateTime INVALID_DATE = new LocalDateTime(Integer.MAX_VALUE);
+	private static int nextId = 0; 
+
+	private Type type;
+	private int id;
 	private String title;
 	private String description;
 	private String category;
-	private LocalDateTime startDate;
-	private LocalDateTime endDate;
-	private boolean completed;
-	private boolean deleted;
+	private LocalDateTime startDate = INVALID_DATE;
+	private LocalDateTime endDate = INVALID_DATE;
+	private boolean completed = false;
+	private boolean deleted = false;
 
 	public ToDo() {
 		this("");
 	}
 
 	public ToDo(String title) {
+		this.type = Type.FLOATING;
+		this.id = nextId;
 		this.title = title;
-		this.completed = false;
-		this.deleted = false;
+		
+		nextId++;
+	}
+	
+	public ToDo(String title, LocalDateTime endDate) {
+		this(title);
+		this.type = Type.DEADLINE;
+		this.endDate = endDate;
+	}
+	
+	public ToDo(String title, LocalDateTime startDate, LocalDateTime endDate) {
+		this(title);
+		this.type = Type.TIMED;
+		this.startDate = startDate;
+		this.endDate = endDate;
+	}
+	
+	public int getId() {
+		return id;
 	}
 
 	public String getTitle() {
@@ -106,10 +134,72 @@ public class ToDo {
 		this.deleted = deleted;
 	}
 
+	public boolean isFloatingTask() {
+		if (this.type.equals(Type.FLOATING)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public boolean isTimedTask() {
+		if (this.type.equals(Type.TIMED)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public boolean isDeadlineTask() {
+		if (this.type.equals(Type.DEADLINE)) {
+			return true;
+		}
+
+		return false;
+	}
+
 	@Override
 	public String toString() {
 		return "ToDo [title=" + title + ", category=" + category
 				+ ", startDate=" + startDate + ", endDate=" + endDate
 				+ ", completed=" + completed + ", deleted=" + deleted + "]";
+	}
+
+	@Override
+	public int compareTo(ToDo todo) {
+
+		if (todo == null) {
+			throw new IllegalArgumentException();
+		}
+
+		if (this.isFloatingTask() && todo.isFloatingTask()) {
+			return this.getTitle().compareToIgnoreCase(todo.getTitle());
+		}
+
+		if (this.isFloatingTask()) {
+			return 1;
+		}
+
+		if (todo.isFloatingTask()) {
+			return -1;
+		}
+
+		LocalDateTime currentTaskDate = getDateToCompare(this);
+		LocalDateTime inputTaskDate = getDateToCompare(todo);
+
+		return currentTaskDate.compareTo(inputTaskDate);
+
+	}
+
+	private LocalDateTime getDateToCompare(ToDo todo) {
+		if (todo.isFloatingTask()) {
+			return ToDo.INVALID_DATE;
+		}
+
+		if (todo.isDeadlineTask()) {
+			return todo.getEndDate();
+		} else {
+			return todo.getStartDate();
+		}
 	}
 }
