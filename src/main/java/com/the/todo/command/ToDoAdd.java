@@ -28,12 +28,10 @@
 
 package com.the.todo.command;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.StringTokenizer;
 
-import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
+import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 
 import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
@@ -46,6 +44,10 @@ public class ToDoAdd extends ToDoCommand {
 	private static final String EXECUTE_ILLEGAL_ARGUMENT = "Mmm ... Seems like you are missing some argument.";
 	private static final String EXECUTE_ERROR = "An error occured while adding ToDo.";
 	private static final String EXECUTE_SUCCESS = "A great success adding ToDo: %s";
+
+	private static enum TaskType {
+		FLOATTASK, TIMETASK, DATETASK
+	};
 
 	ToDoStore todoStorage;
 	ToDo todo;
@@ -77,50 +79,96 @@ public class ToDoAdd extends ToDoCommand {
 	}
 
 	private ToDo createToDo(String input) {
-		ToDo todo = new ToDo();
-		StringTokenizer st = new StringTokenizer(input, " ");
-		LocalDateTime date;
-		List<String> splitArr = new LinkedList<String>();
-		
-		if(input.length() == 0) {
-			return null;
-		}
-		while (st.hasMoreTokens()) {
-			splitArr.add(st.nextToken());
-		}
-		System.out.println(splitArr);
-		for(int i = 0; i < splitArr.size(); i++) {
-			String searchWord = splitArr.get(i);
-			if(searchWord.contains("from")) {
-				date = DateParser.parseDate(splitArr.get(i+1));
-				if(date !=null) {
-					if(splitArr.get(i+2).contains("to")) {
-						todo.setStartDate(date);
-						date = DateParser.parseDate(splitArr.get(i+3));
-						todo.setEndDate(date);
-						input = input.replace(splitArr.get(i+3), "");
-						input = input.replace("to", "");
-						input = input.replace(splitArr.get(i+1), "");
-						input = input.replace("from", "");
-					}else {
-						todo.setEndDate(date);
-					}
-				}
-			}else if(searchWord.contains("on")){
-				date = DateParser.parseDate(splitArr.get(i+1));
-				if(date != null) {
-					todo.setEndDate(date);
-					input = input.replace(splitArr.get(i+1), "");
-					input = input.replace("on", "");
-				}
-			}
-		}
 		String category = CategoryParser.parse(input);
 		String title = CategoryParser.removeCategory(input, category).trim();
+		String[] splitArr = input.split(" ");
+		List<DateGroup> groups = null;
+		boolean validFormatDate = false;
+		for (int i = 0; i < splitArr.length; i++) {
+			validFormatDate = DateParser.checkDigits(splitArr[i]);
+			if (validFormatDate == true) {
+				groups = DateParser.parseDate(splitArr[i]);
+			}
+		}
+		TaskType typeOfTask = checkChangeTaskType(groups);
+		LocalDateTime endDate;
+		LocalDateTime startDate;
 
+		switch (typeOfTask) {
+		case FLOATTASK:
+			break;
+		case TIMETASK:
+			endDate = new LocalDateTime(groups.get(0).getDates().get(0));
+			break;
+		case DATETASK:
+			startDate = new LocalDateTime(groups.get(0).getDates().get(0));
+			endDate = new LocalDateTime(groups.get(0).getDates().get(1));
+			break;
+		}
+		// ToDo todo = new ToDo(......) create new ToDo object new model
 		todo.setTitle(title);
 		todo.setCategory(category);
 
 		return todo;
 	}
+
+	private TaskType checkChangeTaskType(List<DateGroup> groups) {
+
+		if (groups.size() == 0) {
+			return TaskType.FLOATTASK;
+		} else if (groups.size() == 1) {
+			return TaskType.TIMETASK;
+		} else {
+			return TaskType.DATETASK;
+		}
+
+	}
+
+	// private ToDo createToDo(String input) {
+	// ToDo todo = new ToDo();
+	// StringTokenizer st = new StringTokenizer(input, " ");
+	// LocalDateTime date;
+	// List<String> splitArr = new LinkedList<String>();
+	//
+	// if(input.length() == 0) {
+	// return null;
+	// }
+	// while (st.hasMoreTokens()) {
+	// splitArr.add(st.nextToken());
+	// }
+	// System.out.println(splitArr);
+	// for(int i = 0; i < splitArr.size(); i++) {
+	// String searchWord = splitArr.get(i);
+	// if(searchWord.contains("from")) {
+	// date = DateParser.parseDate(splitArr.get(i+1));
+	// if(date !=null) {
+	// if(splitArr.get(i+2).contains("to")) {
+	// todo.setStartDate(date);
+	// date = DateParser.parseDate(splitArr.get(i+3));
+	// todo.setEndDate(date);
+	// input = input.replace(splitArr.get(i+3), "");
+	// input = input.replace("to", "");
+	// input = input.replace(splitArr.get(i+1), "");
+	// input = input.replace("from", "");
+	// }else {
+	// todo.setEndDate(date);
+	// }
+	// }
+	// }else if(searchWord.contains("on")){
+	// date = DateParser.parseDate(splitArr.get(i+1));
+	// if(date != null) {
+	// todo.setEndDate(date);
+	// input = input.replace(splitArr.get(i+1), "");
+	// input = input.replace("on", "");
+	// }
+	// }
+	// }
+	// String category = CategoryParser.parse(input);
+	// String title = CategoryParser.removeCategory(input, category).trim();
+	//
+	// todo.setTitle(title);
+	// todo.setCategory(category);
+	//
+	// return todo;
+	// }
 }

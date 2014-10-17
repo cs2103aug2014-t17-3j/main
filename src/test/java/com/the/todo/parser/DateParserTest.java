@@ -33,37 +33,46 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
+import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 
 public class DateParserTest {
 
-	private LocalDate date = null;
-	private LocalDate expectedDate = null;
+	private LocalDateTime date = null;
+	List<DateGroup> groups = null;
+	private LocalDateTime expectedDate = null;
 
 	@Test
 	public void dateTest() {
 		assertNull(DateParser.parseDate(""));
 
-		date = DateParser.parseDate("study on 29/9/2014").toLocalDate();
-		expectedDate = new LocalDate(2014, 9, 29);
+		groups = DateParser.parseDate("study on 29/9/2014");
+		date = new LocalDateTime(groups.get(0).getDates().get(0));
+		expectedDate = new LocalDateTime(2014, 9, 29, 0, 0);
 		assertEquals(expectedDate, date);
 
-		date = DateParser.parseDate("study on 2016/2/15").toLocalDate();
-		expectedDate = new LocalDate(2016, 2, 15);
+		groups = DateParser.parseDate("study on 2016/2/15");
+		date = new LocalDateTime(groups.get(0).getDates().get(0));
+		expectedDate = new LocalDateTime(2016, 2, 15, 0, 0);
 		assertEquals(expectedDate, date);
 
-		date = DateParser.parseDate("study on 11/28/2014").toLocalDate();
-		expectedDate = new LocalDate(2014, 11, 28);
+		groups = DateParser.parseDate("study on 11/28/2014");
+		date = new LocalDateTime(groups.get(0).getDates().get(0));
+		expectedDate = new LocalDateTime(2014, 11, 28, 0, 0);
 		assertEquals(expectedDate, date);
 
-		date = DateParser.parseDate("study on Christmas").toLocalDate();
-		expectedDate = new LocalDate(2014, 12, 25);
+		groups = DateParser.parseDate("study on Christmas");
+		date = new LocalDateTime(groups.get(0).getDates().get(0));
+		expectedDate = new LocalDateTime(2014, 12, 25, 0, 0);
 		assertEquals(expectedDate, date);
 
-		date = DateParser.parseDate("easter study").toLocalDate();
-		expectedDate = new LocalDate(2015, 4, 5);
+		groups = DateParser.parseDate("easter study");
+		date = new LocalDateTime(groups.get(0).getDates().get(0));
+		expectedDate = new LocalDateTime(2015, 4, 5, 0, 0);
 		assertEquals(expectedDate, date);
 	}
 	
