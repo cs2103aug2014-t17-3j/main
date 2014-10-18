@@ -35,8 +35,10 @@ import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 
 import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
+import com.the.todo.model.ToDo.Type;
 import com.the.todo.parser.CategoryParser;
 import com.the.todo.parser.DateParser;
+import com.the.todo.parser.exception.InvalidDateException;
 import com.the.todo.storage.ToDoStore;
 
 public class ToDoAdd extends ToDoCommand {
@@ -44,10 +46,6 @@ public class ToDoAdd extends ToDoCommand {
 	private static final String EXECUTE_ILLEGAL_ARGUMENT = "Mmm ... Seems like you are missing some argument.";
 	private static final String EXECUTE_ERROR = "An error occured while adding ToDo.";
 	private static final String EXECUTE_SUCCESS = "A great success adding ToDo: %s";
-
-	private static enum TaskType {
-		FLOATTASK, TIMETASK, DATETASK
-	};
 
 	ToDoStore todoStorage;
 	ToDo todo;
@@ -62,7 +60,11 @@ public class ToDoAdd extends ToDoCommand {
 
 	@Override
 	protected CommandStatus performExecute() {
-		todo = createToDo(input);
+		try {
+			todo = createToDo(input);
+		} catch (InvalidDateException e) {
+			return new CommandStatus(Status.ERROR, "Invalid date!");
+		}
 
 		if (todo == null) {
 			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
@@ -78,97 +80,57 @@ public class ToDoAdd extends ToDoCommand {
 		return new CommandStatus(Status.INVALID);
 	}
 
-	private ToDo createToDo(String input) {
+	private ToDo createToDo(String input) throws InvalidDateException {
+		ToDo.Type type;
 		String category = CategoryParser.parse(input);
 		String title = CategoryParser.removeCategory(input, category).trim();
-		String[] splitArr = input.split(" ");
-		List<DateGroup> groups = null;
-		boolean validFormatDate = false;
-		for (int i = 0; i < splitArr.length; i++) {
-			validFormatDate = DateParser.checkDigits(splitArr[i]);
-			if (validFormatDate == true) {
-				groups = DateParser.parseDate(splitArr[i]);
-			}
-		}
-		TaskType typeOfTask = checkChangeTaskType(groups);
-		LocalDateTime endDate;
-		LocalDateTime startDate;
+		List<DateGroup> dateGroup = DateParser.parse(title);
 
-		switch (typeOfTask) {
-		case FLOATTASK:
-			break;
-		case TIMETASK:
-			endDate = new LocalDateTime(groups.get(0).getDates().get(0));
-			break;
-		case DATETASK:
-			startDate = new LocalDateTime(groups.get(0).getDates().get(0));
-			endDate = new LocalDateTime(groups.get(0).getDates().get(1));
-			break;
-		}
-		// ToDo todo = new ToDo(......) create new ToDo object new model
-		todo.setTitle(title);
-		todo.setCategory(category);
+		type = getToDoType(dateGroup);
+		todo = createToDoType(type, title, dateGroup, category);
 
 		return todo;
 	}
 
-	private TaskType checkChangeTaskType(List<DateGroup> groups) {
+	private ToDo createToDoType(Type type, String title,
+			List<DateGroup> dateGroup, String category) {
+		ToDo todo = null;
 
-		if (groups.size() == 0) {
-			return TaskType.FLOATTASK;
-		} else if (groups.size() == 1) {
-			return TaskType.TIMETASK;
-		} else {
-			return TaskType.DATETASK;
+		switch (type) {
+		case FLOATING:
+			todo = new ToDo(title);
+			break;
+		case DEADLINE:
+			LocalDateTime dueDateTime = new LocalDateTime(dateGroup.get(0)
+					.getDates().get(0));
+			todo = new ToDo(title, dueDateTime);
+			break;
+		case TIMED:
+			LocalDateTime startDateTime = new LocalDateTime(dateGroup.get(0)
+					.getDates().get(0));
+			LocalDateTime endDateTime = new LocalDateTime(dateGroup.get(0)
+					.getDates().get(1));
+			todo = new ToDo(title, startDateTime, endDateTime);
+			break;
 		}
 
+		if (category != null) {
+			todo.setCategory(category);
+		}
+
+		return todo;
 	}
 
-	// private ToDo createToDo(String input) {
-	// ToDo todo = new ToDo();
-	// StringTokenizer st = new StringTokenizer(input, " ");
-	// LocalDateTime date;
-	// List<String> splitArr = new LinkedList<String>();
-	//
-	// if(input.length() == 0) {
-	// return null;
-	// }
-	// while (st.hasMoreTokens()) {
-	// splitArr.add(st.nextToken());
-	// }
-	// System.out.println(splitArr);
-	// for(int i = 0; i < splitArr.size(); i++) {
-	// String searchWord = splitArr.get(i);
-	// if(searchWord.contains("from")) {
-	// date = DateParser.parseDate(splitArr.get(i+1));
-	// if(date !=null) {
-	// if(splitArr.get(i+2).contains("to")) {
-	// todo.setStartDate(date);
-	// date = DateParser.parseDate(splitArr.get(i+3));
-	// todo.setEndDate(date);
-	// input = input.replace(splitArr.get(i+3), "");
-	// input = input.replace("to", "");
-	// input = input.replace(splitArr.get(i+1), "");
-	// input = input.replace("from", "");
-	// }else {
-	// todo.setEndDate(date);
-	// }
-	// }
-	// }else if(searchWord.contains("on")){
-	// date = DateParser.parseDate(splitArr.get(i+1));
-	// if(date != null) {
-	// todo.setEndDate(date);
-	// input = input.replace(splitArr.get(i+1), "");
-	// input = input.replace("on", "");
-	// }
-	// }
-	// }
-	// String category = CategoryParser.parse(input);
-	// String title = CategoryParser.removeCategory(input, category).trim();
-	//
-	// todo.setTitle(title);
-	// todo.setCategory(category);
-	//
-	// return todo;
-	// }
+	private Type getToDoType(List<DateGroup> dateGroup) {
+		if (dateGroup.size() == 0) {
+			return Type.FLOATING;
+		} else if (dateGroup.get(0).getDates().size() == 1) {
+			return Type.DEADLINE;
+		} else if (dateGroup.get(0).getDates().size() == 2) {
+			return Type.TIMED;
+		}
+
+		return Type.FLOATING;
+	}
+
 }

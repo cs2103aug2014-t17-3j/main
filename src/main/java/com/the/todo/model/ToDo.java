@@ -134,7 +134,7 @@ public class ToDo implements Comparable<ToDo> {
 		this.deleted = deleted;
 	}
 
-	public boolean isFloatingTask() {
+	public boolean isFloatingToDo() {
 		if (this.type.equals(Type.FLOATING)) {
 			return true;
 		}
@@ -142,7 +142,7 @@ public class ToDo implements Comparable<ToDo> {
 		return false;
 	}
 
-	public boolean isTimedTask() {
+	public boolean isTimedToDo() {
 		if (this.type.equals(Type.TIMED)) {
 			return true;
 		}
@@ -150,7 +150,7 @@ public class ToDo implements Comparable<ToDo> {
 		return false;
 	}
 
-	public boolean isDeadlineTask() {
+	public boolean isDeadlineToDo() {
 		if (this.type.equals(Type.DEADLINE)) {
 			return true;
 		}
@@ -172,15 +172,15 @@ public class ToDo implements Comparable<ToDo> {
 			throw new IllegalArgumentException();
 		}
 
-		if (this.isFloatingTask() && todo.isFloatingTask()) {
+		if (this.isFloatingToDo() && todo.isFloatingToDo()) {
 			return this.getTitle().compareToIgnoreCase(todo.getTitle());
 		}
 
-		if (this.isFloatingTask()) {
+		if (this.isFloatingToDo()) {
 			return 1;
 		}
 
-		if (todo.isFloatingTask()) {
+		if (todo.isFloatingToDo()) {
 			return -1;
 		}
 
@@ -192,11 +192,11 @@ public class ToDo implements Comparable<ToDo> {
 	}
 
 	private LocalDateTime getDateToCompare(ToDo todo) {
-		if (todo.isFloatingTask()) {
+		if (todo.isFloatingToDo()) {
 			return ToDo.INVALID_DATE;
 		}
 
-		if (todo.isDeadlineTask()) {
+		if (todo.isDeadlineToDo()) {
 			return todo.getEndDate();
 		} else {
 			return todo.getStartDate();
