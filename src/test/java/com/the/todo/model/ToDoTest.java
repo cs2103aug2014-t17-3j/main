@@ -14,7 +14,7 @@ public class ToDoTest {
 	public void testFloatingTask() {
 		todo = new ToDo("Test Floating Task!");
 		
-		assertTrue(todo.isFloatingTask());
+		assertTrue(todo.isFloatingToDo());
 		assertEquals("Test Floating Task!", todo.getTitle());
 	}
 	
@@ -22,7 +22,7 @@ public class ToDoTest {
 	public void testDeadlineTask() {
 		todo = new ToDo("Test Deadline Task!", new LocalDateTime());
 		
-		assertTrue(todo.isDeadlineTask());
+		assertTrue(todo.isDeadlineToDo());
 		assertEquals("Test Deadline Task!", todo.getTitle());
 	}
 	
@@ -30,7 +30,7 @@ public class ToDoTest {
 	public void testTimedTask() {
 		todo = new ToDo("Test Timed Task!", new LocalDateTime(), new LocalDateTime().plusDays(3));
 		
-		assertTrue(todo.isTimedTask());
+		assertTrue(todo.isTimedToDo());
 		assertEquals("Test Timed Task!", todo.getTitle());
 	}
 
