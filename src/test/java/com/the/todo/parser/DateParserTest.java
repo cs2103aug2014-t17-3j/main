@@ -76,6 +76,14 @@ public class DateParserTest {
 		assertEquals(expectedDate, date);
 	}
 	
+	@Test
+	public void changeDateStringsFormatTest() {
+		String expected = "study for exams from 2014/08/04 to 2014/08/30";
+		String actual = DateParser.changeDateStringsFormat("study for exams from 04/08/2014 to 30/08/2014");
+		
+		assertEquals(expected, actual);
+	}
+	
 //	@Test
 //	public void validTest(){
 //		date = DateParser.parseDate("study on 29/2/2015").toLocalDate();

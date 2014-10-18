@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.IllegalFieldValueException;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -44,9 +45,14 @@ import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 
 public class DateParser {
 
+	private static final DateTimeFormatter YEAR_MONTH_DAY = DateTimeFormat
+			.forPattern("yyyy/MM/dd");
+	private static final DateTimeFormatter DAY_MONTH_YEAR = DateTimeFormat
+			.forPattern("dd/MM/yyyy");
+
 	public static List<DateGroup> parseDate(String userInput) {
 		List<DateGroup> groups = null;
-		LocalDateTime date; 
+		LocalDateTime date;
 		if (userInput.isEmpty()) {
 			return null;
 		}
@@ -66,7 +72,7 @@ public class DateParser {
 		int dashIndex = userInput.indexOf('-');
 		List<String> dateSplit = new ArrayList<String>();
 
-		if (dashIndex== -1) {
+		if (dashIndex == -1) {
 			st = new StringTokenizer(userInput, "/");
 			while (st.hasMoreTokens()) {
 				dateSplit.add(st.nextToken());
@@ -106,7 +112,8 @@ public class DateParser {
 			return null;
 		}
 
-//		LocalDateTime date = new LocalDateTime(groups.get(0).getDates().get(0));
+		// LocalDateTime date = new
+		// LocalDateTime(groups.get(0).getDates().get(0));
 		return groups;
 	}
 
@@ -118,6 +125,22 @@ public class DateParser {
 			return true;
 		}
 		return false;
+	}
+
+	public static String changeDateStringsFormat(String input) {
+		String formattedInput = input;
+		Pattern pattern = Pattern
+				.compile("^(((((0[1-9])|(1\\d)|(2[0-8]))[\\/-]((0[1-9])|(1[0-2])))|((31[\\/-]((0[13578])|(1[02])))|((29|30)[\\/-]((0[1,3-9])|(1[0-2])))))[\\/-]((20[0-9][0-9])|(19[0-9][0-9])))|((29[\\/-]02[\\/-](19|20)(([02468][048])|([13579][26]))))$");
+		Matcher matcher = pattern.matcher(input);
+
+		while (matcher.find()) {
+			String matchedDate = matcher.group();
+			LocalDate date = LocalDate.parse(matchedDate, DAY_MONTH_YEAR);
+			formattedInput = formattedInput.replace(matchedDate, date.toString(YEAR_MONTH_DAY));
+			System.out.println(formattedInput);
+		}
+		
+		return formattedInput;
 	}
 
 }
