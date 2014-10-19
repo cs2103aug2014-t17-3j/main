@@ -38,4 +38,12 @@ public class StringUtil {
 		return input.trim().split(regex, limit);
 	}
 
+	/**
+	 * @param input
+	 * @return input with 1 leading and trailing whitespace
+	 */
+	public static String padString (String input){
+		String trimmedInput = input.trim();
+		return " " + trimmedInput + " ";
+	}
 }

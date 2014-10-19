@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,15 +37,16 @@ public class ToDoSearchTest {
 
 	@Test
 	public void test() {
-		searchTest("rem", "Lorem\r\n");
-		searchTest("test", "");
-		searchTest("sum dol", "ipsum dolor sit amet\r\n");
-		searchTest("or", "Lorem\r\n"
-				+ "ipsum dolor sit amet\r\n");
+		searchTest("or", "");
+		searchTest("Lorem", "Lorem\r\n");
+		searchTest("amet", "ipsum dolor sit amet\r\n");
+		searchTest("dolor sit", "ipsum dolor sit amet\r\n");
 	}
 
 	public void searchTest(String query, String expected) {
-		ToDoSearch test = new ToDoSearch(storeStub, query);
+		ArrayList<ToDo> updateListStub = new ArrayList<ToDo>();
+
+		ToDoSearch test = new ToDoSearch(storeStub, query, updateListStub);
 		test.execute();
 		assertEquals(expected, output.toString());
 		output.reset();
