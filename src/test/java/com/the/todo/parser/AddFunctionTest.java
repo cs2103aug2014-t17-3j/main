@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +35,7 @@ public class AddFunctionTest {
 
 	@Test
 	public void testAdd() {
-		LocalDate expectedDate = new LocalDate(2014, 11, 11);
+		LocalDateTime expectedDate = new LocalDateTime(2014, 11, 11, 23, 59);
 		appLogic.processCommand("add remember to get milk on 11/11/2014");
 		todoStorage = appLogic.getTodoStorage();
 
@@ -45,7 +46,7 @@ public class AddFunctionTest {
 
 	@Test
 	public void testAddCategory() {
-		LocalDate expectedDate = calcNextFriday(new LocalDate());
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
 		appLogic.processCommand("add remember to get present on Friday +Birthday");
 
 		assertEquals(2, todoStorage.count());
@@ -57,7 +58,7 @@ public class AddFunctionTest {
 
 	@Test
 	public void testAddCategoryRandomPlace1() {
-		LocalDate expectedDate = calcNextFriday(new LocalDate());
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
 		appLogic.processCommand("add remember to get present on Friday +Birthday");
 
 		assertEquals(2, todoStorage.count());
@@ -69,7 +70,7 @@ public class AddFunctionTest {
 
 	@Test
 	public void testAddCategoryRandomPlace2() {
-		LocalDate expectedDate = calcNextFriday(new LocalDate());
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
 		appLogic.processCommand("add remember to get present +Birthday on Friday");
 
 		assertEquals(2, todoStorage.count());
@@ -81,7 +82,7 @@ public class AddFunctionTest {
 
 	@Test
 	public void testAddCategoryRandomPlace3() {
-		LocalDate expectedDate = calcNextFriday(new LocalDate());
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
 		appLogic.processCommand("add +Birthday remember to get present on Friday");
 
 		assertEquals(2, todoStorage.count());
@@ -91,11 +92,11 @@ public class AddFunctionTest {
 		assertEquals("+Birthday", todoStorage.getAll().get(1).getCategory());
 	}
 	
-	private LocalDate calcNextFriday(LocalDate d) {
+	private LocalDateTime calcNextFriday(LocalDateTime d) {
 		if (d.getDayOfWeek() >= DateTimeConstants.FRIDAY) {
 			d = d.plusWeeks(1);
 		}
-		return d.withDayOfWeek(DateTimeConstants.FRIDAY);
+		return d.withDayOfWeek(DateTimeConstants.FRIDAY).withHourOfDay(23).withMinuteOfHour(59).withSecondOfMinute(0).withMillisOfSecond(0);
 	}
 
 }
