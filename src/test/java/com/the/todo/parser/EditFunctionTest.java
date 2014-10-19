@@ -1,12 +1,15 @@
 package com.the.todo.parser;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
+import java.util.List;
 
 import org.joda.time.DateTimeConstants;
-import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 
 import com.the.todo.Logic;
 import com.the.todo.io.FileHandler;
@@ -51,24 +54,26 @@ public class EditFunctionTest {
 	}
 
 	@Test
-	public void testUpdateStartDateNumberFormat() {
-		LocalDate expectedDate = DateParser.parseDate("29/09/2014");
+	public void testUpdateStartDateNumberFormat() throws Exception {
+		LocalDateTime expectedDate = new LocalDateTime(DateParser
+				.parse("29/09/2014").get(0).getDates().get(0));
 		appLogic.processCommand("edit 1 -startdate 29/09/2014");
 
 		assertEquals(1, todoStorage.count());
 		assertEquals(expectedDate, todoStorage.getAll().get(0).getStartDate());
 	}
-	
+
 	@Test
-	public void testUpdateStartDateRelativeDateFormat() {
-		LocalDate expectedDate = calcNextFriday(new LocalDate());
+	public void testUpdateStartDateRelativeDateFormat() throws Exception {
+		LocalDateTime expectedDate = new LocalDateTime(DateParser
+				.parse("friday").get(0).getDates().get(0));
 		appLogic.processCommand("edit 1 -startdate friday");
 
 		assertEquals(1, todoStorage.count());
 		assertEquals(expectedDate, todoStorage.getAll().get(0).getStartDate());
 	}
 
-/***********************************************edit 2 items*****************************************/
+	/*********************************************** edit 2 items *****************************************/
 	@Test
 	public void testUpdateTitleWithCategory() {
 		appLogic.processCommand("edit 1 -title CS2101 developer guide -category +test");
@@ -78,117 +83,126 @@ public class EditFunctionTest {
 				.getTitle());
 		assertEquals("+test", todoStorage.getAll().get(0).getCategory());
 	}
-	
+
 	@Test
-	public void testUpdateTitleWithStartDateNumberFormat() {
-		LocalDate expectedDate = DateParser.parseDate("30/03/2015");
+	public void testUpdateTitleWithStartDateNumberFormat() throws Exception {
+		LocalDateTime expectedDate = new LocalDateTime(DateParser
+				.parse("30/03/2015").get(0).getDates().get(0));
 		appLogic.processCommand("edit 1 -title Start Date Test -startdate 30/03/2015");
 
 		assertEquals(1, todoStorage.count());
-		assertEquals("Start Date Test", todoStorage.getAll().get(0)
-				.getTitle());
+		assertEquals("Start Date Test", todoStorage.getAll().get(0).getTitle());
 		assertEquals(expectedDate, todoStorage.getAll().get(0).getStartDate());
 	}
-	
+
 	@Test
-	public void testUpdateTitleWithStartDateRelativeFormat() {
-		LocalDate expectedDate = DateParser.parseDate("friday");
+	public void testUpdateTitleWithStartDateRelativeFormat() throws Exception {
+		LocalDateTime expectedDate = new LocalDateTime(DateParser
+				.parse("friday").get(0).getDates().get(0));
 		appLogic.processCommand("edit 1 -title Start Date Test(Relative Date) -startdate friday");
 
 		assertEquals(1, todoStorage.count());
-		assertEquals("Start Date Test(Relative Date)", todoStorage.getAll().get(0)
-				.getTitle());
+		assertEquals("Start Date Test(Relative Date)", todoStorage.getAll()
+				.get(0).getTitle());
 		assertEquals(expectedDate, todoStorage.getAll().get(0).getStartDate());
 	}
-	
+
 	@Test
-	public void testUpdateTitleWithEndDateNumberFormat() {
-		LocalDate expectedDate = DateParser.parseDate("25/05/2014");
+	public void testUpdateTitleWithEndDateNumberFormat() throws Exception {
+		LocalDateTime expectedDate = new LocalDateTime(DateParser
+				.parse("25/05/2014").get(0).getDates().get(0));
 		appLogic.processCommand("edit 1 -title End Date Test -enddate 25/05/2014");
 
 		assertEquals(1, todoStorage.count());
-		assertEquals("End Date Test", todoStorage.getAll().get(0)
-				.getTitle());
+		assertEquals("End Date Test", todoStorage.getAll().get(0).getTitle());
 		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
 	}
-	
+
 	@Test
-	public void testUpdateTitleWithEndDateRelativeFormat() {
-		LocalDate expectedDate = DateParser.parseDate("friday");
+	public void testUpdateTitleWithEndDateRelativeFormat() throws Exception {
+		LocalDateTime expectedDate = new LocalDateTime(DateParser
+				.parse("friday").get(0).getDates().get(0));
 		appLogic.processCommand("edit 1 -title End Date Test(Relative Date) -enddate friday");
 
 		assertEquals(1, todoStorage.count());
-		assertEquals("End Date Test(Relative Date)", todoStorage.getAll().get(0)
-				.getTitle());
+		assertEquals("End Date Test(Relative Date)", todoStorage.getAll()
+				.get(0).getTitle());
 		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
 	}
-	
+
 	@Test
-	public void testUpdateTitleWithStartAndEndDateRelativeFormat() {
-		LocalDate expectedDate1 = DateParser.parseDate("friday");
-		LocalDate expectedDate2 = DateParser.parseDate("tuesday");
+	public void testUpdateTitleWithStartAndEndDateRelativeFormat()
+			throws Exception {
+		LocalDateTime expectedDate1 = new LocalDateTime(DateParser
+				.parse("friday").get(0).getDates().get(0));
+		LocalDateTime expectedDate2 = new LocalDateTime(DateParser
+				.parse("tuesday").get(0).getDates().get(0));
+		
+		assertEquals(1, todoStorage.count());
+		
 		appLogic.processCommand("edit 1 -startdate tuesday -enddate friday");
 
 		assertEquals(1, todoStorage.count());
 		assertEquals(expectedDate2, todoStorage.getAll().get(0).getStartDate());
 		assertEquals(expectedDate1, todoStorage.getAll().get(0).getEndDate());
 	}
-	
+
 	@Test
-	public void testUpdateTitleWithStartAndEndDateNumberFormat() {
-		LocalDate expectedDate1 = DateParser.parseDate("25/05/2014");
-		LocalDate expectedDate2 = DateParser.parseDate("1/04/2014");
+	public void testUpdateTitleWithStartAndEndDateNumberFormat()
+			throws Exception {
+		LocalDateTime expectedDate1 = new LocalDateTime(DateParser
+				.parse("25/05/2014").get(0).getDates().get(0));
+		LocalDateTime expectedDate2 = new LocalDateTime(DateParser
+				.parse("1/04/2014").get(0).getDates().get(0));
 		appLogic.processCommand("edit 1 -startdate 1/04/2014 -enddate 25/05/2014");
 
 		assertEquals(1, todoStorage.count());
 		assertEquals(expectedDate2, todoStorage.getAll().get(0).getStartDate());
 		assertEquals(expectedDate1, todoStorage.getAll().get(0).getEndDate());
 	}
-/*************************************************edit 3 items*******************************************/
+
+	/************************************************* edit 3 items *******************************************/
 	@Test
-	public void testUpdateTitleWithCategoryAndStartDateNumberFormat() {
-		LocalDate expectedDate = DateParser.parseDate("25/05/2014");
+	public void testUpdateTitleWithCategoryAndStartDateNumberFormat()
+			throws Exception {
+		LocalDateTime expectedDate = new LocalDateTime(DateParser
+				.parse("25/05/2014").get(0).getDates().get(0));
 		appLogic.processCommand("edit 1 -title test 3 items -category +test -startdate 25/05/2014");
 
 		assertEquals(1, todoStorage.count());
-		assertEquals("test 3 items", todoStorage.getAll().get(0)
-				.getTitle());
+		assertEquals("test 3 items", todoStorage.getAll().get(0).getTitle());
 		assertEquals(expectedDate, todoStorage.getAll().get(0).getStartDate());
 		assertEquals("+test", todoStorage.getAll().get(0).getCategory());
 	}
-	
+
 	@Test
-	public void testUpdateTitleWithCategoryAndStartDateRelativeFormat() {
-		LocalDate expectedDate = DateParser.parseDate("friday");
+	public void testUpdateTitleWithCategoryAndStartDateRelativeFormat()
+			throws Exception {
+		LocalDateTime expectedDate = new LocalDateTime(DateParser
+				.parse("friday").get(0).getDates().get(0));
 		appLogic.processCommand("edit 1 -title test 3 items -category +test -startdate friday");
 
 		assertEquals(1, todoStorage.count());
-		assertEquals("test 3 items", todoStorage.getAll().get(0)
-				.getTitle());
+		assertEquals("test 3 items", todoStorage.getAll().get(0).getTitle());
 		assertEquals(expectedDate, todoStorage.getAll().get(0).getStartDate());
 		assertEquals("+test", todoStorage.getAll().get(0).getCategory());
 	}
-/*********************************************** edit 4 items*****************************************/
+
+	/*********************************************** edit 4 items *****************************************/
 	@Test
-	public void testUpdateTitleWithCategoryAndStartAndEndDateRelativeFormat() {
-		LocalDate expectedDate1 = DateParser.parseDate("25/05/2014");
-		LocalDate expectedDate2 = DateParser.parseDate("1/06/2014");
+	public void testUpdateTitleWithCategoryAndStartAndEndDateRelativeFormat()
+			throws Exception {
+		LocalDateTime expectedDate1 = new LocalDateTime(DateParser
+				.parse("25/05/2014").get(0).getDates().get(0));
+		LocalDateTime expectedDate2 = new LocalDateTime(DateParser
+				.parse("1/06/2014").get(0).getDates().get(0));
 		appLogic.processCommand("edit 1 -title test 3 items -category +test -startdate 25/05/2014 -enddate 1/06/2014");
 
 		assertEquals(1, todoStorage.count());
-		assertEquals("test 3 items", todoStorage.getAll().get(0)
-				.getTitle());
+		assertEquals("test 3 items", todoStorage.getAll().get(0).getTitle());
 		assertEquals(expectedDate1, todoStorage.getAll().get(0).getStartDate());
 		assertEquals(expectedDate2, todoStorage.getAll().get(0).getEndDate());
 		assertEquals("+test", todoStorage.getAll().get(0).getCategory());
-	}
-	
-	
-	private LocalDate calcNextFriday(LocalDate d) {
-		if (d.getDayOfWeek() >= DateTimeConstants.FRIDAY) {
-			d = d.plusWeeks(1);
-		}
-		return d.withDayOfWeek(DateTimeConstants.FRIDAY);
 	}
 
 }

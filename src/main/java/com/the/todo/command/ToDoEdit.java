@@ -38,6 +38,7 @@ import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
 import com.the.todo.parser.DateParser;
+import com.the.todo.parser.exception.InvalidDateException;
 import com.the.todo.storage.ToDoStore;
 import com.the.todo.util.StringUtil;
 
@@ -85,7 +86,12 @@ public class ToDoEdit extends ToDoCommand {
 					EXECUTE_DOES_NOT_EXIST, ""));
 		}
 
-		this.todo = editToDo(this.todo, todoTitle);
+		try {
+			this.todo = editToDo(this.todo, todoTitle);
+		} catch (InvalidDateException e) {
+			// TODO Auto-generated catch block
+			return new CommandStatus(Status.ERROR, "Invalid date!");
+		}
 
 		if (this.todo == null) {
 			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
@@ -137,7 +143,7 @@ public class ToDoEdit extends ToDoCommand {
 	// return todo;
 	// }
 
-	private ToDo editToDo(ToDo todo, String input) {
+	private ToDo editToDo(ToDo todo, String input) throws InvalidDateException {
 		int inputStartIndex;
 		int inputEndIndex;
 		String subStringInput;
@@ -190,7 +196,7 @@ public class ToDoEdit extends ToDoCommand {
 	}
 
 	private ToDo processFieldType(String fieldType, String remainingString,
-			ToDo todo) {
+			ToDo todo) throws InvalidDateException {
 		FieldType typeOfField = getFieldType(fieldType);
 		List<DateGroup> groups;
 		LocalDateTime date;
@@ -203,13 +209,13 @@ public class ToDoEdit extends ToDoCommand {
 			todo.setCategory(remainingString);
 			break;
 		case STARTDATE:
-			groups = DateParser.parseDate(remainingString);
+			groups = DateParser.parse(remainingString);
 			date = new LocalDateTime(groups.get(0).getDates().get(0));
 			todo.setStartDate(date);
 			break;
 		case ENDDATE:
-			groups = DateParser.parseDate(remainingString);
-			date = new LocalDateTime(groups.get(0).getDates().get(1));
+			groups = DateParser.parse(remainingString);
+			date = new LocalDateTime(groups.get(0).getDates().get(0));
 			todo.setEndDate(date);
 			break;
 		case STARTTIME:
@@ -263,15 +269,6 @@ public class ToDoEdit extends ToDoCommand {
 			return TaskType.DATETASK;
 		}
 
-	}
-
-	private boolean checkSpaces(String input) {
-		Pattern pattern = Pattern.compile("\\s+");
-		Matcher matcher = pattern.matcher(input);
-		if (matcher.find()) {
-			return true;
-		}
-		return false;
 	}
 
 }
