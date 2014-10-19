@@ -191,6 +191,9 @@ public class MainToDoController {
 	public void processKeyEvents(KeyEvent keyevent) {
 		for (KeyCode reservedKeyCode : RESERVED_KEYS) {
 
+			if (keyevent.isControlDown() && keyevent.getCode()== KeyCode.Z)
+				processInput("undo");
+			
 			if (keyevent.getCode() == reservedKeyCode) {
 
 				// TODO Implement actions for reserved keys
