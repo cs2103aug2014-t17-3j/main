@@ -39,8 +39,8 @@ public class ToDo implements Comparable<ToDo> {
 	public static final LocalDateTime INVALID_DATE = new LocalDateTime(Integer.MAX_VALUE);
 	private static int nextId = 0; 
 
-	private Type type;
 	private int id;
+	private Type type;
 	private String title;
 	private String description;
 	private String category;
@@ -77,6 +77,22 @@ public class ToDo implements Comparable<ToDo> {
 	public int getId() {
 		return id;
 	}
+	
+	public Type getType() {
+		return type;
+	}
+	
+	public void setFloatingToDo() {
+		this.type = Type.FLOATING;
+	}
+	
+	public void setDeadlineToDo() {
+		this.type = Type.DEADLINE;
+	}
+	
+	public void setTimedToDo() {
+		this.type = Type.TIMED;
+	}
 
 	public String getTitle() {
 		return title;
@@ -105,6 +121,10 @@ public class ToDo implements Comparable<ToDo> {
 	public LocalDateTime getStartDate() {
 		return startDate;
 	}
+	
+	public void removeStartDate() {
+		this.startDate = INVALID_DATE;
+	}
 
 	public void setStartDate(LocalDateTime startDate) {
 		this.startDate = startDate;
@@ -112,6 +132,10 @@ public class ToDo implements Comparable<ToDo> {
 
 	public LocalDateTime getEndDate() {
 		return endDate;
+	}
+	
+	public void removeEndDate() {
+		this.endDate = INVALID_DATE;
 	}
 
 	public void setEndDate(LocalDateTime endDate) {
