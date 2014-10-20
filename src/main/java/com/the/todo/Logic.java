@@ -124,6 +124,10 @@ public class Logic {
 
 	private void updateIdStorage(List<UUID> todoIdStorage,
 			Map<LocalDateTime, List<ToDo>> todoMap) {
+		if (todoMap == null || todoMap.isEmpty()) {
+			return;
+		}
+		
 		todoIdStorage = null;
 		todoIdStorage = new ArrayList<UUID>();
 
