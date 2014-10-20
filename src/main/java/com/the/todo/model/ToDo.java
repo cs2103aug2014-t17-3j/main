@@ -28,6 +28,8 @@
 
 package com.the.todo.model;
 
+import java.util.UUID;
+
 import org.joda.time.LocalDateTime;
 
 public class ToDo implements Comparable<ToDo> {
@@ -36,10 +38,10 @@ public class ToDo implements Comparable<ToDo> {
 		FLOATING, DEADLINE, TIMED
 	};
 
-	public static final LocalDateTime INVALID_DATE = new LocalDateTime(Integer.MAX_VALUE);
-	private static int nextId = 0; 
+	public static final LocalDateTime INVALID_DATE = new LocalDateTime(
+			"292278993-12-31T23:59:59.999");
 
-	private int id;
+	private UUID id;
 	private Type type;
 	private String title;
 	private String description;
@@ -55,41 +57,39 @@ public class ToDo implements Comparable<ToDo> {
 
 	public ToDo(String title) {
 		this.type = Type.FLOATING;
-		this.id = nextId;
+		this.id = UUID.randomUUID();
 		this.title = title;
-		
-		nextId++;
 	}
-	
+
 	public ToDo(String title, LocalDateTime endDate) {
 		this(title);
 		this.type = Type.DEADLINE;
 		this.endDate = endDate;
 	}
-	
+
 	public ToDo(String title, LocalDateTime startDate, LocalDateTime endDate) {
 		this(title);
 		this.type = Type.TIMED;
 		this.startDate = startDate;
 		this.endDate = endDate;
 	}
-	
-	public int getId() {
+
+	public UUID getId() {
 		return id;
 	}
-	
+
 	public Type getType() {
 		return type;
 	}
-	
+
 	public void setFloatingToDo() {
 		this.type = Type.FLOATING;
 	}
-	
+
 	public void setDeadlineToDo() {
 		this.type = Type.DEADLINE;
 	}
-	
+
 	public void setTimedToDo() {
 		this.type = Type.TIMED;
 	}
@@ -121,25 +121,25 @@ public class ToDo implements Comparable<ToDo> {
 	public LocalDateTime getStartDate() {
 		return startDate;
 	}
-	
-	public void removeStartDate() {
-		this.startDate = INVALID_DATE;
-	}
 
 	public void setStartDate(LocalDateTime startDate) {
 		this.startDate = startDate;
 	}
 
+	public void removeStartDate() {
+		this.startDate = INVALID_DATE;
+	}
+
 	public LocalDateTime getEndDate() {
 		return endDate;
-	}
-	
-	public void removeEndDate() {
-		this.endDate = INVALID_DATE;
 	}
 
 	public void setEndDate(LocalDateTime endDate) {
 		this.endDate = endDate;
+	}
+
+	public void removeEndDate() {
+		this.endDate = INVALID_DATE;
 	}
 
 	public boolean isCompleted() {
