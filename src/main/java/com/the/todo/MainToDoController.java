@@ -36,6 +36,7 @@ import java.util.List;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -157,17 +158,7 @@ public class MainToDoController {
 				try {
 					ToDoContainer temp = new ToDoContainer(index, todo);
 					contentsToDisplay.add(temp);
-					temp.getCheckedProperty().addListener(new ChangeListener<Boolean>() {
-						@Override
-						public void changed(ObservableValue<? extends Boolean> ov,
-								Boolean old_val, Boolean new_val) {
-							if (new_val)						
-								processInput("complete " + temp.getID());
-							else 
-								processInput("incomplete "+ temp.getID());
-						}
-					});
-
+					detectCheckBoxChanges(temp);
 					index++;
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -180,7 +171,18 @@ public class MainToDoController {
 		
 	}
 
-
+	private void detectCheckBoxChanges(ToDoContainer container){ 
+		container.getCheckedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> ov,
+					Boolean old_val, Boolean new_val) {
+				if (new_val)						
+					processInput("complete " + container.getID());
+				else 
+					processInput("incomplete "+ container.getID());
+			}
+		});
+		}
 
 
 	public void minimizeWindow() {
@@ -191,9 +193,10 @@ public class MainToDoController {
 	public void processKeyEvents(KeyEvent keyevent) {
 		for (KeyCode reservedKeyCode : RESERVED_KEYS) {
 
-			if (keyevent.isControlDown() && keyevent.getCode()== KeyCode.Z)
-				processInput("undo");
-			
+			if (keyevent.isControlDown() && keyevent.getCode()== KeyCode.Z){
+				mainInput.setText("undo\n");
+				mainInput.positionCaret(4);
+			}
 			if (keyevent.getCode() == reservedKeyCode) {
 
 				// TODO Implement actions for reserved keys
