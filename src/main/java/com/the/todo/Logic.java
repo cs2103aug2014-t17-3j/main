@@ -36,7 +36,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.UUID;
 
-import org.joda.time.LocalDateTime;
+import org.joda.time.LocalDate;
 
 import com.the.todo.command.CommandStatus;
 import com.the.todo.command.CommandStatus.Status;
@@ -55,7 +55,7 @@ public class Logic {
 
 	private ToDoStore todoStorage;
 	private List<ToDo> todoList; // TODO: To be replace with TreeMap
-	private Map<LocalDateTime, List<ToDo>> todoMapDisplay;
+	private Map<LocalDate, List<ToDo>> todoMapDisplay;
 	private List<UUID> todoIdStorage;
 
 	private static Logic logic = null;
@@ -67,7 +67,9 @@ public class Logic {
 	};
 
 	public Logic() {
+		todoMapDisplay = new TreeMap<LocalDate, List<ToDo>>();
 		todoStorage = new JsonFileStore(FILENAME);
+
 		todoList = todoStorage.getAll(); // TODO: To be replace with TreeMap
 
 		sortByDate(todoMapDisplay, todoStorage.getAll());
@@ -90,22 +92,26 @@ public class Logic {
 		return todoStorage;
 	}
 
-	public Map<LocalDateTime, List<ToDo>> getToDoMapDisplay() {
+	public Map<LocalDate, List<ToDo>> getToDoMapDisplay() {
 		sortByDate(todoMapDisplay, todoStorage.getAll());
 		updateIdStorage(todoIdStorage, todoMapDisplay);
+
+		for (Entry<LocalDate, List<ToDo>> entry : todoMapDisplay.entrySet()) {
+			System.out.println(entry.getKey() + " = " + entry.getValue());
+		}
 
 		return todoMapDisplay;
 	}
 
-	private void sortByDate(Map<LocalDateTime, List<ToDo>> todoMap,
+	private void sortByDate(Map<LocalDate, List<ToDo>> todoMap,
 			List<ToDo> todoList) {
-		todoMap = new TreeMap<LocalDateTime, List<ToDo>>();
-
+		todoMap.clear();
+		
 		List<ToDo> todoByDate;
-		LocalDateTime date;
+		LocalDate date;
 
 		for (ToDo todo : todoList) {
-			date = todo.getEndDate();
+			date = todo.getEndDate().toLocalDate();
 
 			if (todoMap.containsKey(date)) {
 				todoByDate = todoMap.get(date);
@@ -117,21 +123,21 @@ public class Logic {
 			}
 		}
 
-		for (Entry<LocalDateTime, List<ToDo>> entry : todoMap.entrySet()) {
+		for (Entry<LocalDate, List<ToDo>> entry : todoMap.entrySet()) {
 			Collections.sort(entry.getValue());
 		}
 	}
 
 	private void updateIdStorage(List<UUID> todoIdStorage,
-			Map<LocalDateTime, List<ToDo>> todoMap) {
+			Map<LocalDate, List<ToDo>> todoMap) {
 		if (todoMap == null || todoMap.isEmpty()) {
 			return;
 		}
-		
+
 		todoIdStorage = null;
 		todoIdStorage = new ArrayList<UUID>();
 
-		for (Entry<LocalDateTime, List<ToDo>> entry : todoMap.entrySet()) {
+		for (Entry<LocalDate, List<ToDo>> entry : todoMap.entrySet()) {
 			for (ToDo todo : entry.getValue()) {
 				todoIdStorage.add(todo.getId());
 			}
