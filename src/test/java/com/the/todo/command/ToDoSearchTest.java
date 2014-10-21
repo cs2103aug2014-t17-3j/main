@@ -22,6 +22,7 @@ public class ToDoSearchTest {
 	private ToDo todo1 = new ToDo("Lorem");
 	private ToDo todo2 = new ToDo("ipsum dolor sit amet");
 
+	ArrayList<ToDo> updateListStub;
 	InMemoryStore storeStub;
 	ByteArrayOutputStream output;
 
@@ -30,6 +31,8 @@ public class ToDoSearchTest {
 		storeStub = new InMemoryStore();
 		storeStub.save(todo1);
 		storeStub.save(todo2);
+		
+		updateListStub = new ArrayList<ToDo>();
 
 		output = new ByteArrayOutputStream();
 		System.setOut(new PrintStream(output));
@@ -44,8 +47,6 @@ public class ToDoSearchTest {
 	}
 
 	public void searchTest(String query, String expected) {
-		ArrayList<ToDo> updateListStub = new ArrayList<ToDo>();
-
 		ToDoSearch test = new ToDoSearch(storeStub, query, updateListStub);
 		test.execute();
 		assertEquals(expected, output.toString());

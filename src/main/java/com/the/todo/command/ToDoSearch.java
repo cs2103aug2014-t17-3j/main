@@ -26,6 +26,8 @@ public class ToDoSearch extends ToDoCommand {
 		ArrayList<ToDo> todoList = (ArrayList<ToDo>) todoStorage.getAll();
 		String titleTemp;
 		String queryTemp = StringUtil.padString(query);
+		
+		updateList.clear();
 
 		for (ToDo todo : todoList) {
 			titleTemp = StringUtil.padString(todo.getTitle());
