@@ -28,18 +28,20 @@
 
 package com.the.todo.model;
 
+import java.util.UUID;
+
 import org.joda.time.LocalDateTime;
 
 public class ToDo implements Comparable<ToDo> {
 
-	public static final LocalDateTime INVALID_DATE = new LocalDateTime(Integer.MAX_VALUE);
-	
 	public static enum Type {
 		FLOATING, DEADLINE, TIMED
 	};
-	private static int nextId = 0; 
 
-	private int id;
+	public static final LocalDateTime INVALID_DATE = new LocalDateTime(
+			"292278993-12-31T23:59:59.999");
+
+	private UUID id;
 	private Type type;
 	private String title;
 	private String description;
@@ -55,27 +57,41 @@ public class ToDo implements Comparable<ToDo> {
 
 	public ToDo(String title) {
 		this.type = Type.FLOATING;
-		this.id = nextId;
+		this.id = UUID.randomUUID();
 		this.title = title;
-		
-		nextId++;
 	}
-	
+
 	public ToDo(String title, LocalDateTime endDate) {
 		this(title);
 		this.type = Type.DEADLINE;
 		this.endDate = endDate;
 	}
-	
+
 	public ToDo(String title, LocalDateTime startDate, LocalDateTime endDate) {
 		this(title);
 		this.type = Type.TIMED;
 		this.startDate = startDate;
 		this.endDate = endDate;
 	}
-	
-	public int getId() {
+
+	public UUID getId() {
 		return id;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public void setFloatingToDo() {
+		this.type = Type.FLOATING;
+	}
+
+	public void setDeadlineToDo() {
+		this.type = Type.DEADLINE;
+	}
+
+	public void setTimedToDo() {
+		this.type = Type.TIMED;
 	}
 
 	public String getTitle() {
@@ -110,12 +126,20 @@ public class ToDo implements Comparable<ToDo> {
 		this.startDate = startDate;
 	}
 
+	public void removeStartDate() {
+		this.startDate = INVALID_DATE;
+	}
+
 	public LocalDateTime getEndDate() {
 		return endDate;
 	}
 
 	public void setEndDate(LocalDateTime endDate) {
 		this.endDate = endDate;
+	}
+
+	public void removeEndDate() {
+		this.endDate = INVALID_DATE;
 	}
 
 	public boolean isCompleted() {
@@ -134,7 +158,7 @@ public class ToDo implements Comparable<ToDo> {
 		this.deleted = deleted;
 	}
 
-	public boolean isFloatingTask() {
+	public boolean isFloatingToDo() {
 		if (this.type.equals(Type.FLOATING)) {
 			return true;
 		}
@@ -142,7 +166,7 @@ public class ToDo implements Comparable<ToDo> {
 		return false;
 	}
 
-	public boolean isTimedTask() {
+	public boolean isTimedToDo() {
 		if (this.type.equals(Type.TIMED)) {
 			return true;
 		}
@@ -150,7 +174,7 @@ public class ToDo implements Comparable<ToDo> {
 		return false;
 	}
 
-	public boolean isDeadlineTask() {
+	public boolean isDeadlineToDo() {
 		if (this.type.equals(Type.DEADLINE)) {
 			return true;
 		}
@@ -172,15 +196,15 @@ public class ToDo implements Comparable<ToDo> {
 			throw new IllegalArgumentException();
 		}
 
-		if (this.isFloatingTask() && todo.isFloatingTask()) {
+		if (this.isFloatingToDo() && todo.isFloatingToDo()) {
 			return this.getTitle().compareToIgnoreCase(todo.getTitle());
 		}
 
-		if (this.isFloatingTask()) {
+		if (this.isFloatingToDo()) {
 			return 1;
 		}
 
-		if (todo.isFloatingTask()) {
+		if (todo.isFloatingToDo()) {
 			return -1;
 		}
 
@@ -192,11 +216,11 @@ public class ToDo implements Comparable<ToDo> {
 	}
 
 	private LocalDateTime getDateToCompare(ToDo todo) {
-		if (todo.isFloatingTask()) {
+		if (todo.isFloatingToDo()) {
 			return ToDo.INVALID_DATE;
 		}
 
-		if (todo.isDeadlineTask()) {
+		if (todo.isDeadlineToDo()) {
 			return todo.getEndDate();
 		} else {
 			return todo.getStartDate();

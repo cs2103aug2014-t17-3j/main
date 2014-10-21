@@ -33,85 +33,75 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
+import org.joda.time.format.DateTimeFormatterBuilder;
+import org.joda.time.format.DateTimeParser;
 import org.ocpsoft.prettytime.nlp.parse.DateGroup;
+
+import com.the.todo.parser.exception.InvalidDateException;
 
 public class DateParser {
 
-	private static String[] date_formats = { "yyyy-MM-dd", "yyyy/MM/dd",
-			"dd/MM/yyyy", "dd-MM-yyyy", "yyyy MMMMM d", "yyyy d MMMMM",
-			"MMMMM d yyyy", "d MMMMM yyyy", "MMMMM d", "d MMMMM", "MM/dd/yyyy" };
-	private static boolean isValid = false;
+	private static final DateTimeFormatter YEAR_MONTH_DAY_SLASH = DateTimeFormat
+			.forPattern("yyyy/MM/dd");
+	private static final DateTimeFormatter DAY_MONTH_YEAR_SLASH = DateTimeFormat
+			.forPattern("dd/MM/yyyy");
+	private static final DateTimeFormatter DAY_MONTH_YEAR_DASH = DateTimeFormat
+			.forPattern("dd-MM-yyyy");
 
-	public static LocalDateTime parseDate(String userInput) {
-		LocalDateTime date = null;
-		if (userInput.isEmpty()) {
-			return date;
+	private static final DateTimeParser[] DATE_TIME_PARSERS = {
+			DAY_MONTH_YEAR_SLASH.getParser(), DAY_MONTH_YEAR_DASH.getParser() };
+	private static final DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
+			.append(null, DATE_TIME_PARSERS).toFormatter();
+
+	public static List<DateGroup> parse(String input)
+			throws InvalidDateException {
+		if (!checkValidDates(input)) {
+			throw new InvalidDateException();
 		}
-		if (checkDigits(userInput)) {
-			date = formatParse(userInput);
-		} else {
-			date = prettyTimeParse(userInput);
-		}
-		return date;
+
+		String formattedInput = changeDateStringsFormat(input);
+		PrettyTimeParserWrapper prettyTime = PrettyTimeParserWrapper
+				.getInstance();
+
+		return prettyTime.parseDateOnly(formattedInput);
 	}
 
-	private static LocalDateTime formatParse(String userInput) {
-		LocalDateTime date = null;
-		for (String input : userInput.split(" ")) {
-			for (String format : DateParser.date_formats) {
-				try {
-					DateTimeFormatter dtf = DateTimeFormat.forPattern(format);
-					date = dtf.parseLocalDateTime(input);
-					isValid = true;
-				} catch (Exception ex) {
-					isValid = false;
-				}
+	public static boolean checkValidDates(String input) {
+		boolean isValid = true;
+		Pattern pattern = Pattern
+				.compile("(?:\\d*)?\\d+[/-](?:\\d*)?\\d+[/-](?:\\d*)?\\d+");
+		Matcher matcher = pattern.matcher(input);
+
+		while (matcher.find()) {
+			String matchedDate = matcher.group();
+			try {
+				LocalDate.parse(matchedDate, DATE_TIME_FORMATTER);
+			} catch (Exception e) {
+				isValid = false;
+				break;
 			}
 		}
-		return date;
-	}
 
-	public static String getRelativeDate(String userInput) {
-		List<DateGroup> groups = new PrettyTimeParser().parseSyntax(userInput);
-
-		if (groups.size() == 0) {
-			return null;
-		}
-
-		return groups.get(0).getText();
-	}
-
-	private static LocalDateTime prettyTimeParse(String userInput) {
-		List<DateGroup> groups = new PrettyTimeParser().parseSyntax(userInput);
-
-		if (groups.size() == 0) {
-			return null;
-		}
-
-		LocalDate localDate = new LocalDate(groups.get(0).getDates().get(0));
-		int year = localDate.getYear();
-		int month = localDate.getMonthOfYear();
-		int day = localDate.getDayOfMonth();
-
-		LocalDateTime date = new LocalDateTime(year, month, day, 0, 0); // TODO : Handle time?
-		return date;
-	}
-
-	public static boolean checkDigits(String s) {
-		Pattern pattern = Pattern.compile("\\b\\d+");
-		Matcher matcher = pattern.matcher(s);
-		if (matcher.find()) {
-			return true;
-		}
-		return false;
-	}
-
-	public static boolean getIsValid() {
 		return isValid;
+	}
+
+	public static String changeDateStringsFormat(String input) {
+		String formattedInput = input;
+		Pattern pattern = Pattern
+				.compile("(?:(?:31(\\/|-|\\.)(?:0?[13578]|1[02]))\\1|(?:(?:29|30)(\\/|-|\\.)(?:0?[1,3-9]|1[0-2])\\2))(?:(?:1[6-9]|[2-9]\\d)?\\d{2})|\\b(?:29(\\/|-|\\.)0?2\\3(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))|\\b(?:0?[1-9]|1\\d|2[0-8])(\\/|-|\\.)(?:(?:0?[1-9])|(?:1[0-2]))\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})");
+		Matcher matcher = pattern.matcher(input);
+
+		while (matcher.find()) {
+			String matchedDate = matcher.group();
+			LocalDate date = LocalDate.parse(matchedDate, DAY_MONTH_YEAR_SLASH);
+			formattedInput = formattedInput.replace(matchedDate,
+					date.toString(YEAR_MONTH_DAY_SLASH));
+			System.out.println(formattedInput);
+		}
+
+		return formattedInput;
 	}
 
 }

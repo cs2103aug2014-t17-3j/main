@@ -28,12 +28,17 @@
 
 package com.the.todo.command;
 
+import java.util.List;
+
 import org.joda.time.LocalDateTime;
+import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 
 import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
+import com.the.todo.model.ToDo.Type;
 import com.the.todo.parser.CategoryParser;
 import com.the.todo.parser.DateParser;
+import com.the.todo.parser.exception.InvalidDateException;
 import com.the.todo.storage.ToDoStore;
 
 public class ToDoAdd extends ToDoCommand {
@@ -55,7 +60,11 @@ public class ToDoAdd extends ToDoCommand {
 
 	@Override
 	protected CommandStatus performExecute() {
-		todo = createToDo(input);
+		try {
+			todo = createToDo(input);
+		} catch (InvalidDateException e) {
+			return new CommandStatus(Status.ERROR, "Invalid date!");
+		}
 
 		if (todo == null) {
 			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
@@ -71,20 +80,57 @@ public class ToDoAdd extends ToDoCommand {
 		return new CommandStatus(Status.INVALID);
 	}
 
-	private ToDo createToDo(String input) {
-		ToDo todo = new ToDo();
-		
+	private ToDo createToDo(String input) throws InvalidDateException {
+		ToDo.Type type;
 		String category = CategoryParser.parse(input);
-		String title = CategoryParser.removeCategory(input, category);
-		LocalDateTime date = DateParser.parseDate(input);
+		String title = CategoryParser.removeCategory(input, category).trim();
+		List<DateGroup> dateGroup = DateParser.parse(title);
 
-		todo.setTitle(title);
-		todo.setCategory(category);
-		if (date != null) {
-			todo.setEndDate(date);
+		type = getToDoType(dateGroup);
+		todo = createToDoType(type, title, dateGroup, category);
+
+		return todo;
+	}
+
+	private ToDo createToDoType(Type type, String title,
+			List<DateGroup> dateGroup, String category) {
+		ToDo todo = null;
+
+		switch (type) {
+		case FLOATING:
+			todo = new ToDo(title);
+			break;
+		case DEADLINE:
+			LocalDateTime dueDateTime = new LocalDateTime(dateGroup.get(0)
+					.getDates().get(0));
+			todo = new ToDo(title, dueDateTime);
+			break;
+		case TIMED:
+			LocalDateTime startDateTime = new LocalDateTime(dateGroup.get(0)
+					.getDates().get(0));
+			LocalDateTime endDateTime = new LocalDateTime(dateGroup.get(0)
+					.getDates().get(1));
+			todo = new ToDo(title, startDateTime, endDateTime);
+			break;
+		}
+
+		if (category != null) {
+			todo.setCategory(category);
 		}
 
 		return todo;
+	}
+
+	private Type getToDoType(List<DateGroup> dateGroup) {
+		if (dateGroup.size() == 0) {
+			return Type.FLOATING;
+		} else if (dateGroup.get(0).getDates().size() == 1) {
+			return Type.DEADLINE;
+		} else if (dateGroup.get(0).getDates().size() == 2) {
+			return Type.TIMED;
+		}
+
+		return Type.FLOATING;
 	}
 
 }

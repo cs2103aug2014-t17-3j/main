@@ -33,47 +33,144 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
+import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 
 public class DateParserTest {
 
-	private LocalDate date = null;
-	private LocalDate expectedDate = null;
+	private LocalDateTime date = null;
+	List<DateGroup> groups = null;
+	private LocalDateTime expectedDate = null;
+
+	// @Test
+	// public void dateTest() {
+	// assertNull(DateParser.parseDate(""));
+	//
+	// groups = DateParser.parseDate("study on 29/9/2014");
+	// date = new LocalDateTime(groups.get(0).getDates().get(0));
+	// expectedDate = new LocalDateTime(2014, 9, 29, 0, 0);
+	// assertEquals(expectedDate, date);
+	//
+	// groups = DateParser.parseDate("study on 2016/2/15");
+	// date = new LocalDateTime(groups.get(0).getDates().get(0));
+	// expectedDate = new LocalDateTime(2016, 2, 15, 0, 0);
+	// assertEquals(expectedDate, date);
+	//
+	// groups = DateParser.parseDate("study on 11/28/2014");
+	// date = new LocalDateTime(groups.get(0).getDates().get(0));
+	// expectedDate = new LocalDateTime(2014, 11, 28, 0, 0);
+	// assertEquals(expectedDate, date);
+	//
+	// groups = DateParser.parseDate("study on Christmas");
+	// date = new LocalDateTime(groups.get(0).getDates().get(0));
+	// expectedDate = new LocalDateTime(2014, 12, 25, 0, 0);
+	// assertEquals(expectedDate, date);
+	//
+	// groups = DateParser.parseDate("easter study");
+	// date = new LocalDateTime(groups.get(0).getDates().get(0));
+	// expectedDate = new LocalDateTime(2015, 4, 5, 0, 0);
+	// assertEquals(expectedDate, date);
+	// }
+	
+	@Test
+	public void parseTest1() throws Exception {
+		String input = "study for exams";
+		List<DateGroup> groups = DateParser.parse(input);
+		for (DateGroup group : groups) {
+			System.out.println(group.getDates());
+		}
+		assertEquals(0, groups.size());
+	}
 
 	@Test
-	public void dateTest() {
-		assertNull(DateParser.parseDate(""));
+	public void parseTest2() throws Exception {
+		String input = "study for exams on 25/02/14";
 
-		date = DateParser.parseDate("study on 29/9/2014").toLocalDate();
-		expectedDate = new LocalDate(2014, 9, 29);
-		assertEquals(expectedDate, date);
-
-		date = DateParser.parseDate("study on 2016/2/15").toLocalDate();
-		expectedDate = new LocalDate(2016, 2, 15);
-		assertEquals(expectedDate, date);
-
-		date = DateParser.parseDate("study on 11/28/2014").toLocalDate();
-		expectedDate = new LocalDate(2014, 11, 28);
-		assertEquals(expectedDate, date);
-
-		date = DateParser.parseDate("study on Christmas").toLocalDate();
-		expectedDate = new LocalDate(2014, 12, 25);
-		assertEquals(expectedDate, date);
-
-		date = DateParser.parseDate("easter study").toLocalDate();
-		expectedDate = new LocalDate(2015, 4, 5);
-		assertEquals(expectedDate, date);
+		List<DateGroup> groups = DateParser.parse(input);
+		for (DateGroup group : groups) {
+			System.out.println(group.getDates());
+		}
+		assertEquals(1, groups.get(0).getDates().size());
 	}
 	
-//	@Test
-//	public void validTest(){
-//		date = DateParser.parseDate("study on 29/2/2015").toLocalDate();
-//		assertFalse(DateParser.getIsValid());
-//		
-//		date = DateParser.parseDate("study on 1/5/2015").toLocalDate();
-//		assertTrue(DateParser.getIsValid());
-//	}
+	@Test
+	public void parseTest3() throws Exception {
+		String input = "study for exams on Friday 2pm";
+
+		List<DateGroup> groups = DateParser.parse(input);
+		for (DateGroup group : groups) {
+			System.out.println(group.getDates());
+		}
+		assertEquals(1, groups.get(0).getDates().size());
+	}
+	
+	@Test
+	public void parseTest4() throws Exception {
+		String input = "study for exams on today 2pm to tomorrow 6pm";
+
+		List<DateGroup> groups = DateParser.parse(input);
+		for (DateGroup group : groups) {
+			System.out.println(group.getDates());
+		}
+		assertEquals(2, groups.get(0).getDates().size());
+	}	
+
+	@Test
+	public void checkValidDatesTest1() {
+		String input = "study for exams on 29/02/2016";
+		assertTrue(DateParser.checkValidDates(input));
+	}
+
+	@Test
+	public void checkValidDatesTest2() {
+		String input = "study for exams on 29/02/2014";
+		assertFalse(DateParser.checkValidDates(input));
+	}
+
+	@Test
+	public void checkValidDatesTest3() {
+		String input = "study for exams on 29-01-14";
+		assertTrue(DateParser.checkValidDates(input));
+	}
+
+	@Test
+	public void changeDateStringsFormatTest1() {
+		String expected = "study for exams from 2014/08/04 to 2014/08/30";
+		String actual = DateParser
+				.changeDateStringsFormat("study for exams from 04/08/2014 to 30/08/2014");
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void changeDateStringsFormatTest2() {
+		String expected = "study for exams from 2014/08/04 to 2014/02/28";
+		String actual = DateParser
+				.changeDateStringsFormat("study for exams from 2014/08/04 to 28/2/2014");
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void changeDateStringsFormatTest3() {
+		String expected = "study for exams from 29/02/14 to 2015/02/28";
+		String actual = DateParser
+				.changeDateStringsFormat("study for exams from 29/02/14 to 28/2/2015");
+
+		assertEquals(expected, actual);
+	}
+
+	// @Test
+	// public void validTest(){
+	// date = DateParser.parseDate("study on 29/2/2015").toLocalDate();
+	// assertFalse(DateParser.getIsValid());
+	//
+	// date = DateParser.parseDate("study on 1/5/2015").toLocalDate();
+	// assertTrue(DateParser.getIsValid());
+	// }
 
 }
