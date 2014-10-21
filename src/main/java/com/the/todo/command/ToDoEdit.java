@@ -45,6 +45,7 @@ import com.the.todo.util.StringUtil;
 
 public class ToDoEdit extends ToDoCommand {
 
+	private static final String DELIM = "-";
 	private static final String EXECUTE_DOES_NOT_EXIST = "It seems like ToDo %s does not exist.";
 	private static final String EXECUTE_ILLEGAL_ARGUMENT = "Mmm ... Seems like you are missing some argument.";
 	private static final String EXECUTE_ERROR = "An error occured while updating ToDo.";
@@ -53,6 +54,11 @@ public class ToDoEdit extends ToDoCommand {
 	private static enum FieldType {
 		TITLE, CATEGORY, STARTDATE, ENDDATE, REMOVE_START, REMOVE_END, PRIORITY, INVALID
 	};
+	
+	private static enum inputStringType {
+		T, TITLE, C, CATEGORY, S, STARTDATE, E, ENDDATE, RS, REMOVESTART, RE, REMOVEEND, P, PRIORITY
+	};
+
 
 	private ToDoStore todoStorage;
 	private ToDo todo;
@@ -105,8 +111,7 @@ public class ToDoEdit extends ToDoCommand {
 	private ToDo editToDo(ToDo todo, String input) throws InvalidDateException {
 		/* String Tokenizer */
 		List<String> tokenString = new ArrayList<String>();
-		String delim = "-";
-		StringTokenizer tokens = new StringTokenizer(input, delim);
+		StringTokenizer tokens = new StringTokenizer(input, DELIM);
 
 		/* String */
 		String[] splitSubInputArr;
@@ -116,13 +121,12 @@ public class ToDoEdit extends ToDoCommand {
 		}
 		for (int i = 0; i < tokenString.size(); i++) {
 			splitSubInputArr = stringSplit(tokenString.get(i), 2);
-			if (splitSubInputArr.length >= 2) {
+			if (splitSubInputArr.length == 2) {
 				todo = proccessEditData(todo, splitSubInputArr);
-			} else if (splitSubInputArr[0].contains("removestart")
-					|| splitSubInputArr[0].contains("removeend")) {
-				removeStartAndEndDate(todo, splitSubInputArr);
+			} else if (splitSubInputArr.length == 1) {
+					removeStartAndEndDate(todo, splitSubInputArr);
 			} else {
-				return todo;
+				break;
 			}
 		}
 		editTaskType(todo);
@@ -209,28 +213,29 @@ public class ToDoEdit extends ToDoCommand {
 
 	private FieldType getFieldType(String userInput) {
 
-		userInput = userInput.toLowerCase();
-		switch (userInput) {
-		case "t":
-		case "title":
+		userInput = userInput.toUpperCase();
+		inputStringType usersInput = inputStringType.valueOf(userInput);
+		switch (usersInput) {
+		case T:
+		case TITLE:
 			return FieldType.TITLE;
-		case "c":
-		case "category":
+		case C:
+		case CATEGORY:
 			return FieldType.CATEGORY;
-		case "s":
-		case "startdate":
+		case S:
+		case STARTDATE:
 			return FieldType.STARTDATE;
-		case "e":
-		case "enddate":
+		case E:
+		case ENDDATE:
 			return FieldType.ENDDATE;
-		case "rs":
-		case "removestart":
+		case RS:
+		case REMOVESTART:
 			return FieldType.REMOVE_START;
-		case "re":
-		case "removeend":
+		case RE:
+		case REMOVEEND:
 			return FieldType.REMOVE_END;
-		case "p":
-		case "priority":
+		case P:
+		case PRIORITY:
 			return FieldType.PRIORITY;
 		default:
 			return FieldType.INVALID;
