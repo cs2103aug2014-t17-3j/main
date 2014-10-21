@@ -1,9 +1,7 @@
 package com.the.todo.command;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 
 import org.junit.Before;
@@ -20,36 +18,40 @@ import com.the.todo.storage.InMemoryStore;
 public class ToDoSearchTest {
 
 	private ToDo todo1 = new ToDo("Lorem");
-	private ToDo todo2 = new ToDo("ipsum dolor sit amet");
+	private ToDo todo2 = new ToDo("ipsum dolor sit");
+	private ToDo todo3 = new ToDo("dolor sit amet");
 
 	ArrayList<ToDo> updateListStub;
 	InMemoryStore storeStub;
-	ByteArrayOutputStream output;
 
 	@Before
 	public void setUp() {
 		storeStub = new InMemoryStore();
 		storeStub.save(todo1);
 		storeStub.save(todo2);
-		
-		updateListStub = new ArrayList<ToDo>();
+		storeStub.save(todo3);
 
-		output = new ByteArrayOutputStream();
-		System.setOut(new PrintStream(output));
+		updateListStub = new ArrayList<ToDo>();
 	}
 
 	@Test
 	public void test() {
-		searchTest("or", "");
-		searchTest("Lorem", "Lorem\r\n");
-		searchTest("amet", "ipsum dolor sit amet\r\n");
-		searchTest("dolor sit", "ipsum dolor sit amet\r\n");
+		searchTest("or");
+		searchTest("Lorem", "Lorem");
+		searchTest("amet", "dolor sit amet");
+		searchTest("dolor sit", "ipsum dolor sit", "dolor sit amet");
 	}
 
-	public void searchTest(String query, String expected) {
+	public void searchTest(String query, String... expected) {
+		ArrayList<String> results = new ArrayList<String>();
+
 		ToDoSearch test = new ToDoSearch(storeStub, query, updateListStub);
 		test.execute();
-		assertEquals(expected, output.toString());
-		output.reset();
+
+		for (ToDo todo : updateListStub) {
+			results.add(todo.getTitle());
+		}
+
+		assertArrayEquals(expected, results.toArray());
 	}
 }

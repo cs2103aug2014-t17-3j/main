@@ -36,11 +36,6 @@ public class ToDoSearch extends ToDoCommand {
 			}
 		}
 
-		// For testing purpose
-		for (ToDo todo : updateList) {
-			System.out.println(todo.getTitle());
-		}
-
 		return new CommandStatus(Status.SUCCESS);
 	}
 
