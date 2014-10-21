@@ -52,13 +52,8 @@ public class ToDoEdit extends ToDoCommand {
 	private static final String EXECUTE_SUCCESS = "A great success updating ToDo: %s";
 
 	private static enum FieldType {
-		TITLE, CATEGORY, STARTDATE, ENDDATE, REMOVE_START, REMOVE_END, PRIORITY, INVALID
+		T, TITLE, C, CATEGORY, S, STARTDATE, E, ENDDATE, RS, REMOVESTART, RE, REMOVEEND, P, PRIORITY, INVALID
 	};
-	
-	private static enum inputStringType {
-		T, TITLE, C, CATEGORY, S, STARTDATE, E, ENDDATE, RS, REMOVESTART, RE, REMOVEEND, P, PRIORITY
-	};
-
 
 	private ToDoStore todoStorage;
 	private ToDo todo;
@@ -124,7 +119,7 @@ public class ToDoEdit extends ToDoCommand {
 			if (splitSubInputArr.length == 2) {
 				todo = proccessEditData(todo, splitSubInputArr);
 			} else if (splitSubInputArr.length == 1) {
-					removeStartAndEndDate(todo, splitSubInputArr);
+				todo = removeStartAndEndDate(todo, splitSubInputArr[0]);
 			} else {
 				break;
 			}
@@ -162,13 +157,32 @@ public class ToDoEdit extends ToDoCommand {
 		}
 	}
 
-	private void removeStartAndEndDate(ToDo todo, String[] splitSubInputArr) {
-		FieldType removeType = getFieldType(splitSubInputArr[0]);
-		if (removeType.equals(FieldType.REMOVE_START)) {
-			todo.removeStartDate();
+	private Type checkChangeTaskType(LocalDateTime startDate,
+			LocalDateTime endDate) {
+
+		if ((startDate.equals(ToDo.INVALID_DATE))
+				&& (endDate.equals(ToDo.INVALID_DATE))) {
+			return Type.FLOATING;
+		} else if ((startDate.equals(ToDo.INVALID_DATE)) && (endDate != null)) {
+			return Type.DEADLINE;
 		} else {
+			return Type.TIMED;
+		}
+
+	}
+
+	private ToDo removeStartAndEndDate(ToDo todo, String stringSplit) {
+		stringSplit = stringSplit.toUpperCase();
+		FieldType fieldType = FieldType.valueOf(stringSplit);
+		if (fieldType.equals(FieldType.REMOVESTART)
+				|| fieldType.equals(FieldType.RS)) {
+			todo.removeStartDate();
+		} else if (fieldType.equals(FieldType.REMOVEEND)
+				|| fieldType.equals(FieldType.RE)) {
 			todo.removeEndDate();
 		}
+		return todo;
+
 	}
 
 	private String[] stringSplit(String subStringInput, int numberOfParts) {
@@ -180,27 +194,33 @@ public class ToDoEdit extends ToDoCommand {
 
 	private ToDo processFieldType(String fieldType, String remainingString,
 			ToDo todo) throws InvalidDateException {
-		FieldType typeOfField = getFieldType(fieldType);
+		fieldType = fieldType.toUpperCase();
+		FieldType typeOfField = FieldType.valueOf(fieldType);
 		List<DateGroup> groups;
 		LocalDateTime date;
 
 		switch (typeOfField) {
+		case T:
 		case TITLE:
 			todo.setTitle(remainingString);
 			break;
+		case C:
 		case CATEGORY:
 			todo.setCategory(remainingString);
 			break;
+		case S:
 		case STARTDATE:
 			groups = DateParser.parse(remainingString);
 			date = new LocalDateTime(groups.get(0).getDates().get(0));
 			todo.setStartDate(date);
 			break;
+		case E:
 		case ENDDATE:
 			groups = DateParser.parse(remainingString);
 			date = new LocalDateTime(groups.get(0).getDates().get(0));
 			todo.setEndDate(date);
 			break;
+		case P:
 		case PRIORITY:
 			break;
 		case INVALID:
@@ -210,49 +230,4 @@ public class ToDoEdit extends ToDoCommand {
 		}
 		return todo;
 	}
-
-	private FieldType getFieldType(String userInput) {
-
-		userInput = userInput.toUpperCase();
-		inputStringType usersInput = inputStringType.valueOf(userInput);
-		switch (usersInput) {
-		case T:
-		case TITLE:
-			return FieldType.TITLE;
-		case C:
-		case CATEGORY:
-			return FieldType.CATEGORY;
-		case S:
-		case STARTDATE:
-			return FieldType.STARTDATE;
-		case E:
-		case ENDDATE:
-			return FieldType.ENDDATE;
-		case RS:
-		case REMOVESTART:
-			return FieldType.REMOVE_START;
-		case RE:
-		case REMOVEEND:
-			return FieldType.REMOVE_END;
-		case P:
-		case PRIORITY:
-			return FieldType.PRIORITY;
-		default:
-			return FieldType.INVALID;
-		}
-	}
-
-	private Type checkChangeTaskType(LocalDateTime startDate,
-			LocalDateTime endDate) {
-
-		if ((startDate == null) && (endDate == null)) {
-			return Type.FLOATING;
-		} else if ((startDate.equals(ToDo.INVALID_DATE)) && (endDate != null)) {
-			return Type.DEADLINE;
-		} else {
-			return Type.TIMED;
-		}
-
-	}
-
 }
