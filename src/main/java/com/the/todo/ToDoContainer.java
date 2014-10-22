@@ -30,12 +30,9 @@ package com.the.todo;
 
 import java.io.IOException;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.beans.property.BooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
@@ -57,7 +54,7 @@ public class ToDoContainer extends AnchorPane {
 	@FXML 
 	private CheckBox completeChkBox; 
 
-	private SimpleStringProperty checkedStatus= new SimpleStringProperty("");
+	private int id; 
 	
 	
 	public ToDoContainer() {
@@ -78,6 +75,7 @@ public class ToDoContainer extends AnchorPane {
 
 	public ToDoContainer(int id, ToDo todo) throws Exception {
 		this();
+		this.id = id; 
 		if (!isValidTodo(todo)) {
 			throw new Exception("Invalid todo");
 		} else {
@@ -86,13 +84,6 @@ public class ToDoContainer extends AnchorPane {
 			setDate(todo.getEndDate());
 			setComplete(todo.isCompleted());
 		}
-		completeChkBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
-	        public void changed(ObservableValue<? extends Boolean> ov,
-	            Boolean old_val, Boolean new_val) {
-	        	if (new_val)
-	        		checkedStatus.set(((Integer)id).toString()); 
-	        }
-	    });
 		
 	}
 
@@ -115,7 +106,6 @@ public class ToDoContainer extends AnchorPane {
 	private void setComplete(Boolean isCompleted){
 		if(isCompleted){
 			completeChkBox.setSelected(true);
-			completeChkBox.setDisable(true);
 		} 
 		else 
 			completeChkBox.setSelected(false);
@@ -136,8 +126,11 @@ public class ToDoContainer extends AnchorPane {
 		return true;
 	}
 	
-	public SimpleStringProperty getCheckedStatus(){
-		return checkedStatus;
+	public BooleanProperty getCheckedProperty(){
+		return completeChkBox.selectedProperty(); 
+		
 	}
-	
+	public int getID(){ 
+		return id; 
+	}
 }

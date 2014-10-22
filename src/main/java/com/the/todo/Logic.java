@@ -46,6 +46,7 @@ import com.the.todo.command.ToDoCommand;
 import com.the.todo.command.ToDoComplete;
 import com.the.todo.command.ToDoDelete;
 import com.the.todo.command.ToDoEdit;
+import com.the.todo.command.ToDoIncomplete;
 import com.the.todo.command.ToDoRead;
 import com.the.todo.command.ToDoUndo;
 import com.the.todo.model.ToDo;
@@ -172,6 +173,10 @@ public class Logic {
 		case COMPLETE:
 			ToDo taskToComplete = getToDo(Integer.valueOf(todoTitleOrId));
 			todoCommand = new ToDoComplete(todoStorage, taskToComplete);
+			break;
+		case INCOMPLETE: 
+			ToDo taskToIncomplete = getToDo(Integer.valueOf(todoTitleOrId));
+			todoCommand = new ToDoIncomplete(todoStorage, taskToIncomplete);
 			break;
 		case SEARCH:
 			break;
