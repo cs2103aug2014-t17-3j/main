@@ -12,7 +12,7 @@ public class ToDoUndo extends ToDoCommand {
 	ToDo todo;
 	ToDoStore todoStorage;
 	Stack<ToDoCommand> undoStack;
-	
+
 	private static final String EXECUTE_ERROR_EMPTY = "There is nothing to undo.";
 
 	public ToDoUndo(ToDoStore todoStorage, Stack<ToDoCommand> undoStack) {

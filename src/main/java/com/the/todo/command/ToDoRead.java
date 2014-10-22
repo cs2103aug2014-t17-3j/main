@@ -35,7 +35,7 @@ import com.the.todo.model.ToDo;
 import com.the.todo.storage.ToDoStore;
 
 public class ToDoRead extends ToDoCommand {
-	
+
 	ToDoStore todoStorage;
 	List<ToDo> todoList;
 

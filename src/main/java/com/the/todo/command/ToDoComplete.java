@@ -4,8 +4,8 @@ import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
 import com.the.todo.storage.ToDoStore;
 
-public class ToDoComplete extends ToDoCommand{
-	
+public class ToDoComplete extends ToDoCommand {
+
 	private static final String EXECUTE_DOES_NOT_EXIST = "It seems like ToDo %s does not exist.";
 	private static final String EXECUTE_ILLEGAL_ARGUMENT = "Mmm ... Seems like you are missing some argument.";
 	private static final String EXECUTE_ERROR = "An error occured while updating ToDo.";
@@ -34,8 +34,7 @@ public class ToDoComplete extends ToDoCommand{
 		if (this.todo == null) {
 			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
 		}
-		
-		//todoStorage.save(this.todo.getId(), this.todo);
+
 		return new CommandStatus(Status.SUCCESS, String.format(EXECUTE_SUCCESS,
 				""));
 	}
@@ -47,17 +46,17 @@ public class ToDoComplete extends ToDoCommand{
 		if (this.todo == null) {
 			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
 		}
-		
-		//todoStorage.save(this.todo.getId(), this.todo);
+
+		// todoStorage.save(this.todo.getId(), this.todo);
 		return new CommandStatus(Status.SUCCESS, String.format(EXECUTE_SUCCESS,
 				""));
 	}
-	
+
 	private ToDo isCompleteToDo(ToDo todo) {
 		todo.setCompleted(true);
 		return todo;
 	}
-	
+
 	private ToDo undoCompleteToDo(ToDo todo) {
 		todo.setCompleted(false);
 		return todo;
