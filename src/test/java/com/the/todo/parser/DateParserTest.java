@@ -30,51 +30,17 @@ package com.the.todo.parser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.junit.Test;
 import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 
 public class DateParserTest {
 
-	private LocalDateTime date = null;
 	List<DateGroup> groups = null;
-	private LocalDateTime expectedDate = null;
-
-	// @Test
-	// public void dateTest() {
-	// assertNull(DateParser.parseDate(""));
-	//
-	// groups = DateParser.parseDate("study on 29/9/2014");
-	// date = new LocalDateTime(groups.get(0).getDates().get(0));
-	// expectedDate = new LocalDateTime(2014, 9, 29, 0, 0);
-	// assertEquals(expectedDate, date);
-	//
-	// groups = DateParser.parseDate("study on 2016/2/15");
-	// date = new LocalDateTime(groups.get(0).getDates().get(0));
-	// expectedDate = new LocalDateTime(2016, 2, 15, 0, 0);
-	// assertEquals(expectedDate, date);
-	//
-	// groups = DateParser.parseDate("study on 11/28/2014");
-	// date = new LocalDateTime(groups.get(0).getDates().get(0));
-	// expectedDate = new LocalDateTime(2014, 11, 28, 0, 0);
-	// assertEquals(expectedDate, date);
-	//
-	// groups = DateParser.parseDate("study on Christmas");
-	// date = new LocalDateTime(groups.get(0).getDates().get(0));
-	// expectedDate = new LocalDateTime(2014, 12, 25, 0, 0);
-	// assertEquals(expectedDate, date);
-	//
-	// groups = DateParser.parseDate("easter study");
-	// date = new LocalDateTime(groups.get(0).getDates().get(0));
-	// expectedDate = new LocalDateTime(2015, 4, 5, 0, 0);
-	// assertEquals(expectedDate, date);
-	// }
 	
 	@Test
 	public void parseTest1() throws Exception {
@@ -163,14 +129,5 @@ public class DateParserTest {
 
 		assertEquals(expected, actual);
 	}
-
-	// @Test
-	// public void validTest(){
-	// date = DateParser.parseDate("study on 29/2/2015").toLocalDate();
-	// assertFalse(DateParser.getIsValid());
-	//
-	// date = DateParser.parseDate("study on 1/5/2015").toLocalDate();
-	// assertTrue(DateParser.getIsValid());
-	// }
 
 }

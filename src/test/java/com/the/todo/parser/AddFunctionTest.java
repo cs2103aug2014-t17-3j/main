@@ -1,9 +1,8 @@
 package com.the.todo.parser;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.joda.time.DateTimeConstants;
-import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.junit.After;
 import org.junit.Before;
