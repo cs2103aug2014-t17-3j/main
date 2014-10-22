@@ -56,7 +56,6 @@ import com.the.todo.util.StringUtil;
 public class Logic {
 
 	private ToDoStore todoStorage;
-	// private List<ToDo> todoList; // TODO: To be replace with TreeMap
 	private Map<LocalDate, List<ToDo>> todoMapDisplay;
 	private List<UUID> todoIdStorage;
 	private Stack<ToDoCommand> undoStack;
@@ -105,7 +104,6 @@ public class Logic {
 			todoCommand = new ToDoAdd(todoStorage, todoTitleOrId);
 			break;
 		case READ:
-			// todoCommand = new ToDoRead(todoStorage, todoList);
 			break;
 		case EDIT:
 			int id = Integer.valueOf(userInput.split(" ", 3)[1]);
