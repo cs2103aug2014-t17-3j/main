@@ -69,8 +69,9 @@ public class Logic {
 	};
 
 	public Logic() {
-		todoMapDisplay = new TreeMap<LocalDate, List<ToDo>>();
 		todoStorage = new JsonFileStore(FILENAME);
+		todoMapDisplay = new TreeMap<LocalDate, List<ToDo>>();
+		todoIdStorage = new ArrayList<UUID>();
 		undoStack = new Stack<ToDoCommand>();
 
 		//todoList = todoStorage.getAll(); // TODO: To be replace with TreeMap
@@ -137,9 +138,8 @@ public class Logic {
 			return;
 		}
 
-		todoIdStorage = null;
-		todoIdStorage = new ArrayList<UUID>();
-
+		todoIdStorage.clear();
+		
 		for (Entry<LocalDate, List<ToDo>> entry : todoMap.entrySet()) {
 			for (ToDo todo : entry.getValue()) {
 				todoIdStorage.add(todo.getId());
@@ -267,7 +267,7 @@ public class Logic {
 			id = null;
 		}
 		
-		if (id == null) {
+		if (id != null) {
 			for (ToDo item : todoStorage.getAll()) {
 				if (item.getId().equals(id)) {
 					todo = item;
