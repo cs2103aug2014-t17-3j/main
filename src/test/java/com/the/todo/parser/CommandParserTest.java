@@ -28,8 +28,7 @@
 
 package com.the.todo.parser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
@@ -80,12 +79,38 @@ public class CommandParserTest {
 		assertEquals(1, todoStorage.count());
 		assertTrue(todoStorage.getAll().get(0).isCompleted());
 	}
+	
+	@Test
+	public void testUndoComplete() {
+		appLogic.processCommand("complete 1");
+		appLogic.processCommand("undo");
 
-	private LocalDate calcNextFriday(LocalDate d) {
-		if (d.getDayOfWeek() >= DateTimeConstants.FRIDAY) {
-			d = d.plusWeeks(1);
-		}
-		return d.withDayOfWeek(DateTimeConstants.FRIDAY);
+		assertEquals(1, todoStorage.count());
+		assertFalse(todoStorage.getAll().get(0).isCompleted());
 	}
+	
+	@Test
+	public void testInComplete() {
+		appLogic.processCommand("incomplete 1");
+
+		assertEquals(1, todoStorage.count());
+		assertFalse(todoStorage.getAll().get(0).isCompleted());
+	}
+	
+	@Test
+	public void testUndoInComplete() {
+		appLogic.processCommand("incomplete 1");
+		appLogic.processCommand("undo");
+
+		assertEquals(1, todoStorage.count());
+		assertTrue(todoStorage.getAll().get(0).isCompleted());
+	}
+
+//	private LocalDate calcNextFriday(LocalDate d) {
+//		if (d.getDayOfWeek() >= DateTimeConstants.FRIDAY) {
+//			d = d.plusWeeks(1);
+//		}
+//		return d.withDayOfWeek(DateTimeConstants.FRIDAY);
+//	}
 
 }

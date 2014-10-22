@@ -30,7 +30,6 @@ public class ToDoIncomplete extends ToDoCommand{
 		}
 
 		this.todo = isIncompleteToDo(this.todo);
-		System.out.println("Im here");
 
 		if (this.todo == null) {
 			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
@@ -43,8 +42,15 @@ public class ToDoIncomplete extends ToDoCommand{
 
 	@Override
 	protected CommandStatus performUndo() {
-		// TODO Auto-generated method stub
-		return null;
+		this.todo = isCompleteToDo(this.todo);
+
+		if (this.todo == null) {
+			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
+		}
+		
+		//todoStorage.save(this.todo.getId(), this.todo);
+		return new CommandStatus(Status.SUCCESS, String.format(EXECUTE_SUCCESS,
+				""));
 	}
 	
 	private ToDo isIncompleteToDo(ToDo todo) {
@@ -52,4 +58,8 @@ public class ToDoIncomplete extends ToDoCommand{
 		return todo;
 	}
 
+	private ToDo isCompleteToDo(ToDo todo) {
+		todo.setCompleted(true);
+		return todo;
+	}
 }
