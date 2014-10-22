@@ -273,35 +273,34 @@ public class MainToDoController {
 		Stage stage = (Stage) minimizeButton.getScene().getWindow();
 		stage.hide();
 	}
+
 	
-	int i=0;
 	public void processKeyEvents(KeyEvent keyevent) {
-	
-		if (keyevent.getEventType()== KeyEvent.KEY_PRESSED){ 
-			if(keyevent.isControlDown()){
-		
-				// TODO Implement actions for reserved keys
 
-				if (keyevent.getCode() == KeyCode.UP) {
-					mainScrollpane.setVvalue(mainScrollpane.getVvalue()-0.1); 
-				} 
-				if(keyevent.getCode() == KeyCode.DOWN) {					  
-					mainScrollpane.setVvalue(mainScrollpane.getVvalue()+0.1);
+		for (KeyCode reservedkey : RESERVED_KEYS){ 
+			if (keyevent.getEventType()== KeyEvent.KEY_PRESSED && keyevent.getCode()==reservedkey){ 
+				if(keyevent.isControlDown()){
+
+					// TODO Implement actions for reserved keys
+
+					if (keyevent.getCode() == KeyCode.UP) {
+						mainScrollpane.setVvalue(mainScrollpane.getVvalue()-0.1); 
+					} 
+					if(keyevent.getCode() == KeyCode.DOWN) {					  
+						mainScrollpane.setVvalue(mainScrollpane.getVvalue()+0.1);
+					}
+					if (keyevent.getCode() == KeyCode.Z) {
+						processInput("undo");
+					}
+
+					keyevent.consume();
+					break; 
 				}
-				if (keyevent.getCode() == KeyCode.Z) {
-					//i for testing
-					i++;
-					processInput("undo");	
-					showPrompt(i+"");
-				}
-
-				keyevent.consume();
-			}
-
-
 			}
 
 		}
+
+	}
 
 }
 
