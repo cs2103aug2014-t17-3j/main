@@ -38,6 +38,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 
 import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormat;
 
 import com.the.todo.model.ToDo;
 
@@ -75,13 +76,12 @@ public class ToDoContainer extends AnchorPane {
 
 	public ToDoContainer(int id, ToDo todo) throws Exception {
 		this();
-		this.id = id; 
 		if (!isValidTodo(todo)) {
 			throw new Exception("Invalid todo");
 		} else {
 			setID(id);
 			setTitle(todo.getTitle());
-			setDate(todo.getEndDate());
+			setDate(todo);
 			setComplete(todo.isCompleted());
 		}
 		
@@ -95,14 +95,31 @@ public class ToDoContainer extends AnchorPane {
 		todoTitle.setText(title);
 	}
 
-	private void setDate(LocalDateTime date) {
-		if (date != null)
-			todoDate.setText(date.toString());
+	private void setDate(ToDo todo){
+		LocalDateTime startDate,endDate; 
+		startDate = todo.getStartDate();
+		endDate = todo.getEndDate();
+
+		if (todo.isDeadlineToDo()){
+			todoDate.setText(formatDate(endDate)); 
+		}
+		if (todo.isTimedToDo()){
+			todoDate.setText(formatDate(startDate)+ "     to       " + formatDate(endDate)); 
+		
+		}
+	
+	
+	}
+	private String formatDate(LocalDateTime date){ 
+		String dateStr = date.toLocalDate().toString(DateTimeFormat.forPattern("dd MMMM yyyy"));
+		String timeStr = date.toLocalTime().toString(DateTimeFormat.forPattern("hh:mm aa"));
+		return "Date: "+ dateStr + " Time: "+ timeStr;
 	}
 
 	private void setMisc(String misc) {
 		todoMisc.setText(misc);
 	}
+	
 	private void setComplete(Boolean isCompleted){
 		if(isCompleted){
 			completeChkBox.setSelected(true);
