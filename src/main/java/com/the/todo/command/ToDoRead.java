@@ -47,7 +47,12 @@ public class ToDoRead extends ToDoCommand {
 
 	@Override
 	protected CommandStatus performExecute() {
-		todoList = todoStorage.getAll();
+		todoList.clear();
+		
+		for (ToDo todo : todoStorage.getAll()) {
+			todoList.add(new ToDo(todo));
+		}
+		
 		return new CommandStatus(Status.SUCCESS, "");
 	}
 

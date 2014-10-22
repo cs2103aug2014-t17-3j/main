@@ -47,6 +47,7 @@ import com.the.todo.command.ToDoComplete;
 import com.the.todo.command.ToDoDelete;
 import com.the.todo.command.ToDoEdit;
 import com.the.todo.command.ToDoIncomplete;
+import com.the.todo.command.ToDoRead;
 import com.the.todo.command.ToDoUndo;
 import com.the.todo.model.ToDo;
 import com.the.todo.storage.JsonFileStore;
@@ -56,6 +57,8 @@ import com.the.todo.util.StringUtil;
 public class Logic {
 
 	private ToDoStore todoStorage;
+	
+	private List<ToDo> todoDisplay;
 	private Map<LocalDate, List<ToDo>> todoMapDisplay;
 	private List<UUID> todoIdStorage;
 	private Stack<ToDoCommand> undoStack;
@@ -69,10 +72,12 @@ public class Logic {
 
 	public Logic() {
 		todoStorage = new JsonFileStore(FILENAME);
+		todoDisplay = new ArrayList<ToDo>();
 		todoMapDisplay = new TreeMap<LocalDate, List<ToDo>>();
 		todoIdStorage = new ArrayList<UUID>();
 		undoStack = new Stack<ToDoCommand>();
 
+		initializeDisplayList();
 		updateDisplayItems();
 	}
 
@@ -104,6 +109,7 @@ public class Logic {
 			todoCommand = new ToDoAdd(todoStorage, todoTitleOrId);
 			break;
 		case READ:
+			todoCommand = new ToDoRead(todoStorage, todoDisplay);
 			break;
 		case EDIT:
 			int id = Integer.valueOf(userInput.split(" ", 3)[1]);
@@ -137,6 +143,10 @@ public class Logic {
 			commandStatus = todoCommand.execute();
 			todoStorage.saveToFile();
 			updateDisplayItems();
+			
+			if (command == CommandType.ADD) {
+				initializeDisplayList();
+			}
 
 			if (todoCommand.isUndoable()
 					&& commandStatus.getStatus() == Status.SUCCESS) {
@@ -232,9 +242,17 @@ public class Logic {
 			}
 		}
 	}
+	
+	private void initializeDisplayList() {
+		todoDisplay.clear();
+		
+	    for(ToDo item: todoStorage.getAll()) {
+	    	todoDisplay.add(new ToDo(item));
+	    }
+	}
 
 	private void updateDisplayItems() {
-		sortByDate(todoMapDisplay, todoStorage.getAll());
+		sortByDate(todoMapDisplay, todoDisplay);
 		updateIdStorage(todoIdStorage, todoMapDisplay);
 	}
 
@@ -249,7 +267,7 @@ public class Logic {
 		}
 
 		if (id != null) {
-			for (ToDo item : todoStorage.getAll()) {
+			for (ToDo item : todoDisplay) {
 				if (item.getId().equals(id)) {
 					todo = item;
 					break;
