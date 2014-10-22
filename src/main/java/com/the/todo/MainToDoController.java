@@ -28,6 +28,7 @@
 
 package com.the.todo;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -58,7 +60,7 @@ import com.the.todo.model.ToDo;
 public class MainToDoController {
 
 	private static final KeyCode[] RESERVED_KEYS = { KeyCode.UP, KeyCode.DOWN,
-		KeyCode.LEFT, KeyCode.RIGHT };
+		KeyCode.LEFT, KeyCode.RIGHT , KeyCode.Z };
 
 	@FXML
 	private Label promptLabel;
@@ -70,6 +72,8 @@ public class MainToDoController {
 	private ScrollPane mainScrollpane;
 	@FXML
 	private Button minimizeButton;
+	@FXML 
+	private SplitPane mainPane; 
 
 	private FadeTransition fadeOut;
 
@@ -269,28 +273,35 @@ public class MainToDoController {
 		Stage stage = (Stage) minimizeButton.getScene().getWindow();
 		stage.hide();
 	}
-
+	
+	int i=0;
 	public void processKeyEvents(KeyEvent keyevent) {
-		for (KeyCode reservedKeyCode : RESERVED_KEYS) {
-
-			if (keyevent.isControlDown() && keyevent.getCode() == KeyCode.Z) {
-				mainInput.setText("undo\n");
-				mainInput.positionCaret(mainInput.getLength());
-			}
-
-			if (keyevent.getCode() == reservedKeyCode) {
-
+	
+		if (keyevent.getEventType()== KeyEvent.KEY_PRESSED){ 
+			if(keyevent.isControlDown()){
+		
 				// TODO Implement actions for reserved keys
-				/*
-				 * if (keyevent.getCode() == KeyCode.UP) {
-				 * mainScrollpane.setVvalue(mainScrollpane.getVvalue()-1); } if
-				 * (keyevent.getCode() == KeyCode.DOWN) {
-				 * mainScrollpane.setVvalue(mainScrollpane.getVvalue()+1); }
-				 */
+
+				if (keyevent.getCode() == KeyCode.UP) {
+					mainScrollpane.setVvalue(mainScrollpane.getVvalue()-0.1); 
+				} 
+				if(keyevent.getCode() == KeyCode.DOWN) {					  
+					mainScrollpane.setVvalue(mainScrollpane.getVvalue()+0.1);
+				}
+				if (keyevent.getCode() == KeyCode.Z) {
+					//i for testing
+					i++;
+					processInput("undo");	
+					showPrompt(i+"");
+				}
 
 				keyevent.consume();
-				break;
 			}
+
+
+			}
+
 		}
-	}
+
 }
+
