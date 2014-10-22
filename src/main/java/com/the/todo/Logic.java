@@ -47,7 +47,6 @@ import com.the.todo.command.ToDoComplete;
 import com.the.todo.command.ToDoDelete;
 import com.the.todo.command.ToDoEdit;
 import com.the.todo.command.ToDoIncomplete;
-import com.the.todo.command.ToDoRead;
 import com.the.todo.command.ToDoUndo;
 import com.the.todo.model.ToDo;
 import com.the.todo.storage.JsonFileStore;
@@ -57,7 +56,7 @@ import com.the.todo.util.StringUtil;
 public class Logic {
 
 	private ToDoStore todoStorage;
-	private List<ToDo> todoList; // TODO: To be replace with TreeMap
+	//private List<ToDo> todoList; // TODO: To be replace with TreeMap
 	private Map<LocalDate, List<ToDo>> todoMapDisplay;
 	private List<UUID> todoIdStorage;
 	private Stack<ToDoCommand> undoStack;
@@ -74,7 +73,7 @@ public class Logic {
 		todoStorage = new JsonFileStore(FILENAME);
 		undoStack = new Stack<ToDoCommand>();
 
-		todoList = todoStorage.getAll(); // TODO: To be replace with TreeMap
+		//todoList = todoStorage.getAll(); // TODO: To be replace with TreeMap
 
 		sortByDate(todoMapDisplay, todoStorage.getAll());
 		updateIdStorage(todoIdStorage, todoMapDisplay);
@@ -88,9 +87,9 @@ public class Logic {
 		return logic;
 	}
 
-	public List<ToDo> getTodoList() { // TODO: To be replace with TreeMap
-		return todoList;
-	}
+//	public List<ToDo> getTodoList() { // TODO: To be replace with TreeMap
+//		return todoList;
+//	}
 
 	public ToDoStore getTodoStorage() {
 		return todoStorage;
@@ -159,7 +158,7 @@ public class Logic {
 			todoCommand = new ToDoAdd(todoStorage, todoTitleOrId);
 			break;
 		case READ:
-			todoCommand = new ToDoRead(todoStorage, todoList);
+			//todoCommand = new ToDoRead(todoStorage, todoList);
 			break;
 		case EDIT:
 			int id = Integer.valueOf(userInput.split(" ", 3)[1]);
@@ -192,7 +191,7 @@ public class Logic {
 		if (command != CommandType.INVALID) {
 			commandStatus = todoCommand.execute();
 			todoStorage.saveToFile();
-			todoList = todoStorage.getAll();
+			//todoList = todoStorage.getAll();
 			
 			if (todoCommand.isUndoable() && commandStatus.getStatus() == Status.SUCCESS) {
 				undoStack.push(todoCommand);
@@ -258,13 +257,25 @@ public class Logic {
 		return splitInput[1];
 	}
 
-	private ToDo getToDo(int id) {
-		ToDo todo;
+	private ToDo getToDo(int index) {
+		ToDo todo = null;
+		UUID id = null;
+		
 		try {
-			todo = todoList.get(id - 1);
+			id = todoIdStorage.get(index - 1);
 		} catch (IndexOutOfBoundsException ex) {
-			todo = null;
+			id = null;
 		}
+		
+		if (id == null) {
+			for (ToDo item : todoStorage.getAll()) {
+				if (item.getId().equals(id)) {
+					todo = item;
+					break;
+				}
+			}
+		}
+		
 		return todo;
 	}
 
