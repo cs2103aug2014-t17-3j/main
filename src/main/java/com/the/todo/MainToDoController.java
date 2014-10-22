@@ -45,7 +45,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -59,7 +58,7 @@ import com.the.todo.model.ToDo;
 public class MainToDoController {
 
 	private static final KeyCode[] RESERVED_KEYS = { KeyCode.UP, KeyCode.DOWN,
-			KeyCode.LEFT, KeyCode.RIGHT };
+		KeyCode.LEFT, KeyCode.RIGHT };
 
 	@FXML
 	private Label promptLabel;
@@ -72,7 +71,6 @@ public class MainToDoController {
 	@FXML
 	private Button minimizeButton;
 
-	private AnchorPane anPane;
 	private FadeTransition fadeOut;
 
 	private static Logic appLogic;
@@ -144,7 +142,6 @@ public class MainToDoController {
 		int index = 1;
 
 		ArrayList<Node> contentsToDisplay = new ArrayList<Node>();
-		ArrayList<Character> i = new ArrayList<Character>();
 
 		if (todoItems.isEmpty()) {
 			Label temp = new Label("No items to show.");
@@ -162,11 +159,13 @@ public class MainToDoController {
 								public void changed(
 										ObservableValue<? extends Boolean> ov,
 										Boolean old_val, Boolean new_val) {
-									if (new_val)
+									if (new_val){
 										processInput("complete " + temp.getID());
-									else
+									}
+									else{
 										processInput("incomplete "
 												+ temp.getID());
+									}
 								}
 							});
 
@@ -187,7 +186,6 @@ public class MainToDoController {
 
 		int index = 1;
 		ArrayList<Node> contentsToDisplay = new ArrayList<Node>();
-		ArrayList<Character> i = new ArrayList<Character>();
 
 		if (todoItems == null || todoItems.isEmpty()) {
 			Label temp = new Label("No items to show.");
@@ -257,10 +255,12 @@ public class MainToDoController {
 					@Override
 					public void changed(ObservableValue<? extends Boolean> ov,
 							Boolean old_val, Boolean new_val) {
-						if (new_val)
+						if (new_val){
 							processInput("complete " + container.getID());
-						else
+						}
+						else{
 							processInput("incomplete " + container.getID());
+						}
 					}
 				});
 	}
@@ -275,8 +275,9 @@ public class MainToDoController {
 
 			if (keyevent.isControlDown() && keyevent.getCode() == KeyCode.Z) {
 				mainInput.setText("undo\n");
-				mainInput.positionCaret(4);
+				mainInput.positionCaret(mainInput.getLength());
 			}
+
 			if (keyevent.getCode() == reservedKeyCode) {
 
 				// TODO Implement actions for reserved keys
