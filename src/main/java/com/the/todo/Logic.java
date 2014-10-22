@@ -192,6 +192,8 @@ public class Logic {
 			commandStatus = todoCommand.execute();
 			todoStorage.saveToFile();
 			//todoList = todoStorage.getAll();
+			sortByDate(todoMapDisplay, todoStorage.getAll());
+			updateIdStorage(todoIdStorage, todoMapDisplay);
 			
 			if (todoCommand.isUndoable() && commandStatus.getStatus() == Status.SUCCESS) {
 				undoStack.push(todoCommand);
