@@ -29,6 +29,7 @@
 package com.the.todo.storage;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.the.todo.model.ToDo;
 
@@ -43,6 +44,8 @@ public interface ToDoStore {
 	public ToDo get(ToDo todo);
 
 	public ToDo save(ToDo todo);
+	
+	public ToDo update(UUID id, ToDo todo);
 
 	public void delete(ToDo todo);
 
