@@ -30,6 +30,7 @@ package com.the.todo.storage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import com.the.todo.model.ToDo;
 
@@ -42,7 +43,7 @@ public class InMemoryStore implements ToDoStore {
 	}
 
 	@Override
-	public List<ToDo> getAll() {		
+	public List<ToDo> getAll() {
 		return store;
 	}
 
@@ -55,7 +56,7 @@ public class InMemoryStore implements ToDoStore {
 	public List<ToDo> getAllUncompleted() {
 		return null;
 	}
-	
+
 	@Override
 	public ToDo get(ToDo todo) {
 		int index = store.indexOf(todo);
@@ -66,6 +67,26 @@ public class InMemoryStore implements ToDoStore {
 	public ToDo save(ToDo todo) {
 		store.add(todo);
 		return todo;
+	}
+
+	@Override
+	public ToDo update(UUID id, ToDo todo) {
+		int index = Integer.MAX_VALUE;
+
+		for (int i = 0; i < store.size(); i++) {
+			if (store.get(i).getId().equals(id)) {
+				index = i;
+				break;
+			}
+		}
+
+		if (index != Integer.MAX_VALUE) {
+			store.remove(index);
+			store.add(todo);
+			return todo;
+		} else {
+			return null;
+		}
 	}
 
 	@Override

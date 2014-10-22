@@ -57,6 +57,7 @@ public class ToDoEdit extends ToDoCommand {
 
 	private ToDoStore todoStorage;
 	private ToDo todo;
+	private ToDo newtodo;
 	private String input;
 
 	public ToDoEdit(ToDoStore todoStorage, ToDo todo, String input) {
@@ -72,6 +73,8 @@ public class ToDoEdit extends ToDoCommand {
 
 		String todoTitle;
 		String[] todoStrings = StringUtil.splitString(input, " ", 2);
+		newtodo = new ToDo(todo);
+		todoStorage.update(newtodo.getId(), newtodo);
 
 		if (todoStrings.length != 2) {
 			return new CommandStatus(Status.ERROR, EXECUTE_ILLEGAL_ARGUMENT);
@@ -79,18 +82,18 @@ public class ToDoEdit extends ToDoCommand {
 
 		todoTitle = todoStrings[1];
 
-		if (this.todo == null) {
+		if (this.newtodo == null) {
 			return new CommandStatus(Status.ERROR, String.format(
 					EXECUTE_DOES_NOT_EXIST, ""));
 		}
 
 		try {
-			this.todo = editToDo(this.todo, todoTitle);
+			this.newtodo = editToDo(this.newtodo, todoTitle);
 		} catch (InvalidDateException e) {
 			return new CommandStatus(Status.ERROR, "Invalid date!");
 		}
 
-		if (this.todo == null) {
+		if (this.newtodo == null) {
 			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
 		}
 
@@ -100,7 +103,13 @@ public class ToDoEdit extends ToDoCommand {
 
 	@Override
 	protected CommandStatus performUndo() {
-		return new CommandStatus(Status.INVALID);
+		todoStorage.update(todo.getId(), todo);
+		if (this.newtodo == null) {
+			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
+		}
+
+		return new CommandStatus(Status.SUCCESS, String.format(EXECUTE_SUCCESS,
+				""));
 	}
 
 	private ToDo editToDo(ToDo todo, String input) throws InvalidDateException {

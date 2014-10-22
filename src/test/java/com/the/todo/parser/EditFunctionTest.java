@@ -145,12 +145,11 @@ public class EditFunctionTest {
 		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
 	}
 
-
 	/**************************************************** Edit 1 Item with short form keywords *******************/
 	@Test
 	public void testUpdateT() {
 		appLogic.processCommand("edit 1 -t Test short form");
-
+	
 		assertEquals(1, todoStorage.count());
 		assertEquals("Test short form", todoStorage.getAll().get(0).getTitle());
 	}
@@ -438,6 +437,26 @@ public class EditFunctionTest {
 		assertEquals(expectedDate1, todoStorage.getAll().get(0).getStartDate());
 		assertEquals(expectedDate2, todoStorage.getAll().get(0).getEndDate());
 		assertEquals("+test", todoStorage.getAll().get(0).getCategory());
+	}
+	
+	/**************************************************** Undo Edit Function ******************************/
+	@Test
+	public void testUndo() {
+		appLogic.processCommand("edit 1 -t Test short form");
+		appLogic.processCommand("undo");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("CS2013 IVLE quiz", todoStorage.getAll().get(0).getTitle());
+	}
+	
+	@Test
+	public void testUndoEndDate() {
+		LocalDateTime expectedDate = ToDo.INVALID_DATE;
+		appLogic.processCommand("edit 1 -e 29/09/2014");
+		appLogic.processCommand("undo");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
 	}
 
 }

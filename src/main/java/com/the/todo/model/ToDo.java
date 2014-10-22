@@ -73,6 +73,17 @@ public class ToDo implements Comparable<ToDo> {
 		this.startDate = startDate;
 		this.endDate = endDate;
 	}
+	
+	public ToDo(ToDo oldToDo) {
+		this.id = oldToDo.getId();
+		this.type = oldToDo.getType();
+		this.title = oldToDo.getTitle();	
+		this.category = oldToDo.getCategory();
+		this.startDate = oldToDo.getStartDate();
+		this.endDate = oldToDo.getEndDate();
+		this.completed = oldToDo.isCompleted();
+		this.deleted = oldToDo.isDeleted();
+	}
 
 	public UUID getId() {
 		return id;
