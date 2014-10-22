@@ -143,10 +143,6 @@ public class Logic {
 			commandStatus = todoCommand.execute();
 			todoStorage.saveToFile();
 			updateDisplayItems();
-			
-			if (command == CommandType.ADD) {
-				initializeDisplayList();
-			}
 
 			if (todoCommand.isUndoable()
 					&& commandStatus.getStatus() == Status.SUCCESS) {
@@ -252,7 +248,7 @@ public class Logic {
 	}
 
 	private void updateDisplayItems() {
-		sortByDate(todoMapDisplay, todoDisplay);
+		sortByDate(todoMapDisplay, todoStorage.getAll());
 		updateIdStorage(todoIdStorage, todoMapDisplay);
 	}
 
@@ -267,7 +263,7 @@ public class Logic {
 		}
 
 		if (id != null) {
-			for (ToDo item : todoDisplay) {
+			for (ToDo item : todoStorage.getAll()) {
 				if (item.getId().equals(id)) {
 					todo = item;
 					break;
