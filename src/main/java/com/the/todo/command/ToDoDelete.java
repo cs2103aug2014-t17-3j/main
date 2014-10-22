@@ -64,7 +64,8 @@ public class ToDoDelete extends ToDoCommand {
 
 	@Override
 	protected CommandStatus performUndo() {
-		return new CommandStatus(Status.INVALID);
+		todoStorage.save(todo);
+		return new CommandStatus(Status.SUCCESS, String.format("ToDo successfully restored: %s", todo.getTitle()));
 	}
 
 }

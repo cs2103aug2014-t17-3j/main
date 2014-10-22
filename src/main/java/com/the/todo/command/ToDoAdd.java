@@ -77,7 +77,9 @@ public class ToDoAdd extends ToDoCommand {
 
 	@Override
 	protected CommandStatus performUndo() {
-		return new CommandStatus(Status.INVALID);
+		todoStorage.delete(todo);
+		return new CommandStatus(Status.SUCCESS, String.format(
+				"Task successfully removed: %s", todo.getTitle()));
 	}
 
 	private ToDo createToDo(String input) throws InvalidDateException {
