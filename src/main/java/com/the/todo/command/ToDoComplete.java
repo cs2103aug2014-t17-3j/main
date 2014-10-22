@@ -42,12 +42,24 @@ public class ToDoComplete extends ToDoCommand{
 
 	@Override
 	protected CommandStatus performUndo() {
-		// TODO Auto-generated method stub
-		return null;
+		this.todo = undoCompleteToDo(this.todo);
+
+		if (this.todo == null) {
+			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
+		}
+		
+		//todoStorage.save(this.todo.getId(), this.todo);
+		return new CommandStatus(Status.SUCCESS, String.format(EXECUTE_SUCCESS,
+				""));
 	}
 	
 	private ToDo isCompleteToDo(ToDo todo) {
 		todo.setCompleted(true);
+		return todo;
+	}
+	
+	private ToDo undoCompleteToDo(ToDo todo) {
+		todo.setCompleted(false);
 		return todo;
 	}
 
