@@ -56,7 +56,7 @@ import com.the.todo.util.StringUtil;
 public class Logic {
 
 	private ToDoStore todoStorage;
-	//private List<ToDo> todoList; // TODO: To be replace with TreeMap
+	// private List<ToDo> todoList; // TODO: To be replace with TreeMap
 	private Map<LocalDate, List<ToDo>> todoMapDisplay;
 	private List<UUID> todoIdStorage;
 	private Stack<ToDoCommand> undoStack;
@@ -74,10 +74,7 @@ public class Logic {
 		todoIdStorage = new ArrayList<UUID>();
 		undoStack = new Stack<ToDoCommand>();
 
-		//todoList = todoStorage.getAll(); // TODO: To be replace with TreeMap
-
-		sortByDate(todoMapDisplay, todoStorage.getAll());
-		updateIdStorage(todoIdStorage, todoMapDisplay);
+		updateDisplayItems();
 	}
 
 	public static Logic getInstance() {
@@ -88,63 +85,13 @@ public class Logic {
 		return logic;
 	}
 
-//	public List<ToDo> getTodoList() { // TODO: To be replace with TreeMap
-//		return todoList;
-//	}
-
 	public ToDoStore getTodoStorage() {
 		return todoStorage;
 	}
 
 	public Map<LocalDate, List<ToDo>> getToDoMapDisplay() {
-		sortByDate(todoMapDisplay, todoStorage.getAll());
-		updateIdStorage(todoIdStorage, todoMapDisplay);
-
-		for (Entry<LocalDate, List<ToDo>> entry : todoMapDisplay.entrySet()) {
-			System.out.println(entry.getKey() + " = " + entry.getValue());
-		}
-
+		updateDisplayItems();
 		return todoMapDisplay;
-	}
-
-	private void sortByDate(Map<LocalDate, List<ToDo>> todoMap,
-			List<ToDo> todoList) {
-		todoMap.clear();
-		
-		List<ToDo> todoByDate;
-		LocalDate date;
-
-		for (ToDo todo : todoList) {
-			date = todo.getEndDate().toLocalDate();
-
-			if (todoMap.containsKey(date)) {
-				todoByDate = todoMap.get(date);
-				todoByDate.add(todo);
-			} else {
-				todoByDate = new ArrayList<ToDo>();
-				todoByDate.add(todo);
-				todoMap.put(date, todoByDate);
-			}
-		}
-
-		for (Entry<LocalDate, List<ToDo>> entry : todoMap.entrySet()) {
-			Collections.sort(entry.getValue());
-		}
-	}
-
-	private void updateIdStorage(List<UUID> todoIdStorage,
-			Map<LocalDate, List<ToDo>> todoMap) {
-		if (todoMap == null || todoMap.isEmpty()) {
-			return;
-		}
-
-		todoIdStorage.clear();
-		
-		for (Entry<LocalDate, List<ToDo>> entry : todoMap.entrySet()) {
-			for (ToDo todo : entry.getValue()) {
-				todoIdStorage.add(todo.getId());
-			}
-		}
 	}
 
 	public CommandStatus processCommand(String userInput) {
@@ -158,7 +105,7 @@ public class Logic {
 			todoCommand = new ToDoAdd(todoStorage, todoTitleOrId);
 			break;
 		case READ:
-			//todoCommand = new ToDoRead(todoStorage, todoList);
+			// todoCommand = new ToDoRead(todoStorage, todoList);
 			break;
 		case EDIT:
 			int id = Integer.valueOf(userInput.split(" ", 3)[1]);
@@ -173,7 +120,7 @@ public class Logic {
 			ToDo taskToComplete = getToDo(Integer.valueOf(todoTitleOrId));
 			todoCommand = new ToDoComplete(todoStorage, taskToComplete);
 			break;
-		case INCOMPLETE: 
+		case INCOMPLETE:
 			ToDo taskToIncomplete = getToDo(Integer.valueOf(todoTitleOrId));
 			todoCommand = new ToDoIncomplete(todoStorage, taskToIncomplete);
 			break;
@@ -191,11 +138,10 @@ public class Logic {
 		if (command != CommandType.INVALID) {
 			commandStatus = todoCommand.execute();
 			todoStorage.saveToFile();
-			//todoList = todoStorage.getAll();
-			sortByDate(todoMapDisplay, todoStorage.getAll());
-			updateIdStorage(todoIdStorage, todoMapDisplay);
-			
-			if (todoCommand.isUndoable() && commandStatus.getStatus() == Status.SUCCESS) {
+			updateDisplayItems();
+
+			if (todoCommand.isUndoable()
+					&& commandStatus.getStatus() == Status.SUCCESS) {
 				undoStack.push(todoCommand);
 			}
 		} else {
@@ -249,26 +195,61 @@ public class Logic {
 		}
 	}
 
-	private static String getTitleOrId(String userInput) {
-		String[] splitInput = StringUtil.splitString(userInput, " ", 2);
+	private void sortByDate(Map<LocalDate, List<ToDo>> todoMap,
+			List<ToDo> todoList) {
+		todoMap.clear();
 
-		if (splitInput.length == 1) {
-			return "";
+		List<ToDo> todoByDate;
+		LocalDate date;
+
+		for (ToDo todo : todoList) {
+			date = todo.getEndDate().toLocalDate();
+
+			if (todoMap.containsKey(date)) {
+				todoByDate = todoMap.get(date);
+				todoByDate.add(todo);
+			} else {
+				todoByDate = new ArrayList<ToDo>();
+				todoByDate.add(todo);
+				todoMap.put(date, todoByDate);
+			}
 		}
 
-		return splitInput[1];
+		for (Entry<LocalDate, List<ToDo>> entry : todoMap.entrySet()) {
+			Collections.sort(entry.getValue());
+		}
+	}
+
+	private void updateIdStorage(List<UUID> todoIdStorage,
+			Map<LocalDate, List<ToDo>> todoMap) {
+		if (todoMap == null || todoMap.isEmpty()) {
+			return;
+		}
+
+		todoIdStorage.clear();
+
+		for (Entry<LocalDate, List<ToDo>> entry : todoMap.entrySet()) {
+			for (ToDo todo : entry.getValue()) {
+				todoIdStorage.add(todo.getId());
+			}
+		}
+	}
+
+	private void updateDisplayItems() {
+		sortByDate(todoMapDisplay, todoStorage.getAll());
+		updateIdStorage(todoIdStorage, todoMapDisplay);
 	}
 
 	private ToDo getToDo(int index) {
 		ToDo todo = null;
 		UUID id = null;
-		
+
 		try {
 			id = todoIdStorage.get(index - 1);
 		} catch (IndexOutOfBoundsException ex) {
 			id = null;
 		}
-		
+
 		if (id != null) {
 			for (ToDo item : todoStorage.getAll()) {
 				if (item.getId().equals(id)) {
@@ -277,8 +258,18 @@ public class Logic {
 				}
 			}
 		}
-		
+
 		return todo;
+	}
+
+	private static String getTitleOrId(String userInput) {
+		String[] splitInput = StringUtil.splitString(userInput, " ", 2);
+
+		if (splitInput.length == 1) {
+			return "";
+		}
+
+		return splitInput[1];
 	}
 
 }
