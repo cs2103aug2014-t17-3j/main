@@ -74,7 +74,7 @@ public class ToDoEdit extends ToDoCommand {
 		String todoTitle;
 		String[] todoStrings = StringUtil.splitString(input, " ", 2);
 		newtodo = new ToDo(todo);
-		
+		todoStorage.update(newtodo.getId(), newtodo);
 
 		if (todoStrings.length != 2) {
 			return new CommandStatus(Status.ERROR, EXECUTE_ILLEGAL_ARGUMENT);
@@ -103,7 +103,13 @@ public class ToDoEdit extends ToDoCommand {
 
 	@Override
 	protected CommandStatus performUndo() {
-		return null;
+		todoStorage.update(todo.getId(), todo);
+		if (this.newtodo == null) {
+			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
+		}
+
+		return new CommandStatus(Status.SUCCESS, String.format(EXECUTE_SUCCESS,
+				""));
 	}
 
 	private ToDo editToDo(ToDo todo, String input) throws InvalidDateException {
