@@ -43,19 +43,28 @@ public class ToDoSearchTest {
 
 	@Test
 	public void test() {
+		/*This is a boundary case for empty input.*/
 		searchTest("");
+		
+		/*Search that returns no results*/
 		searchTest("or");
+		searchTest("+");
+		searchTest("or +search");
+		
+		/*Search for values at the start/end*/
 		searchTest("Lorem ", "Lorem");
 		searchTest("amet", "dolor sit amet", "amet consectetur adipiscing elit.");
 		searchTest("elit.", "amet consectetur adipiscing elit.");
+		
+		/*Search using multiple keywords*/
 		searchTest("dolor sit", "ipsum dolor sit", "dolor sit amet");
 
-		searchTest("+");
+		/*Search with only category specified*/
 		searchTest("+search", "Lorem");
 		searchTest("+test", "dolor sit amet",
 				"amet consectetur adipiscing elit.");
 
-		searchTest("or +search");
+		/*Search with both keywords and category specified*/
 		searchTest("dolor sit +add", "ipsum dolor sit");
 		searchTest("amet +test", "dolor sit amet",
 				"amet consectetur adipiscing elit.");
