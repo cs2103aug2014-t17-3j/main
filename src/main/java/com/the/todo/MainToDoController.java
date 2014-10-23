@@ -28,7 +28,6 @@
 
 package com.the.todo;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -59,9 +58,6 @@ import com.the.todo.model.ToDo;
 
 public class MainToDoController {
 
-	private static final KeyCode[] RESERVED_KEYS = { KeyCode.UP, KeyCode.DOWN,
-		KeyCode.LEFT, KeyCode.RIGHT , KeyCode.Z };
-
 	@FXML
 	private Label promptLabel;
 	@FXML
@@ -72,8 +68,8 @@ public class MainToDoController {
 	private ScrollPane mainScrollpane;
 	@FXML
 	private Button minimizeButton;
-	@FXML 
-	private SplitPane mainPane; 
+	@FXML
+	private SplitPane mainPane;
 
 	private FadeTransition fadeOut;
 
@@ -163,10 +159,9 @@ public class MainToDoController {
 								public void changed(
 										ObservableValue<? extends Boolean> ov,
 										Boolean old_val, Boolean new_val) {
-									if (new_val){
+									if (new_val) {
 										processInput("complete " + temp.getID());
-									}
-									else{
+									} else {
 										processInput("incomplete "
 												+ temp.getID());
 									}
@@ -259,10 +254,9 @@ public class MainToDoController {
 					@Override
 					public void changed(ObservableValue<? extends Boolean> ov,
 							Boolean old_val, Boolean new_val) {
-						if (new_val){
+						if (new_val) {
 							processInput("complete " + container.getID());
-						}
-						else{
+						} else {
 							processInput("incomplete " + container.getID());
 						}
 					}
@@ -274,33 +268,21 @@ public class MainToDoController {
 		stage.hide();
 	}
 
-	
 	public void processKeyEvents(KeyEvent keyevent) {
+		if (keyevent.getEventType() == KeyEvent.KEY_PRESSED
+				&& keyevent.isControlDown()) {
 
-		for (KeyCode reservedkey : RESERVED_KEYS){ 
-			if (keyevent.getEventType()== KeyEvent.KEY_PRESSED && keyevent.getCode()==reservedkey){ 
-				if(keyevent.isControlDown()){
-
-					// TODO Implement actions for reserved keys
-
-					if (keyevent.getCode() == KeyCode.UP) {
-						mainScrollpane.setVvalue(mainScrollpane.getVvalue()-0.1); 
-					} 
-					if(keyevent.getCode() == KeyCode.DOWN) {					  
-						mainScrollpane.setVvalue(mainScrollpane.getVvalue()+0.1);
-					}
-					if (keyevent.getCode() == KeyCode.Z) {
-						processInput("undo");
-					}
-
-					keyevent.consume();
-					break; 
-				}
+			if (keyevent.getCode() == KeyCode.UP) {
+				mainScrollpane.setVvalue(mainScrollpane.getVvalue() - 0.1);
+				keyevent.consume();
+			} else if (keyevent.getCode() == KeyCode.DOWN) {
+				mainScrollpane.setVvalue(mainScrollpane.getVvalue() + 0.1);
+				keyevent.consume();
+			} else if (keyevent.getCode() == KeyCode.Z) {
+				processInput("undo");
+				keyevent.consume();
 			}
-
 		}
-
 	}
 
 }
-
