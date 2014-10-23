@@ -47,6 +47,7 @@ import com.the.todo.command.ToDoComplete;
 import com.the.todo.command.ToDoDelete;
 import com.the.todo.command.ToDoEdit;
 import com.the.todo.command.ToDoIncomplete;
+import com.the.todo.command.ToDoRead;
 import com.the.todo.command.ToDoUndo;
 import com.the.todo.model.ToDo;
 import com.the.todo.storage.JsonFileStore;
@@ -56,6 +57,8 @@ import com.the.todo.util.StringUtil;
 public class Logic {
 
 	private ToDoStore todoStorage;
+	
+	private List<ToDo> todoDisplay;
 	private Map<LocalDate, List<ToDo>> todoMapDisplay;
 	private List<UUID> todoIdStorage;
 	private Stack<ToDoCommand> undoStack;
@@ -66,14 +69,20 @@ public class Logic {
 	private static enum CommandType {
 		ADD, READ, EDIT, DELETE, COMPLETE, INCOMPLETE, SEARCH, UNDO, INVALID
 	};
+	
+	private static enum DisplayType {
+		ALL, SEARCH
+	};
 
 	public Logic() {
 		todoStorage = new JsonFileStore(FILENAME);
+		todoDisplay = new ArrayList<ToDo>();
 		todoMapDisplay = new TreeMap<LocalDate, List<ToDo>>();
 		todoIdStorage = new ArrayList<UUID>();
 		undoStack = new Stack<ToDoCommand>();
 
-		updateDisplayItems();
+		initializeDisplayList();
+		updateDisplayItems(todoStorage.getAll());
 	}
 
 	public static Logic getInstance() {
@@ -89,7 +98,6 @@ public class Logic {
 	}
 
 	public Map<LocalDate, List<ToDo>> getToDoMapDisplay() {
-		updateDisplayItems();
 		return todoMapDisplay;
 	}
 
@@ -98,12 +106,15 @@ public class Logic {
 		String todoTitleOrId = getTitleOrId(userInput);
 		ToDoCommand todoCommand = null;
 		CommandStatus commandStatus;
+		DisplayType displayType = DisplayType.ALL;
 
 		switch (command) {
 		case ADD:
 			todoCommand = new ToDoAdd(todoStorage, todoTitleOrId);
 			break;
 		case READ:
+			todoCommand = new ToDoRead(todoStorage, todoDisplay);
+			displayType = DisplayType.SEARCH;
 			break;
 		case EDIT:
 			int id = Integer.valueOf(userInput.split(" ", 3)[1]);
@@ -123,6 +134,7 @@ public class Logic {
 			todoCommand = new ToDoIncomplete(todoStorage, taskToIncomplete);
 			break;
 		case SEARCH:
+			displayType = DisplayType.SEARCH;
 			break;
 		case UNDO:
 			todoCommand = new ToDoUndo(todoStorage, undoStack);
@@ -136,7 +148,11 @@ public class Logic {
 		if (command != CommandType.INVALID) {
 			commandStatus = todoCommand.execute();
 			todoStorage.saveToFile();
-			updateDisplayItems();
+			
+			if (displayType == DisplayType.ALL)
+				updateDisplayItems(todoStorage.getAll());
+			else
+				updateDisplayItems(todoDisplay);
 
 			if (todoCommand.isUndoable()
 					&& commandStatus.getStatus() == Status.SUCCESS) {
@@ -232,9 +248,17 @@ public class Logic {
 			}
 		}
 	}
+	
+	private void initializeDisplayList() {
+		todoDisplay.clear();
+		
+	    for(ToDo item: todoStorage.getAll()) {
+	    	todoDisplay.add(new ToDo(item));
+	    }
+	}
 
-	private void updateDisplayItems() {
-		sortByDate(todoMapDisplay, todoStorage.getAll());
+	private void updateDisplayItems(List<ToDo> list) {
+		sortByDate(todoMapDisplay, list);
 		updateIdStorage(todoIdStorage, todoMapDisplay);
 	}
 
