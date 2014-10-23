@@ -1,4 +1,4 @@
-package com.the.todo.parser;
+package com.the.todo.command;
 
 import static org.junit.Assert.*;
 
@@ -10,6 +10,7 @@ import org.junit.Test;
 import com.the.todo.Logic;
 import com.the.todo.io.FileHandler;
 import com.the.todo.model.ToDo;
+import com.the.todo.parser.DateParser;
 import com.the.todo.storage.ToDoStore;
 
 public class EditFunctionTest {

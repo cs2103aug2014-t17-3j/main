@@ -1,4 +1,4 @@
-package com.the.todo.parser;
+package com.the.todo.command;
 
 import static org.junit.Assert.assertEquals;
 
