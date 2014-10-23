@@ -1,7 +1,7 @@
 package com.the.todo.command;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -50,7 +50,7 @@ public class ToDoSearch extends ToDoCommand {
 	}
 
 	private List<ToDo> searchByCategory(List<ToDo> todos, String category) {
-		//assert category to have this format "+"....
+		// assert category to have this format "+"....
 		List<ToDo> results = new ArrayList<ToDo>(todos);
 		ListIterator<ToDo> i = results.listIterator();
 
@@ -75,28 +75,35 @@ public class ToDoSearch extends ToDoCommand {
 		ListIterator<ToDo> i = results.listIterator();
 		while (i.hasNext()) {
 			ToDo nextToDo = i.next();
-			String[] tokenizedTitle = nextToDo.getTitle().split(" ");
-			String[] tokenizedQuery = query.split(" ");
-			List<String> tokenizedQueryList = new ArrayList<String>();
-			Collections.addAll(tokenizedQueryList, tokenizedQuery);
-
-			//TODO extract this part into a method: containsAll
-			for (int j = 0; j < tokenizedTitle.length
-					&& tokenizedQueryList.size() != 0; j++) {
-				ListIterator<String> k = tokenizedQueryList.listIterator();
-				while (k.hasNext()) {
-					if (k.next().equals(tokenizedTitle[j])) {
-						k.remove();
-						break;
-					}
-				}
-			}
-			if (tokenizedQueryList.size() != 0) {
+			if (!containsAll(nextToDo.getTitle(), query)) {
 				i.remove();
 			}
 		}
 
 		return results;
+	}
+
+	private boolean containsAll(String data, String query) {
+		String[] tokenizedData = data.split(" ");
+		String[] tokenizedQuery = query.split(" ");
+		List<String> tokenizedQueryList = new ArrayList<String>(
+				Arrays.asList(tokenizedQuery));
+
+		for (int i = 0; i < tokenizedData.length
+				&& tokenizedQueryList.size() != 0; i++) {
+			ListIterator<String> j = tokenizedQueryList.listIterator();
+			while (j.hasNext()) {
+				if (j.next().equals(tokenizedData[i])) {
+					j.remove();
+					break;
+				}
+			}
+		}
+
+		if (tokenizedQueryList.size() == 0) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
