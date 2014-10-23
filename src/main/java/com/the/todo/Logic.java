@@ -69,6 +69,10 @@ public class Logic {
 	private static enum CommandType {
 		ADD, READ, EDIT, DELETE, COMPLETE, INCOMPLETE, SEARCH, UNDO, INVALID
 	};
+	
+	private static enum DisplayType {
+		ALL, SEARCH
+	};
 
 	public Logic() {
 		todoStorage = new JsonFileStore(FILENAME);
@@ -78,7 +82,7 @@ public class Logic {
 		undoStack = new Stack<ToDoCommand>();
 
 		initializeDisplayList();
-		updateDisplayItems();
+		updateDisplayItems(todoStorage.getAll());
 	}
 
 	public static Logic getInstance() {
@@ -94,7 +98,6 @@ public class Logic {
 	}
 
 	public Map<LocalDate, List<ToDo>> getToDoMapDisplay() {
-		updateDisplayItems();
 		return todoMapDisplay;
 	}
 
@@ -103,6 +106,7 @@ public class Logic {
 		String todoTitleOrId = getTitleOrId(userInput);
 		ToDoCommand todoCommand = null;
 		CommandStatus commandStatus;
+		DisplayType displayType = DisplayType.ALL;
 
 		switch (command) {
 		case ADD:
@@ -110,6 +114,7 @@ public class Logic {
 			break;
 		case READ:
 			todoCommand = new ToDoRead(todoStorage, todoDisplay);
+			displayType = DisplayType.SEARCH;
 			break;
 		case EDIT:
 			int id = Integer.valueOf(userInput.split(" ", 3)[1]);
@@ -129,6 +134,7 @@ public class Logic {
 			todoCommand = new ToDoIncomplete(todoStorage, taskToIncomplete);
 			break;
 		case SEARCH:
+			displayType = DisplayType.SEARCH;
 			break;
 		case UNDO:
 			todoCommand = new ToDoUndo(todoStorage, undoStack);
@@ -142,7 +148,11 @@ public class Logic {
 		if (command != CommandType.INVALID) {
 			commandStatus = todoCommand.execute();
 			todoStorage.saveToFile();
-			updateDisplayItems();
+			
+			if (displayType == DisplayType.ALL)
+				updateDisplayItems(todoStorage.getAll());
+			else
+				updateDisplayItems(todoDisplay);
 
 			if (todoCommand.isUndoable()
 					&& commandStatus.getStatus() == Status.SUCCESS) {
@@ -247,8 +257,8 @@ public class Logic {
 	    }
 	}
 
-	private void updateDisplayItems() {
-		sortByDate(todoMapDisplay, todoStorage.getAll());
+	private void updateDisplayItems(List<ToDo> list) {
+		sortByDate(todoMapDisplay, list);
 		updateIdStorage(todoIdStorage, todoMapDisplay);
 	}
 
