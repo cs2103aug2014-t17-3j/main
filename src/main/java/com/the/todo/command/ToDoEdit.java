@@ -72,14 +72,15 @@ public class ToDoEdit extends ToDoCommand {
 	protected CommandStatus performExecute() {
 
 		String todoTitle = input;
+		String[] todoStrings = input.split(" ", 2);
 		newtodo = new ToDo(todo);
 		todoStorage.update(newtodo.getId(), newtodo);
 
-//		if (todoStrings.length != 2) {
-//			return new CommandStatus(Status.ERROR, EXECUTE_ILLEGAL_ARGUMENT);
-//		}
-//
-//		todoTitle = todoStrings[1];
+		// if (todoStrings.length != 2) {
+		// return new CommandStatus(Status.ERROR, EXECUTE_ILLEGAL_ARGUMENT);
+		// }
+
+		// todoTitle = todoStrings[1];
 
 		if (this.newtodo == null) {
 			return new CommandStatus(Status.ERROR, String.format(
@@ -87,9 +88,20 @@ public class ToDoEdit extends ToDoCommand {
 		}
 
 		try {
+			if (todoTitle.isEmpty()) {
+				return new CommandStatus(Status.ERROR, EXECUTE_ILLEGAL_ARGUMENT);
+			}
+			if (todo.getType() == Type.FLOATING) {
+				if ((input.contains("-s")) && !input.contains("-e")) {
+					return new CommandStatus(Status.ERROR,
+							EXECUTE_ILLEGAL_ARGUMENT);
+				}
+			}
 			this.newtodo = editToDo(this.newtodo, todoTitle);
 		} catch (InvalidDateException e) {
 			return new CommandStatus(Status.ERROR, "Invalid date!");
+		} catch (Exception e) {
+			return new CommandStatus(Status.ERROR, EXECUTE_ILLEGAL_ARGUMENT);
 		}
 
 		if (this.newtodo == null) {
@@ -111,7 +123,7 @@ public class ToDoEdit extends ToDoCommand {
 				""));
 	}
 
-	private ToDo editToDo(ToDo todo, String input) throws InvalidDateException {
+	private ToDo editToDo(ToDo todo, String input) throws Exception {
 		/* String Tokenizer */
 		List<String> tokenString = new ArrayList<String>();
 		StringTokenizer tokens = new StringTokenizer(input, DELIM);
@@ -127,7 +139,16 @@ public class ToDoEdit extends ToDoCommand {
 			if (splitSubInputArr.length == 2) {
 				todo = proccessEditData(todo, splitSubInputArr);
 			} else if (splitSubInputArr.length == 1) {
-				todo = removeStartAndEndDate(todo, splitSubInputArr[0]);
+				String commands = splitSubInputArr[0].toUpperCase();
+				FieldType typeOfField = FieldType.valueOf(commands);
+				if (typeOfField.equals(FieldType.RS)
+						|| typeOfField.equals(FieldType.RE)
+						|| typeOfField.equals(FieldType.REMOVESTART)
+						|| typeOfField.equals(FieldType.REMOVEEND)) {
+					todo = removeStartAndEndDate(todo, splitSubInputArr[0]);
+				} else {
+					throw new Exception("Missing Args");
+				}
 			} else {
 				break;
 			}

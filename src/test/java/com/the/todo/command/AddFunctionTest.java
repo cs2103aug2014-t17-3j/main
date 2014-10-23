@@ -32,25 +32,93 @@ public class AddFunctionTest {
 		FileHandler.writeFile("thetodo.json", "");
 	}
 
+	/***************************************** Add 1 task ***********************************************/
+	// Add 1 task without start and end date.
+	// Type will be floating task
 	@Test
-	public void testAdd() {
+	public void testAddOneItem() {
+
+		appLogic.processCommand("add remember to get milk");
+		todoStorage = appLogic.getTodoStorage();
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get milk", todoStorage.getAll().get(1)
+				.getTitle());
+	}
+
+	/***************************************** Add 1 task with Number & relative date ***********************************************/
+	// Add 1 task with end date.
+	// Type will be deadline task
+	@Test
+	public void testAddNumberFormatDate() {
 		LocalDateTime expectedDate = new LocalDateTime(2014, 11, 11, 23, 59);
 		appLogic.processCommand("add remember to get milk on 11/11/2014");
 		todoStorage = appLogic.getTodoStorage();
 
 		assertEquals(2, todoStorage.count());
-		assertEquals("remember to get milk on 11/11/2014", todoStorage.getAll().get(1).getTitle());
+		assertEquals("remember to get milk on 11/11/2014", todoStorage.getAll()
+				.get(1).getTitle());
 		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
 	}
 
 	@Test
-	public void testAddCategory() {
+	public void testAddRelativeFormatDate() {
 		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
-		appLogic.processCommand("add remember to get present on Friday +Birthday");
+		appLogic.processCommand("add remember to get milk on Friday");
+		todoStorage = appLogic.getTodoStorage();
 
 		assertEquals(2, todoStorage.count());
-		assertEquals("remember to get present on Friday", todoStorage.getAll().get(1)
+		assertEquals("remember to get milk on Friday", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+	}
+	
+	// Add 1 task with start date and end date.
+	// Type will be Timed task
+	@Test
+	public void testAddNumberFormatDateStartAndEnd() {
+		LocalDateTime expectedDate = new LocalDateTime(2014, 11, 11, 23, 59);
+		LocalDateTime expectedEndDate = new LocalDateTime(2014, 11, 24, 23, 59);
+		appLogic.processCommand("add remember to get milk from 11/11/2014 to 24/11/2014");
+		todoStorage = appLogic.getTodoStorage();
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get milk from 11/11/2014 to 24/11/2014", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedEndDate, todoStorage.getAll().get(1).getEndDate());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getStartDate());
+	}
+
+	/***************************************** Add 1 task With category ***********************************************/
+	@Test
+	public void testAddCategoryRandomPlace1WithTitle() {
+		appLogic.processCommand("add remember to get present +Birthday");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present", todoStorage.getAll().get(1)
 				.getTitle());
+		assertEquals("+Birthday", todoStorage.getAll().get(1).getCategory());
+	}
+
+	@Test
+	public void testAddCategoryRandomPlace2WithTitle() {
+		appLogic.processCommand("add +Birthday remember to get present ");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present", todoStorage.getAll().get(1)
+				.getTitle());
+		assertEquals("+Birthday", todoStorage.getAll().get(1).getCategory());
+	}
+
+	/***************************************** Add 1 task With category With Date ***********************************************/
+	@Test
+	public void testAddCategoryRandomPlaceWithDate() {
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
+		appLogic.processCommand("add +Birthday remember to get present on Friday");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
 		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
 		assertEquals("+Birthday", todoStorage.getAll().get(1).getCategory());
 	}
@@ -61,8 +129,8 @@ public class AddFunctionTest {
 		appLogic.processCommand("add remember to get present on Friday +Birthday");
 
 		assertEquals(2, todoStorage.count());
-		assertEquals("remember to get present on Friday", todoStorage.getAll().get(1)
-				.getTitle());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
 		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
 		assertEquals("+Birthday", todoStorage.getAll().get(1).getCategory());
 	}
@@ -73,8 +141,8 @@ public class AddFunctionTest {
 		appLogic.processCommand("add remember to get present +Birthday on Friday");
 
 		assertEquals(2, todoStorage.count());
-		assertEquals("remember to get present on Friday", todoStorage.getAll().get(1)
-				.getTitle());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
 		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
 		assertEquals("+Birthday", todoStorage.getAll().get(1).getCategory());
 	}
@@ -85,17 +153,19 @@ public class AddFunctionTest {
 		appLogic.processCommand("add +Birthday remember to get present on Friday");
 
 		assertEquals(2, todoStorage.count());
-		assertEquals("remember to get present on Friday", todoStorage.getAll().get(1)
-				.getTitle());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
 		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
 		assertEquals("+Birthday", todoStorage.getAll().get(1).getCategory());
 	}
-	
+
 	private LocalDateTime calcNextFriday(LocalDateTime d) {
 		if (d.getDayOfWeek() >= DateTimeConstants.FRIDAY) {
 			d = d.plusWeeks(1);
 		}
-		return d.withDayOfWeek(DateTimeConstants.FRIDAY).withHourOfDay(23).withMinuteOfHour(59).withSecondOfMinute(0).withMillisOfSecond(0);
+		return d.withDayOfWeek(DateTimeConstants.FRIDAY).withHourOfDay(23)
+				.withMinuteOfHour(59).withSecondOfMinute(0)
+				.withMillisOfSecond(0);
 	}
 
 }
