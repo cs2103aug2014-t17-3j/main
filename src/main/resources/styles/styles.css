@@ -26,8 +26,7 @@
  * THE SOFTWARE.
  */
 
-/* mainLabel unused for now */
-#mainLabel {
+.groupLabel {
 	-fx-background-color:  #333333;
 	-fx-font-size: 14;
 	-fx-font-family: "Lucida Grande", sans-serif;
@@ -71,4 +70,13 @@
 
 #todoTitle {
 	-fx-font-size: 14;
+}
+
+.check-box .box {
+	-fx-padding: 8;
+    -fx-background-color: #84C085;
+}
+
+.check-box:selected .mark {
+    -fx-background-color: white;
 }
