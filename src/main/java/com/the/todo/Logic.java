@@ -52,12 +52,12 @@ import com.the.todo.command.ToDoUndo;
 import com.the.todo.model.ToDo;
 import com.the.todo.storage.JsonFileStore;
 import com.the.todo.storage.ToDoStore;
-import com.the.todo.util.StringUtil;
+import com.the.todo.util.CommandUtil;
 
 public class Logic {
 
 	private ToDoStore todoStorage;
-	
+
 	private List<ToDo> todoDisplay;
 	private Map<LocalDate, List<ToDo>> todoMapDisplay;
 	private List<UUID> todoIdStorage;
@@ -69,7 +69,7 @@ public class Logic {
 	private static enum CommandType {
 		ADD, READ, EDIT, DELETE, COMPLETE, INCOMPLETE, SEARCH, UNDO, INVALID
 	};
-	
+
 	private static enum DisplayType {
 		ALL, SEARCH
 	};
@@ -101,37 +101,34 @@ public class Logic {
 		return todoMapDisplay;
 	}
 
-	public CommandStatus processCommand(String userInput) {
-		CommandType command = getCommandType(userInput);
-		String todoTitleOrId = getTitleOrId(userInput);
+	public CommandStatus processCommand(String input) {
+		String command = CommandUtil.getFirstPhrase(input);
+		String params = CommandUtil.getParams(command, input);
+		CommandType commandType = getCommandType(command);
+
 		ToDoCommand todoCommand = null;
-		CommandStatus commandStatus;
 		DisplayType displayType = DisplayType.ALL;
 
-		switch (command) {
+		CommandStatus commandStatus;
+
+		switch (commandType) {
 		case ADD:
-			todoCommand = new ToDoAdd(todoStorage, todoTitleOrId);
+			todoCommand = new ToDoAdd(todoStorage, params);
 			break;
 		case READ:
 			todoCommand = new ToDoRead(todoStorage, todoDisplay);
 			displayType = DisplayType.SEARCH;
 			break;
 		case EDIT:
-			int id = Integer.valueOf(userInput.split(" ", 3)[1]);
-			ToDo taskToEdit = getToDo(id);
-			todoCommand = new ToDoEdit(todoStorage, taskToEdit, todoTitleOrId);
-			break;
 		case DELETE:
-			ToDo taskToDelete = getToDo(Integer.valueOf(todoTitleOrId));
-			todoCommand = new ToDoDelete(todoStorage, taskToDelete);
-			break;
 		case COMPLETE:
-			ToDo taskToComplete = getToDo(Integer.valueOf(todoTitleOrId));
-			todoCommand = new ToDoComplete(todoStorage, taskToComplete);
-			break;
 		case INCOMPLETE:
-			ToDo taskToIncomplete = getToDo(Integer.valueOf(todoTitleOrId));
-			todoCommand = new ToDoIncomplete(todoStorage, taskToIncomplete);
+			try {
+				todoCommand = parseToDoCommand(commandType, params);
+			} catch (Exception e) {
+				commandType = CommandType.INVALID; 
+				commandStatus = new CommandStatus(Status.INVALID, "Invalid command.");
+			}
 			break;
 		case SEARCH:
 			displayType = DisplayType.SEARCH;
@@ -145,10 +142,10 @@ public class Logic {
 			break;
 		}
 
-		if (command != CommandType.INVALID) {
+		if (commandType != CommandType.INVALID) {
 			commandStatus = todoCommand.execute();
 			todoStorage.saveToFile();
-			
+
 			if (displayType == DisplayType.ALL)
 				updateDisplayItems(todoStorage.getAll());
 			else
@@ -178,14 +175,13 @@ public class Logic {
 		return commandStatus;
 	}
 
-	private CommandType getCommandType(String userInput) {
+	private CommandType getCommandType(String input) {
 
-		if (userInput.trim().isEmpty()) {
+		if (input.trim().isEmpty()) {
 			return CommandType.INVALID;
 		}
 
-		String[] splitInput = StringUtil.splitString(userInput, " ", 2);
-		String command = splitInput[0].toLowerCase();
+		String command = CommandUtil.getFirstPhrase(input);
 
 		switch (command) {
 		case "add":
@@ -248,13 +244,13 @@ public class Logic {
 			}
 		}
 	}
-	
+
 	private void initializeDisplayList() {
 		todoDisplay.clear();
-		
-	    for(ToDo item: todoStorage.getAll()) {
-	    	todoDisplay.add(new ToDo(item));
-	    }
+
+		for (ToDo item : todoStorage.getAll()) {
+			todoDisplay.add(new ToDo(item));
+		}
 	}
 
 	private void updateDisplayItems(List<ToDo> list) {
@@ -262,15 +258,34 @@ public class Logic {
 		updateIdStorage(todoIdStorage, todoMapDisplay);
 	}
 
-	private ToDo getToDo(int index) {
-		ToDo todo = null;
-		UUID id = null;
+	private ToDoCommand parseToDoCommand(CommandType commandType, String input) throws Exception {
+
+		String index = CommandUtil.getFirstPhrase(input);
+		String params = CommandUtil.getParams(index, input);
 
 		try {
-			id = todoIdStorage.get(index - 1);
-		} catch (IndexOutOfBoundsException ex) {
-			id = null;
+			UUID id = getId(Integer.valueOf(index));
+			ToDo todo = getToDo(id);
+			
+			switch (commandType) {
+			case EDIT:
+				return new ToDoEdit(todoStorage, todo, params);
+			case DELETE:
+				return new ToDoDelete(todoStorage, todo);
+			case COMPLETE:
+				return new ToDoComplete(todoStorage, todo);
+			case INCOMPLETE:
+				return new ToDoIncomplete(todoStorage, todo);
+			default:
+				return null;
+			}
+		} catch (NumberFormatException ex) {
+			throw new Exception("Invalid Command.");
 		}
+	}
+
+	private ToDo getToDo(UUID id) {
+		ToDo todo = null;
 
 		if (id != null) {
 			for (ToDo item : todoStorage.getAll()) {
@@ -284,14 +299,16 @@ public class Logic {
 		return todo;
 	}
 
-	private static String getTitleOrId(String userInput) {
-		String[] splitInput = StringUtil.splitString(userInput, " ", 2);
+	private UUID getId(int index) {
+		UUID id;
 
-		if (splitInput.length == 1) {
-			return "";
+		try {
+			id = todoIdStorage.get(index - 1);
+		} catch (IndexOutOfBoundsException ex) {
+			id = null;
 		}
 
-		return splitInput[1];
+		return id;
 	}
 
 }

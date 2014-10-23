@@ -71,16 +71,15 @@ public class ToDoEdit extends ToDoCommand {
 	@Override
 	protected CommandStatus performExecute() {
 
-		String todoTitle;
-		String[] todoStrings = StringUtil.splitString(input, " ", 2);
+		String todoTitle = input;
 		newtodo = new ToDo(todo);
 		todoStorage.update(newtodo.getId(), newtodo);
 
-		if (todoStrings.length != 2) {
-			return new CommandStatus(Status.ERROR, EXECUTE_ILLEGAL_ARGUMENT);
-		}
-
-		todoTitle = todoStrings[1];
+//		if (todoStrings.length != 2) {
+//			return new CommandStatus(Status.ERROR, EXECUTE_ILLEGAL_ARGUMENT);
+//		}
+//
+//		todoTitle = todoStrings[1];
 
 		if (this.newtodo == null) {
 			return new CommandStatus(Status.ERROR, String.format(
