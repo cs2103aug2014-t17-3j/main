@@ -42,10 +42,10 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -58,9 +58,6 @@ import com.the.todo.model.ToDo;
 
 public class MainToDoController {
 
-	private static final KeyCode[] RESERVED_KEYS = { KeyCode.UP, KeyCode.DOWN,
-			KeyCode.LEFT, KeyCode.RIGHT };
-
 	@FXML
 	private Label promptLabel;
 	@FXML
@@ -71,8 +68,9 @@ public class MainToDoController {
 	private ScrollPane mainScrollpane;
 	@FXML
 	private Button minimizeButton;
+	@FXML
+	private SplitPane mainPane;
 
-	private AnchorPane anPane;
 	private FadeTransition fadeOut;
 
 	private static Logic appLogic;
@@ -144,7 +142,6 @@ public class MainToDoController {
 		int index = 1;
 
 		ArrayList<Node> contentsToDisplay = new ArrayList<Node>();
-		ArrayList<Character> i = new ArrayList<Character>();
 
 		if (todoItems.isEmpty()) {
 			Label temp = new Label("No items to show.");
@@ -162,11 +159,12 @@ public class MainToDoController {
 								public void changed(
 										ObservableValue<? extends Boolean> ov,
 										Boolean old_val, Boolean new_val) {
-									if (new_val)
+									if (new_val) {
 										processInput("complete " + temp.getID());
-									else
+									} else {
 										processInput("incomplete "
 												+ temp.getID());
+									}
 								}
 							});
 
@@ -187,7 +185,6 @@ public class MainToDoController {
 
 		int index = 1;
 		ArrayList<Node> contentsToDisplay = new ArrayList<Node>();
-		ArrayList<Character> i = new ArrayList<Character>();
 
 		if (todoItems == null || todoItems.isEmpty()) {
 			Label temp = new Label("No items to show.");
@@ -198,9 +195,9 @@ public class MainToDoController {
 			for (Entry<LocalDate, List<ToDo>> entry : todoItems.entrySet()) {
 				System.out.println(entry.getKey() + " = " + entry.getValue());
 				if (entry.getKey().equals(ToDo.INVALID_DATE.toLocalDate())) {
-					lblDate = new Label("Someday");
+					lblDate = createGroupLabel("Someday");
 				} else {
-					lblDate = new Label(entry.getKey().toString(
+					lblDate = createGroupLabel(entry.getKey().toString(
 							DateTimeFormat.forPattern("EEEE, dd MMMM yyyy")));
 				}
 				contentsToDisplay.add(lblDate);
@@ -257,10 +254,11 @@ public class MainToDoController {
 					@Override
 					public void changed(ObservableValue<? extends Boolean> ov,
 							Boolean old_val, Boolean new_val) {
-						if (new_val)
+						if (new_val) {
 							processInput("complete " + container.getID());
-						else
+						} else {
 							processInput("incomplete " + container.getID());
+						}
 					}
 				});
 	}
@@ -270,26 +268,27 @@ public class MainToDoController {
 		stage.hide();
 	}
 
+	public Label createGroupLabel (String text){
+		Label label = new Label(text);
+		label.getStyleClass().add("groupLabel");
+		
+		return label;
+	}
 	public void processKeyEvents(KeyEvent keyevent) {
-		for (KeyCode reservedKeyCode : RESERVED_KEYS) {
+		if (keyevent.getEventType() == KeyEvent.KEY_PRESSED
+				&& keyevent.isControlDown()) {
 
-			if (keyevent.isControlDown() && keyevent.getCode() == KeyCode.Z) {
-				mainInput.setText("undo\n");
-				mainInput.positionCaret(4);
-			}
-			if (keyevent.getCode() == reservedKeyCode) {
-
-				// TODO Implement actions for reserved keys
-				/*
-				 * if (keyevent.getCode() == KeyCode.UP) {
-				 * mainScrollpane.setVvalue(mainScrollpane.getVvalue()-1); } if
-				 * (keyevent.getCode() == KeyCode.DOWN) {
-				 * mainScrollpane.setVvalue(mainScrollpane.getVvalue()+1); }
-				 */
-
+			if (keyevent.getCode() == KeyCode.UP) {
+				mainScrollpane.setVvalue(mainScrollpane.getVvalue() - 0.1);
 				keyevent.consume();
-				break;
+			} else if (keyevent.getCode() == KeyCode.DOWN) {
+				mainScrollpane.setVvalue(mainScrollpane.getVvalue() + 0.1);
+				keyevent.consume();
+			} else if (keyevent.getCode() == KeyCode.Z) {
+				processInput("undo");
+				keyevent.consume();
 			}
 		}
 	}
+
 }
