@@ -58,6 +58,14 @@
 	-fx-background-color: transparent;
 }
 
+#mainInput:focused { 
+
+  -fx-background-color: transparent,-fx-box-border,-fx-control-inner-background;
+  -fx-background-insets: -1.4, 0, 1;
+  -fx-background-radius: 1.4, 2.5, 2.5;
+  -fx-padding: 5; 
+}
+
 /* ToDoContainer styles */
 #root {
 	-fx-padding: 5;
