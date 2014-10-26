@@ -47,8 +47,9 @@ import com.the.todo.command.ToDoComplete;
 import com.the.todo.command.ToDoDelete;
 import com.the.todo.command.ToDoEdit;
 import com.the.todo.command.ToDoIncomplete;
-import com.the.todo.command.ToDoView;
+import com.the.todo.command.ToDoSearch;
 import com.the.todo.command.ToDoUndo;
+import com.the.todo.command.ToDoView;
 import com.the.todo.model.ToDo;
 import com.the.todo.storage.JsonFileStore;
 import com.the.todo.storage.ToDoStore;
@@ -131,6 +132,7 @@ public class Logic {
 			}
 			break;
 		case SEARCH:
+			todoCommand = new ToDoSearch(todoStorage, todoDisplay, params);
 			displayType = DisplayType.SEARCH;
 			break;
 		case UNDO:

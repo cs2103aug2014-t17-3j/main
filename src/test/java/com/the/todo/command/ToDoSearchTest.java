@@ -74,7 +74,7 @@ public class ToDoSearchTest {
 	public void searchTest(String query, String... expected) {
 		ArrayList<String> results = new ArrayList<String>();
 
-		ToDoSearch test = new ToDoSearch(storeStub, query, updateListStub);
+		ToDoSearch test = new ToDoSearch(storeStub, updateListStub, query);
 		test.execute();
 
 		for (ToDo todo : updateListStub) {

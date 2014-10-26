@@ -17,12 +17,13 @@ public class ToDoSearch extends ToDoCommand {
 	String query;
 	List<ToDo> updateList;
 
-	public ToDoSearch(ToDoStore todoStorage, String query, List<ToDo> updateList) {
+	public ToDoSearch(ToDoStore todoStorage, List<ToDo> updateList, String query) {
 		super();
-		this.undoable = false;
 		this.todoStorage = todoStorage;
-		this.query = query;
 		this.updateList = updateList;
+		this.query = query;
+		
+		this.undoable = false;
 	}
 
 	@Override
@@ -58,7 +59,7 @@ public class ToDoSearch extends ToDoCommand {
 		if (category != null) {
 			while (i.hasNext()) {
 				ToDo nextToDo = i.next();
-				if (!nextToDo.getCategory().equals(category)) {
+				if (nextToDo.getCategory() == null || !nextToDo.getCategory().equals(category)) {
 					i.remove();
 				}
 			}
