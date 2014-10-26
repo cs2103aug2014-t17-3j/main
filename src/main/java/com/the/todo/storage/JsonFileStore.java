@@ -66,7 +66,14 @@ public class JsonFileStore implements ToDoStore {
 
 	@Override
 	public List<ToDo> getAllCompleted() {
-		return null;
+		List<ToDo> completeToDo = new ArrayList<ToDo>();
+
+		for (int i = 0; i < store.size(); i++) {
+			if (store.get(i).isCompleted()) {
+				completeToDo.add(store.get(i));
+			}
+		}
+		return completeToDo;
 	}
 
 	@Override

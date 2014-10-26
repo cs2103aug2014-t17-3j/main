@@ -171,6 +171,28 @@ public class Logic {
 			System.out.println("Completed: " + todo.isCompleted());
 			System.out.println("Delete: " + todo.isDeleted());
 		}
+		System.out.println("--------Completed---------");
+		for (ToDo todo : todoStorage.getAllCompleted()) {
+			System.out.println("ID: " + todo.getId());
+			System.out.println("Type: " + todo.getType());
+			System.out.println("Title: " + todo.getTitle());
+			System.out.println("Start Date: " + todo.getStartDate());
+			System.out.println("End Date: " + todo.getEndDate());
+			System.out.println("Category: " + todo.getCategory());
+			System.out.println("Completed: " + todo.isCompleted());
+			System.out.println("Delete: " + todo.isDeleted());
+		}
+		System.out.println("--------UnCompleted---------");
+		for (ToDo todo : todoStorage.getAllUncompleted()) {
+			System.out.println("ID: " + todo.getId());
+			System.out.println("Type: " + todo.getType());
+			System.out.println("Title: " + todo.getTitle());
+			System.out.println("Start Date: " + todo.getStartDate());
+			System.out.println("End Date: " + todo.getEndDate());
+			System.out.println("Category: " + todo.getCategory());
+			System.out.println("Completed: " + todo.isCompleted());
+			System.out.println("Delete: " + todo.isDeleted());
+		}
 
 		return commandStatus;
 	}
