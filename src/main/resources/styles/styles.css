@@ -61,6 +61,13 @@
 	-fx-background-color: transparent;
 	-fx-padding: 0;
 }
+.scroll-bar .increment-button ,.scroll-bar .decrement-button {
+    -fx-opacity: 0;
+}
+
+.scroll-bar:vertical {
+  -fx-background-color: transparent;
+}
 
 #mainInput:focused { 
 
