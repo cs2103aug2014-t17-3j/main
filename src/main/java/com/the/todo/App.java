@@ -45,60 +45,65 @@ import javafx.stage.StageStyle;
 import javax.imageio.ImageIO;
 
 public class App extends Application {
-	
-	
+
 	private static final String MAIN_FXML = "/fxml/MainToDo.fxml";
 	private static final String MAIN_STYLE = "/styles/styles.css";
 	private static final String ICON_TRAY = "/images/ic_thetodo.jpg";
+
 	private static final int MAIN_FRAME_HEIGHT = 600;
 	private static final int MAIN_FRAME_WIDTH = 800;
-	
+
 	private Stage primaryStage;
+	private ChangeListener<Boolean> focusListener;
+	private EventHandler<KeyEvent> keyEvent;
 
 	public static void main(String[] args) throws Exception {
 		launch(args);
 	}
 
+	private void initializeListenersAndEvents(MainToDoController controller) {
+		focusListener = new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> ov,
+					Boolean t, Boolean t1) {
+				if (t && !t1) {
+					primaryStage.hide();
+				}
+			}
+		};
+
+		keyEvent = new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent event) {
+				controller.processKeyEvents(event);
+			}
+		};
+	}
+
 	@Override
 	public void start(Stage stage) throws Exception {
 		this.primaryStage = stage;
+
 		Platform.setImplicitExit(false);
 		javax.swing.SwingUtilities.invokeLater(this::addAppToTray);
-		
-		primaryStage.initStyle(StageStyle.UNDECORATED);
 
 		FXMLLoader loader = new FXMLLoader();
 		Parent rootNode = (Parent) loader.load(getClass().getResourceAsStream(
 				MAIN_FXML));
 
+		initializeListenersAndEvents(loader.getController());
+
 		Scene scene = new Scene(rootNode, MAIN_FRAME_WIDTH, MAIN_FRAME_HEIGHT);
-		
 		scene.getStylesheets().add(MAIN_STYLE);
+		scene.addEventFilter(KeyEvent.ANY, keyEvent);
 
-		final MainToDoController control = loader.getController();
-		scene.addEventFilter(KeyEvent.ANY, new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent event) {
-				control.processKeyEvents(event);
-			}
-		});
-		
-		primaryStage.focusedProperty().addListener(new ChangeListener<Boolean>() {
-		    @Override
-		    public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) {
-		        if (t && !t1) {
-		        	//primaryStage.setIconified(true);
-		        	primaryStage.hide();
-		        }
-		    }
-		});
-
-		primaryStage.setTitle("TheTODO");
+		primaryStage.focusedProperty().addListener(focusListener);
+		primaryStage.initStyle(StageStyle.UNDECORATED);
+		primaryStage.setTitle("THE TODO");
 		primaryStage.setScene(scene);
 		primaryStage.show();
-
 	}
-	
+
 	private void addAppToTray() {
 		try {
 			java.awt.Toolkit.getDefaultToolkit();
