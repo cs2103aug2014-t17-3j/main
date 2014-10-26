@@ -75,10 +75,13 @@ public class MainToDoController {
 
 	private static Logic appLogic;
 
+	private ArrayList<String> commandHistory = new ArrayList<String>();
+	private int currentHistoryIndex;
+
 	@FXML
 	void initialize() {
 		mainScrollpane.setFitToWidth(true);
-		
+
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
@@ -93,6 +96,10 @@ public class MainToDoController {
 
 	public void processInput() {
 		String userInput = mainInput.getText();
+
+		commandHistory.add(userInput);
+		currentHistoryIndex = commandHistory.size();
+
 		processInput(userInput);
 	}
 
@@ -270,26 +277,38 @@ public class MainToDoController {
 		stage.hide();
 	}
 
-	public Label createGroupLabel (String text){
+	public Label createGroupLabel(String text) {
 		Label label = new Label(text);
 		label.getStyleClass().add("groupLabel");
 		label.setMaxWidth(Double.MAX_VALUE);
-		
+
 		return label;
 	}
+
 	public void processKeyEvents(KeyEvent keyevent) {
 		if (keyevent.getEventType() == KeyEvent.KEY_PRESSED
 				&& keyevent.isControlDown()) {
 
 			if (keyevent.getCode() == KeyCode.UP) {
 				mainScrollpane.setVvalue(mainScrollpane.getVvalue() - 0.1);
-				keyevent.consume();
 			} else if (keyevent.getCode() == KeyCode.DOWN) {
 				mainScrollpane.setVvalue(mainScrollpane.getVvalue() + 0.1);
-				keyevent.consume();
 			} else if (keyevent.getCode() == KeyCode.Z) {
 				processInput("undo");
-				keyevent.consume();
+			}
+		}
+
+		if (keyevent.getEventType() == KeyEvent.KEY_PRESSED) {
+			if (keyevent.getCode() == KeyCode.UP) {
+				if (currentHistoryIndex > 0) {
+					currentHistoryIndex--;
+					mainInput.setText(commandHistory.get(currentHistoryIndex));
+				}
+			} else if (keyevent.getCode() == KeyCode.DOWN) {
+				if (currentHistoryIndex < commandHistory.size() - 1) {
+					currentHistoryIndex++;
+					mainInput.setText(commandHistory.get(currentHistoryIndex));
+				}
 			}
 		}
 	}
