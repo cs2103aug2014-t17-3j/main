@@ -25,6 +25,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+.split-pane{
+	-fx-padding: 0;
+}
 
 .groupLabel {
 	-fx-background-color:  #333333;
@@ -56,6 +59,7 @@
 
 #mainScrollpane {
 	-fx-background-color: transparent;
+	-fx-padding: 0;
 }
 
 #mainInput:focused { 
