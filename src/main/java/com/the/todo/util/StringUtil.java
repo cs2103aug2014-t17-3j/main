@@ -33,17 +33,8 @@ public class StringUtil {
 	public static String[] splitString(String input, String regex) {
 		return splitString(input, regex, 0);
 	}
-	
+
 	public static String[] splitString(String input, String regex, int limit) {
 		return input.trim().split(regex, limit);
-	}
-
-	/**
-	 * @param input
-	 * @return input with 1 leading and trailing whitespace
-	 */
-	public static String padString (String input){
-		String trimmedInput = input.trim();
-		return " " + trimmedInput + " ";
 	}
 }
