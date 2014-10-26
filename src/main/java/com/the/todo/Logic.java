@@ -47,7 +47,7 @@ import com.the.todo.command.ToDoComplete;
 import com.the.todo.command.ToDoDelete;
 import com.the.todo.command.ToDoEdit;
 import com.the.todo.command.ToDoIncomplete;
-import com.the.todo.command.ToDoRead;
+import com.the.todo.command.ToDoView;
 import com.the.todo.command.ToDoUndo;
 import com.the.todo.model.ToDo;
 import com.the.todo.storage.JsonFileStore;
@@ -67,7 +67,7 @@ public class Logic {
 	private static final String FILENAME = "thetodo.json";
 
 	private static enum CommandType {
-		ADD, READ, EDIT, DELETE, COMPLETE, INCOMPLETE, SEARCH, UNDO, INVALID
+		ADD, VIEW, EDIT, DELETE, COMPLETE, INCOMPLETE, SEARCH, UNDO, INVALID
 	};
 
 	private static enum DisplayType {
@@ -115,8 +115,8 @@ public class Logic {
 		case ADD:
 			todoCommand = new ToDoAdd(todoStorage, params);
 			break;
-		case READ:
-			todoCommand = new ToDoRead(todoStorage, todoDisplay);
+		case VIEW:
+			todoCommand = new ToDoView(todoStorage, todoDisplay, params);
 			displayType = DisplayType.SEARCH;
 			break;
 		case EDIT:
@@ -208,8 +208,8 @@ public class Logic {
 		switch (command) {
 		case "add":
 			return CommandType.ADD;
-		case "read":
-			return CommandType.READ;
+		case "view":
+			return CommandType.VIEW;
 		case "edit":
 			return CommandType.EDIT;
 		case "delete":

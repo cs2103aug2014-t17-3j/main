@@ -34,14 +34,16 @@ import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
 import com.the.todo.storage.ToDoStore;
 
-public class ToDoRead extends ToDoCommand {
+public class ToDoView extends ToDoCommand {
 
 	ToDoStore todoStorage;
 	List<ToDo> todoList;
+	String input;
 
-	public ToDoRead(ToDoStore todoStorage, List<ToDo> todoList) {
+	public ToDoView(ToDoStore todoStorage, List<ToDo> todoList, String input) {
 		this.todoStorage = todoStorage;
 		this.todoList = todoList;
+		this.input = input.toLowerCase();
 		this.undoable = false;
 	}
 
@@ -49,8 +51,20 @@ public class ToDoRead extends ToDoCommand {
 	protected CommandStatus performExecute() {
 		todoList.clear();
 		
-		for (ToDo todo : todoStorage.getAll()) {
-			todoList.add(new ToDo(todo));
+		if (input.isEmpty() || input.equals("all")) {
+			for (ToDo todo : todoStorage.getAll()) {
+				todoList.add(new ToDo(todo));
+			}
+		} else if (input.equals("completed")) {
+			for (ToDo todo : todoStorage.getAllCompleted()) {
+				todoList.add(new ToDo(todo));
+			}
+		} else if (input.equals("incomplete")) {
+			for (ToDo todo : todoStorage.getAllUncompleted()) {
+				todoList.add(new ToDo(todo));
+			}
+		} else {
+			return new CommandStatus(Status.ERROR, "Invalid Command!");
 		}
 		
 		return new CommandStatus(Status.SUCCESS, "");
