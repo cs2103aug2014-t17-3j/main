@@ -214,6 +214,7 @@ public class MainToDoController {
 				for (ToDo todo : entry.getValue()) {
 					try {
 						ToDoContainer item = new ToDoContainer(index, todo);
+						detectCheckBoxChanges(item); 
 						contentsToDisplay.add(item);
 						index++;
 					} catch (Exception e) {
@@ -222,38 +223,6 @@ public class MainToDoController {
 				}
 			}
 		}
-
-		// else {
-		// // Implement main label here (Date-ToDo, search, view)
-		// for (Entry<LocalDateTime, List<ToDo>> entry : todoItems.entrySet()) {
-		// try {
-		// SimpleStringProperty checkedStatus = new SimpleStringProperty(
-		// "");
-		// ToDoContainer temp = new ToDoContainer(index, todo);
-		// contentsToDisplay.add(temp);
-		// temp.getCheckedStatus().addListener(
-		// new ChangeListener<String>() {
-		// @Override
-		// public void changed(
-		// ObservableValue<? extends String> ov,
-		// String old_val, String new_val) {
-		// checkedStatus.set(new_val);
-		// showPrompt(checkedStatus.toString());
-		// processInput("complete "
-		// + checkedStatus.toString().charAt(
-		// checkedStatus.toString()
-		// .length() - 2));
-		// }
-		// });
-		//
-		// index++;
-		// } catch (Exception e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		//
-		// }
-		// }
 		mainVBox.getChildren().setAll(contentsToDisplay);
 	}
 

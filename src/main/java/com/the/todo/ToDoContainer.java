@@ -76,12 +76,14 @@ public class ToDoContainer extends AnchorPane {
 
 	public ToDoContainer(int id, ToDo todo) throws Exception {
 		this();
+		this.id = id; 
 		if (!isValidTodo(todo)) {
 			throw new Exception("Invalid todo");
 		} else {
 			setID(id);
 			setTitle(todo.getTitle());
 			setDate(todo);
+			setCategory(todo.getCategory()); 
 			setComplete(todo.isCompleted());
 		}
 		
@@ -116,16 +118,18 @@ public class ToDoContainer extends AnchorPane {
 		return "Date: "+ dateStr + " Time: "+ timeStr;
 	}
 
-	private void setMisc(String misc) {
-		todoMisc.setText(misc);
+	private void setCategory(String category) {
+		if (category != null)
+		todoMisc.setText(category.substring(1));
 	}
 	
 	private void setComplete(Boolean isCompleted){
 		if(isCompleted){
 			completeChkBox.setSelected(true);
 		} 
-		else 
+		else{ 
 			completeChkBox.setSelected(false);
+		}
 	}
 
 	/**
