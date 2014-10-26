@@ -77,6 +77,8 @@ public class MainToDoController {
 
 	@FXML
 	void initialize() {
+		mainScrollpane.setFitToWidth(true);
+		
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
@@ -271,6 +273,7 @@ public class MainToDoController {
 	public Label createGroupLabel (String text){
 		Label label = new Label(text);
 		label.getStyleClass().add("groupLabel");
+		label.setMaxWidth(Double.MAX_VALUE);
 		
 		return label;
 	}
