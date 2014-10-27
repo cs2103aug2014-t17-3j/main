@@ -101,12 +101,13 @@ public class ToDoAdd extends ToDoCommand {
 					|| foundList.get(i).toUpperCase().equals(MEDIUM)) {
 				priorityFound = foundList.get(i).toUpperCase();
 				priority = ToDo.Priority.valueOf(priorityFound);
+				priorityFound = "+" + priorityFound.toLowerCase();
 			} else {
 				categoryFound = "+" + foundList.get(i);
 			}
 		}
 		title = CategoryParser.removeStringFromTitle(input, categoryFound).trim();
-		title = CategoryParser.removeStringFromTitle(title, '+' + priorityFound.toLowerCase()).trim();
+		title = CategoryParser.removeStringFromTitle(title, priorityFound).trim();
 		List<DateGroup> dateGroup = DateParser.parse(title);
 		type = getToDoType(dateGroup);
 		
