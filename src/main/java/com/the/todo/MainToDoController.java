@@ -76,8 +76,7 @@ public class MainToDoController {
 	private static Logic appLogic;
 
 	private ArrayList<String> commandHistory = new ArrayList<String>();
-	private int currentHistoryIndex;
-
+	private int currentHistoryIndex;	
 	@FXML
 	void initialize() {
 		mainScrollpane.setFitToWidth(true);
@@ -255,6 +254,7 @@ public class MainToDoController {
 	}
 
 	public void processKeyEvents(KeyEvent keyevent) {
+
 		if (keyevent.getEventType() == KeyEvent.KEY_PRESSED
 				&& keyevent.isControlDown()) {
 
@@ -280,6 +280,19 @@ public class MainToDoController {
 				}
 			}
 		}
+		
+		//For showing hints 
+		if (keyevent.getEventType() == KeyEvent.KEY_PRESSED) {
+		if(!keyevent.getCode().equals(KeyCode.ENTER) && !keyevent.getCode().equals(KeyCode.BACK_SPACE)){
+			String incompleteCommand = mainInput.getText()+ keyevent.getText();
+			ToDoHint hint = new ToDoHint(incompleteCommand); 
+			String str= hint.getHints();
+			showPrompt(str);
+		}
+		
+		}	
 	}
+
+
 
 }
