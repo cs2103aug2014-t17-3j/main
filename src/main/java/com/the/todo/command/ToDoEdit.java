@@ -52,7 +52,7 @@ public class ToDoEdit extends ToDoCommand {
 	private static final String EXECUTE_SUCCESS = "A great success updating ToDo: %s";
 
 	private static enum FieldType {
-		T, TITLE, C, CATEGORY, S, STARTDATE, E, ENDDATE, RS, REMOVESTART, RE, REMOVEEND, P, PRIORITY, INVALID
+		T, TITLE, C, CATEGORY, S, STARTDATE, E, ENDDATE, P, PRIORITY, RS, REMOVESTART, RE, REMOVEEND, INVALID
 	};
 
 	private ToDoStore todoStorage;
@@ -251,6 +251,7 @@ public class ToDoEdit extends ToDoCommand {
 			break;
 		case P:
 		case PRIORITY:
+			todo.setPriority(remainingString.toUpperCase());
 			break;
 		case INVALID:
 			break;

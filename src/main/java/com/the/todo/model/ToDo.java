@@ -209,6 +209,11 @@ public class ToDo implements Comparable<ToDo> {
 		return false;
 	}
 	
+	public void setPriority(String prioritySetByUser) {
+		Priority priorityChosen = Priority.valueOf(prioritySetByUser);
+		priorityLevel = priorityChosen;
+	}
+	
 	public Priority getPriority() {
 		return priorityLevel;
 	}
