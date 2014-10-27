@@ -41,6 +41,7 @@ import org.joda.time.format.DateTimeParser;
 
 import com.joestelmach.natty.DateGroup;
 import com.the.todo.parser.exception.InvalidDateException;
+import com.the.todo.util.StringUtil;
 
 public class DateAndTimeParser {
 
@@ -63,22 +64,38 @@ public class DateAndTimeParser {
 		}
 
 		String formattedInput = changeDateStringsFormat(input);
-		String replacedInput = formattedInput.replaceAll("([A-Za-z]+\\d+)", ""); // Fixes something similar to time
-		NattyParserWrapper prettyTime = NattyParserWrapper
-				.getInstance();
+		formattedInput = removeAllIntegers(formattedInput);
+		formattedInput = formattedInput.replaceAll("([A-Za-z]+\\d+)", "");
 
-		List<DateGroup> groups = prettyTime.parseDateOnly(replacedInput);
+		NattyParserWrapper prettyTime = NattyParserWrapper.getInstance();
+
+		List<DateGroup> groups = prettyTime.parseDateOnly(formattedInput);
 		List<DateGroup> newGroups = new ArrayList<DateGroup>();
 		for (DateGroup group : groups) {
 			String matchingValue = group.getText();
 			String regex = ".*\\b" + matchingValue + "\\b.*";
-			
+
 			if (formattedInput.matches(regex)) {
 				newGroups.add(group);
 			}
 		}
 
 		return newGroups;
+	}
+
+	private static String removeAllIntegers(String input) {
+		String output = input;
+		String[] tokens = StringUtil.splitString(input, " ");
+
+		for (String token : tokens) {
+			try {
+				Integer.parseInt(token);
+				output = output.replaceFirst(token, "");
+			} catch (NumberFormatException ex) {
+			}
+		}
+
+		return output;
 	}
 
 	public static boolean checkValidDates(String input) {
