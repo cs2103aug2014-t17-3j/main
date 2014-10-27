@@ -42,7 +42,7 @@ import org.joda.time.format.DateTimeParser;
 import com.joestelmach.natty.DateGroup;
 import com.the.todo.parser.exception.InvalidDateException;
 
-public class DateParser {
+public class DateAndTimeParser {
 
 	private static final DateTimeFormatter YEAR_MONTH_DAY_SLASH = DateTimeFormat
 			.forPattern("yyyy/MM/dd");

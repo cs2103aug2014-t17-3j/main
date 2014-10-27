@@ -37,7 +37,7 @@ import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
 import com.the.todo.model.ToDo.Type;
 import com.the.todo.parser.CategoryParser;
-import com.the.todo.parser.DateParser;
+import com.the.todo.parser.DateAndTimeParser;
 import com.the.todo.parser.exception.InvalidDateException;
 import com.the.todo.storage.ToDoStore;
 
@@ -86,7 +86,7 @@ public class ToDoAdd extends ToDoCommand {
 		ToDo.Type type;
 		String category = CategoryParser.parse(input);
 		String title = CategoryParser.removeCategory(input, category).trim();
-		List<DateGroup> dateGroup = DateParser.parse(title);
+		List<DateGroup> dateGroup = DateAndTimeParser.parse(title);
 
 		type = getToDoType(dateGroup);
 		todo = createToDoType(type, title, dateGroup, category);

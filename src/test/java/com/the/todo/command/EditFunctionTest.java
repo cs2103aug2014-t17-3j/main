@@ -10,7 +10,7 @@ import org.junit.Test;
 import com.the.todo.Logic;
 import com.the.todo.io.FileHandler;
 import com.the.todo.model.ToDo;
-import com.the.todo.parser.DateParser;
+import com.the.todo.parser.DateAndTimeParser;
 import com.the.todo.storage.ToDoStore;
 
 public class EditFunctionTest {
@@ -109,7 +109,7 @@ public class EditFunctionTest {
 	@Test
 	public void testRemoveStartDateNumberFormat() throws Exception {
 		LocalDateTime expectedDate = ToDo.INVALID_DATE;
-		LocalDateTime expectedEndDate = new LocalDateTime(DateParser
+		LocalDateTime expectedEndDate = new LocalDateTime(DateAndTimeParser
 				.parse("30/10/2014").get(0).getDates().get(0));
 		appLogic.processCommand("edit 1 -startdate 29/09/2014 -enddate 30/10/2014");
 		appLogic.processCommand("edit 1 -removestart");
@@ -189,7 +189,7 @@ public class EditFunctionTest {
 	@Test
 	public void testRemoveSDateNumberFormat() throws Exception {
 		LocalDateTime expectedDate = ToDo.INVALID_DATE;
-		LocalDateTime expectedEndDate = new LocalDateTime(DateParser
+		LocalDateTime expectedEndDate = new LocalDateTime(DateAndTimeParser
 				.parse("30/10/2014").get(0).getDates().get(0));
 		appLogic.processCommand("edit 1 -s 29/09/2014 -e 30/10/2014");
 		appLogic.processCommand("edit 1 -rs");
@@ -267,7 +267,7 @@ public class EditFunctionTest {
 
 	@Test
 	public void testUpdateTitleWithEndDateNumberFormat() throws Exception {
-		LocalDateTime expectedDate = new LocalDateTime(DateParser
+		LocalDateTime expectedDate = new LocalDateTime(DateAndTimeParser
 				.parse("25/05/2014").get(0).getDates().get(0));
 		appLogic.processCommand("edit 1 -title End Date Test -enddate 25/05/2014");
 
@@ -278,7 +278,7 @@ public class EditFunctionTest {
 
 	@Test
 	public void testUpdateTitleWithEndDateRelativeFormat() throws Exception {
-		LocalDateTime expectedDate = new LocalDateTime(DateParser
+		LocalDateTime expectedDate = new LocalDateTime(DateAndTimeParser
 				.parse("friday").get(0).getDates().get(0));
 		appLogic.processCommand("edit 1 -title End Date Test(Relative Date) -enddate friday");
 
@@ -291,9 +291,9 @@ public class EditFunctionTest {
 	@Test
 	public void testUpdateTitleWithStartAndEndDateRelativeFormat()
 			throws Exception {
-		LocalDateTime expectedDate1 = new LocalDateTime(DateParser
+		LocalDateTime expectedDate1 = new LocalDateTime(DateAndTimeParser
 				.parse("friday").get(0).getDates().get(0));
-		LocalDateTime expectedDate2 = new LocalDateTime(DateParser
+		LocalDateTime expectedDate2 = new LocalDateTime(DateAndTimeParser
 				.parse("tuesday").get(0).getDates().get(0));
 
 		assertEquals(1, todoStorage.count());
@@ -308,9 +308,9 @@ public class EditFunctionTest {
 	@Test
 	public void testUpdateTitleWithStartAndEndDateNumberFormat()
 			throws Exception {
-		LocalDateTime expectedDate1 = new LocalDateTime(DateParser
+		LocalDateTime expectedDate1 = new LocalDateTime(DateAndTimeParser
 				.parse("25/05/2014").get(0).getDates().get(0));
-		LocalDateTime expectedDate2 = new LocalDateTime(DateParser
+		LocalDateTime expectedDate2 = new LocalDateTime(DateAndTimeParser
 				.parse("1/04/2014").get(0).getDates().get(0));
 		appLogic.processCommand("edit 1 -startdate 1/04/2014 -enddate 25/05/2014");
 
@@ -332,7 +332,7 @@ public class EditFunctionTest {
 
 	@Test
 	public void testUpdateTWithSDateNumberFormat() throws Exception {
-		LocalDateTime expectedDate = new LocalDateTime(DateParser
+		LocalDateTime expectedDate = new LocalDateTime(DateAndTimeParser
 				.parse("30/03/2015").get(0).getDates().get(0));
 		appLogic.processCommand("edit 1 -s 01/01/2015 -e 05/05/2015");
 		appLogic.processCommand("edit 1 -t Start Date Test -s 30/03/2015");
@@ -356,7 +356,7 @@ public class EditFunctionTest {
 
 	@Test
 	public void testUpdateTWithEDateNumberFormat() throws Exception {
-		LocalDateTime expectedDate = new LocalDateTime(DateParser
+		LocalDateTime expectedDate = new LocalDateTime(DateAndTimeParser
 				.parse("25/05/2014").get(0).getDates().get(0));
 		appLogic.processCommand("edit 1 -t End Date Test -e 25/05/2014");
 
@@ -367,7 +367,7 @@ public class EditFunctionTest {
 
 	@Test
 	public void testUpdateTWithEDateRelativeFormat() throws Exception {
-		LocalDateTime expectedDate = new LocalDateTime(DateParser
+		LocalDateTime expectedDate = new LocalDateTime(DateAndTimeParser
 				.parse("friday").get(0).getDates().get(0));
 		appLogic.processCommand("edit 1 -t End Date Test(Relative Date) -e friday");
 
@@ -379,9 +379,9 @@ public class EditFunctionTest {
 
 	@Test
 	public void testUpdateTitleWithSAndEDateRelativeFormat() throws Exception {
-		LocalDateTime expectedDate1 = new LocalDateTime(DateParser
+		LocalDateTime expectedDate1 = new LocalDateTime(DateAndTimeParser
 				.parse("friday").get(0).getDates().get(0));
-		LocalDateTime expectedDate2 = new LocalDateTime(DateParser
+		LocalDateTime expectedDate2 = new LocalDateTime(DateAndTimeParser
 				.parse("tuesday").get(0).getDates().get(0));
 
 		assertEquals(1, todoStorage.count());
@@ -395,9 +395,9 @@ public class EditFunctionTest {
 
 	@Test
 	public void testUpdateTitleWithSAndEDateNumberFormat() throws Exception {
-		LocalDateTime expectedDate1 = new LocalDateTime(DateParser
+		LocalDateTime expectedDate1 = new LocalDateTime(DateAndTimeParser
 				.parse("25/05/2014").get(0).getDates().get(0));
-		LocalDateTime expectedDate2 = new LocalDateTime(DateParser
+		LocalDateTime expectedDate2 = new LocalDateTime(DateAndTimeParser
 				.parse("1/04/2014").get(0).getDates().get(0));
 		appLogic.processCommand("edit 1 -s 1/04/2014 -e 25/05/2014");
 
@@ -410,7 +410,7 @@ public class EditFunctionTest {
 	@Test
 	public void testUpdateTitleWithCategoryAndStartDateNumberFormat()
 			throws Exception {
-		LocalDateTime expectedDate = new LocalDateTime(DateParser
+		LocalDateTime expectedDate = new LocalDateTime(DateAndTimeParser
 				.parse("25/05/2014").get(0).getDates().get(0));
 		appLogic.processCommand("edit 1 -title test 3 items -category +test -enddate 25/05/2014");
 
@@ -423,7 +423,7 @@ public class EditFunctionTest {
 	@Test
 	public void testUpdateTitleWithCategoryAndStartDateRelativeFormat()
 			throws Exception {
-		LocalDateTime expectedDate = new LocalDateTime(DateParser
+		LocalDateTime expectedDate = new LocalDateTime(DateAndTimeParser
 				.parse("friday").get(0).getDates().get(0));
 		appLogic.processCommand("edit 1 -title test 3 items -category +test -enddate friday");
 
@@ -437,9 +437,9 @@ public class EditFunctionTest {
 	@Test
 	public void testUpdateTitleWithCategoryAndStartAndEndDateRelativeFormat()
 			throws Exception {
-		LocalDateTime expectedDate1 = new LocalDateTime(DateParser
+		LocalDateTime expectedDate1 = new LocalDateTime(DateAndTimeParser
 				.parse("25/05/2014").get(0).getDates().get(0));
-		LocalDateTime expectedDate2 = new LocalDateTime(DateParser
+		LocalDateTime expectedDate2 = new LocalDateTime(DateAndTimeParser
 				.parse("1/06/2014").get(0).getDates().get(0));
 		appLogic.processCommand("edit 1 -title test 3 items -category +test -startdate 25/05/2014 -enddate 1/06/2014");
 

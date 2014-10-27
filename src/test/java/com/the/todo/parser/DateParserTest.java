@@ -45,7 +45,7 @@ public class DateParserTest {
 	@Test
 	public void parseTest1() throws Exception {
 		String input = "study for exams";
-		List<DateGroup> groups = DateParser.parse(input);
+		List<DateGroup> groups = DateAndTimeParser.parse(input);
 		for (DateGroup group : groups) {
 			System.out.println(group.getDates());
 		}
@@ -56,7 +56,7 @@ public class DateParserTest {
 	public void parseTest2() throws Exception {
 		String input = "study for exams on 25/02/14";
 
-		List<DateGroup> groups = DateParser.parse(input);
+		List<DateGroup> groups = DateAndTimeParser.parse(input);
 		for (DateGroup group : groups) {
 			System.out.println(group.getDates());
 		}
@@ -67,7 +67,7 @@ public class DateParserTest {
 	public void parseTest3() throws Exception {
 		String input = "study for exams on Friday 2pm";
 
-		List<DateGroup> groups = DateParser.parse(input);
+		List<DateGroup> groups = DateAndTimeParser.parse(input);
 		for (DateGroup group : groups) {
 			System.out.println(group.getDates());
 		}
@@ -78,7 +78,7 @@ public class DateParserTest {
 	public void parseTest4() throws Exception {
 		String input = "study for exams on today 2pm to tomorrow 6pm";
 
-		List<DateGroup> groups = DateParser.parse(input);
+		List<DateGroup> groups = DateAndTimeParser.parse(input);
 		for (DateGroup group : groups) {
 			System.out.println(group.getDates());
 		}
@@ -88,25 +88,25 @@ public class DateParserTest {
 	@Test
 	public void checkValidDatesTest1() {
 		String input = "study for exams on 29/02/2016";
-		assertTrue(DateParser.checkValidDates(input));
+		assertTrue(DateAndTimeParser.checkValidDates(input));
 	}
 
 	@Test
 	public void checkValidDatesTest2() {
 		String input = "study for exams on 29/02/2014";
-		assertFalse(DateParser.checkValidDates(input));
+		assertFalse(DateAndTimeParser.checkValidDates(input));
 	}
 
 	@Test
 	public void checkValidDatesTest3() {
 		String input = "study for exams on 29-01-14";
-		assertTrue(DateParser.checkValidDates(input));
+		assertTrue(DateAndTimeParser.checkValidDates(input));
 	}
 
 	@Test
 	public void changeDateStringsFormatTest1() {
 		String expected = "study for exams from 2014/08/04 to 2014/08/30";
-		String actual = DateParser
+		String actual = DateAndTimeParser
 				.changeDateStringsFormat("study for exams from 04/08/2014 to 30/08/2014");
 
 		assertEquals(expected, actual);
@@ -115,7 +115,7 @@ public class DateParserTest {
 	@Test
 	public void changeDateStringsFormatTest2() {
 		String expected = "study for exams from 2014/08/04 to 2014/02/28";
-		String actual = DateParser
+		String actual = DateAndTimeParser
 				.changeDateStringsFormat("study for exams from 2014/08/04 to 28/2/2014");
 
 		assertEquals(expected, actual);
@@ -124,7 +124,7 @@ public class DateParserTest {
 	@Test
 	public void changeDateStringsFormatTest3() {
 		String expected = "study for exams from 29/02/14 to 2015/02/28";
-		String actual = DateParser
+		String actual = DateAndTimeParser
 				.changeDateStringsFormat("study for exams from 29/02/14 to 28/2/2015");
 
 		assertEquals(expected, actual);
