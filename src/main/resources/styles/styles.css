@@ -25,12 +25,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-.split-pane{
+ 
+.unDecorated {
 	-fx-padding: 0;
+	-fx-background: white;
+	-fx-background-color: white;
+}
+
+#appTitlePane {
+	-fx-background-color: #333333;
+}
+
+#appTitleIcon {
+	-fx-background-image: url(../images/THETODO.png);
+}
+
+#appTitle {
+	-fx-font-family: Helvetica, sans-serif;
+	-fx-font-size: 16;
+	-fx-font-weight: bold;
+	-fx-text-fill: white;
 }
 
 .groupLabel {
-	-fx-background-color:  #333333;
+	-fx-background-color:  #3E506F;
 	-fx-font-size: 14;
 	-fx-font-family: "Lucida Grande", sans-serif;
 	-fx-font-weight: bold;
@@ -45,7 +63,9 @@
 	-fx-content-display: graphic-only;
 	-fx-alignment: center;
 	-fx-opacity: 0.6;
+	-fx-padding: 0;
 }
+
 #minimizeButton:hover {
 	-fx-opacity: 1;
 }
@@ -57,12 +77,9 @@
 	-fx-opacity: 0;
 }
 
-#mainScrollpane {
+#mainScrollpane:focused {
 	-fx-background-color: transparent;
-	-fx-padding: 0;
-}
-.scroll-bar .increment-button ,.scroll-bar .decrement-button {
-    -fx-opacity: 0;
+	-fx-background-insets: 0;
 }
 
 .scroll-bar:vertical {

@@ -9,18 +9,24 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<SplitPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.the.todo.MainToDoController">
+<SplitPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="unDecorated" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.the.todo.MainToDoController">
   <items>
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" styleClass="unDecorated">
          <children>
-            <ScrollPane id="mainScrollpane" fx:id="mainScrollpane" hbarPolicy="NEVER" layoutX="16.0" layoutY="139.0" pannable="true" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <AnchorPane id="appTitlePane" prefHeight="32.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <Pane id="appTitleIcon" prefHeight="24.0" prefWidth="24.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="4.0" AnchorPane.topAnchor="4.0" />
+                  <Label id="appTitle" text="THE TODO" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="32.0" AnchorPane.topAnchor="0.0" />
+                  <Button id="minimizeButton" fx:id="minimizeButton" mnemonicParsing="false" onAction="#minimizeWindow" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="0.0">
+            </Button>
+               </children>
+            </AnchorPane>
+            <ScrollPane id="mainScrollpane" fx:id="mainScrollpane" hbarPolicy="NEVER" layoutX="16.0" layoutY="139.0" pannable="true" styleClass="unDecorated" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="32.0">
                <content>
                   <VBox fx:id="mainVBox" />
                </content>
             </ScrollPane>
             <TextField fx:id="mainInput" onAction="#processInput" prefHeight="40.0" promptText="Enter your command here" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
-            <Button id="minimizeButton" fx:id="minimizeButton" layoutX="552.0" mnemonicParsing="false" onAction="#minimizeWindow" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-            </Button>
             <FlowPane alignment="CENTER" prefHeight="25.0" AnchorPane.bottomAnchor="55.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                <children>
                   <Label id="promptLabel" fx:id="promptLabel">
