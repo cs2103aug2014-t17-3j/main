@@ -51,10 +51,12 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 
 import com.the.todo.command.CommandStatus;
 import com.the.todo.model.ToDo;
+import com.the.todo.task.ReminderTask;
 
 public class MainToDoController {
 
@@ -73,20 +75,20 @@ public class MainToDoController {
 
 	private FadeTransition fadeOut;
 
-	private static Logic appLogic;
+	private Logic appLogic = Logic.getInstance();
 
 	@FXML
 	void initialize() {
+		fadeOut = new FadeTransition(Duration.millis(3000), promptLabel);
+		
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
 				mainInput.requestFocus();
+				updateUI(appLogic.getToDoMapDisplay());
+				generateAllReminders();
 			}
 		});
-
-		fadeOut = new FadeTransition(Duration.millis(3000), promptLabel);
-		appLogic = new Logic();
-		updateUI(appLogic.getToDoMapDisplay());
 	}
 
 	public void processInput() {
@@ -268,12 +270,13 @@ public class MainToDoController {
 		stage.hide();
 	}
 
-	public Label createGroupLabel (String text){
+	public Label createGroupLabel(String text) {
 		Label label = new Label(text);
 		label.getStyleClass().add("groupLabel");
-		
+
 		return label;
 	}
+
 	public void processKeyEvents(KeyEvent keyevent) {
 		if (keyevent.getEventType() == KeyEvent.KEY_PRESSED
 				&& keyevent.isControlDown()) {
@@ -287,6 +290,19 @@ public class MainToDoController {
 			} else if (keyevent.getCode() == KeyCode.Z) {
 				processInput("undo");
 				keyevent.consume();
+			}
+		}
+	}
+	
+	private void generateAllReminders() {
+		LocalDateTime currentDateTime = new LocalDateTime();
+		LocalDateTime tomorrowDateTime = new LocalDateTime().plusDays(1);
+		
+		for (ToDo todo : appLogic.getTodoStorage().getAll()) {
+			if (todo.isDeadlineToDo()) {
+				if (todo.getEndDate().isBefore(tomorrowDateTime) && todo.getEndDate().isAfter(currentDateTime)) {
+					new ReminderTask(todo, currentDateTime);
+				}
 			}
 		}
 	}
