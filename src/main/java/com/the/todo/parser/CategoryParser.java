@@ -28,7 +28,13 @@
 
 package com.the.todo.parser;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+
 public class CategoryParser {
+
+	private static final String DELIM = " ";
 
 	public static String parse(String input) {
 		String category;
@@ -48,8 +54,25 @@ public class CategoryParser {
 
 		return category;
 	}
-	
-	public static String removeCategory(String input, String category) {
+
+	public static List<String> parseAll(String input) {
+		List<String> foundList = new ArrayList<String>();
+		List<String> wantedList = new ArrayList<String>();
+		StringTokenizer tokens = new StringTokenizer(input, DELIM);
+
+		while (tokens.hasMoreTokens()) {
+			foundList.add(tokens.nextToken());
+		}
+		for(int i = 0; i < foundList.size(); i++) {
+			if(foundList.get(i).contains("+")) {
+				wantedList.add(foundList.get(i).replace("+", " ").trim());
+			}
+		}
+
+		return wantedList;
+	}
+
+	public static String removeStringFromTitle(String input, String category) {
 		if (category != null) {
 			return input.replace(category, "").replaceAll("( )+", " ").trim();
 		} else {

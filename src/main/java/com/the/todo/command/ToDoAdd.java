@@ -28,6 +28,7 @@
 
 package com.the.todo.command;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.LocalDateTime;
@@ -35,6 +36,7 @@ import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 
 import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
+import com.the.todo.model.ToDo.Priority;
 import com.the.todo.model.ToDo.Type;
 import com.the.todo.parser.CategoryParser;
 import com.the.todo.parser.DateParser;
@@ -43,6 +45,9 @@ import com.the.todo.storage.ToDoStore;
 
 public class ToDoAdd extends ToDoCommand {
 
+	private static final String MEDIUM = "MEDIUM";
+	private static final String LOW = "LOW";
+	private static final String HIGH = "HIGH";
 	private static final String EXECUTE_ILLEGAL_ARGUMENT = "Mmm ... Seems like you are missing some argument.";
 	private static final String EXECUTE_ERROR = "An error occured while adding ToDo.";
 	private static final String EXECUTE_SUCCESS = "A great success adding ToDo: %s";
@@ -84,18 +89,34 @@ public class ToDoAdd extends ToDoCommand {
 
 	private ToDo createToDo(String input) throws InvalidDateException {
 		ToDo.Type type;
-		String category = CategoryParser.parse(input);
-		String title = CategoryParser.removeCategory(input, category).trim();
+		List<String> foundList = CategoryParser.parseAll(input);
+		String categoryFound = null;
+		String priorityFound = null;
+		String title = null;
+		ToDo.Priority priority = null;
+		
+		for(int i = 0; i < foundList.size(); i++) {
+			if (foundList.get(i).toUpperCase().equals(HIGH)
+					|| foundList.get(i).toUpperCase().equals(LOW)
+					|| foundList.get(i).toUpperCase().equals(MEDIUM)) {
+				priorityFound = foundList.get(i).toUpperCase();
+				priority = ToDo.Priority.valueOf(priorityFound);
+			} else {
+				categoryFound = "+" + foundList.get(i);
+			}
+		}
+		title = CategoryParser.removeStringFromTitle(input, categoryFound).trim();
+		title = CategoryParser.removeStringFromTitle(title, '+' + priorityFound.toLowerCase()).trim();
 		List<DateGroup> dateGroup = DateParser.parse(title);
-
 		type = getToDoType(dateGroup);
-		todo = createToDoType(type, title, dateGroup, category);
-
+		
+		todo = createToDoType(type, title, dateGroup, categoryFound, priority);
+		
 		return todo;
 	}
 
 	private ToDo createToDoType(Type type, String title,
-			List<DateGroup> dateGroup, String category) {
+			List<DateGroup> dateGroup, String category, Priority priority) {
 		ToDo todo = null;
 
 		switch (type) {
@@ -118,6 +139,9 @@ public class ToDoAdd extends ToDoCommand {
 
 		if (category != null) {
 			todo.setCategory(category);
+		}
+		if (priority != null) {
+			todo.setPriority(priority);
 		}
 
 		return todo;

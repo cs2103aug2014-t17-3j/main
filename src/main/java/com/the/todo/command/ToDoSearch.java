@@ -38,7 +38,7 @@ public class ToDoSearch extends ToDoCommand {
 		String category = CategoryParser.parse(query);
 		List<ToDo> todoWithCategory = searchByCategory(allToDos, category);
 
-		String queryWithoutCategory = CategoryParser.removeCategory(query,
+		String queryWithoutCategory = CategoryParser.removeStringFromTitle(query,
 				category);
 		List<ToDo> results = searchByKeywords(todoWithCategory,
 				queryWithoutCategory);
