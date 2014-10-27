@@ -33,8 +33,8 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.joda.time.LocalDateTime;
-import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 
+import com.joestelmach.natty.DateGroup;
 import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
 import com.the.todo.model.ToDo.Type;

@@ -28,6 +28,7 @@
 
 package com.the.todo.parser;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,8 +38,8 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import org.joda.time.format.DateTimeParser;
-import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 
+import com.joestelmach.natty.DateGroup;
 import com.the.todo.parser.exception.InvalidDateException;
 
 public class DateParser {
@@ -62,10 +63,22 @@ public class DateParser {
 		}
 
 		String formattedInput = changeDateStringsFormat(input);
+		String replacedInput = formattedInput.replaceAll("([A-Za-z]+\\d+)", ""); // Fixes something similar to time
 		PrettyTimeParserWrapper prettyTime = PrettyTimeParserWrapper
 				.getInstance();
 
-		return prettyTime.parseDateOnly(formattedInput);
+		List<DateGroup> groups = prettyTime.parseDateOnly(replacedInput);
+		List<DateGroup> newGroups = new ArrayList<DateGroup>();
+		for (DateGroup group : groups) {
+			String matchingValue = group.getText();
+			String regex = ".*\\b" + matchingValue + "\\b.*";
+			
+			if (formattedInput.matches(regex)) {
+				newGroups.add(group);
+			}
+		}
+
+		return newGroups;
 	}
 
 	public static boolean checkValidDates(String input) {

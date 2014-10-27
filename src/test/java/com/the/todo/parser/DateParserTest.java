@@ -34,9 +34,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.joda.time.LocalDateTime;
 import org.junit.Test;
-import org.ocpsoft.prettytime.nlp.parse.DateGroup;
+
+import com.joestelmach.natty.DateGroup;
 
 public class DateParserTest {
 
