@@ -64,7 +64,7 @@ public class DateParser {
 
 		String formattedInput = changeDateStringsFormat(input);
 		String replacedInput = formattedInput.replaceAll("([A-Za-z]+\\d+)", ""); // Fixes something similar to time
-		PrettyTimeParserWrapper prettyTime = PrettyTimeParserWrapper
+		NattyParserWrapper prettyTime = NattyParserWrapper
 				.getInstance();
 
 		List<DateGroup> groups = prettyTime.parseDateOnly(replacedInput);
