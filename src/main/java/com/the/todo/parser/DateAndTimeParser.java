@@ -73,7 +73,7 @@ public class DateAndTimeParser {
 		List<DateGroup> newGroups = new ArrayList<DateGroup>();
 		for (DateGroup group : groups) {
 			String matchingValue = group.getText();
-			String regex = ".*\\b" + matchingValue + "\\b.*";
+			String regex = ".*\\b" + matchingValue + "\\b.*"; // TODO: Not sure this is useful (KIV).
 
 			if (formattedInput.matches(regex)) {
 				newGroups.add(group);
