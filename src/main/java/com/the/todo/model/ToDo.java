@@ -51,7 +51,7 @@ public class ToDo implements Comparable<ToDo> {
 	private String category;
 	private LocalDateTime startDate = INVALID_DATE;
 	private LocalDateTime endDate = INVALID_DATE;
-	private Priority priorityLevel;
+	private Priority priority;
 	private boolean completed = false;
 	private boolean deleted = false;
 
@@ -63,14 +63,14 @@ public class ToDo implements Comparable<ToDo> {
 		this.type = Type.FLOATING;
 		this.id = UUID.randomUUID();
 		this.title = title;
-		this.priorityLevel = Priority.LOW;
+		this.priority = Priority.LOW;
 	}
 
 	public ToDo(String title, LocalDateTime endDate) {
 		this(title);
 		this.type = Type.DEADLINE;
 		this.endDate = endDate;
-		this.priorityLevel = Priority.LOW;
+		this.priority = Priority.LOW;
 	}
 
 	public ToDo(String title, LocalDateTime startDate, LocalDateTime endDate) {
@@ -78,15 +78,7 @@ public class ToDo implements Comparable<ToDo> {
 		this.type = Type.TIMED;
 		this.startDate = startDate;
 		this.endDate = endDate;
-		this.priorityLevel = Priority.LOW;
-	}
-	
-	public ToDo(String title, LocalDateTime startDate, LocalDateTime endDate, Priority priorityChosen) {
-		this(title);
-		this.type = Type.TIMED;
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.priorityLevel = priorityChosen;
+		this.priority = Priority.LOW;
 	}
 	
 	public ToDo(ToDo oldToDo) {
@@ -98,7 +90,7 @@ public class ToDo implements Comparable<ToDo> {
 		this.endDate = oldToDo.getEndDate();
 		this.completed = oldToDo.isCompleted();
 		this.deleted = oldToDo.isDeleted();
-		this.priorityLevel = oldToDo.getPriority();
+		this.priority = oldToDo.getPriority();
 	}
 
 	public UUID getId() {
@@ -205,17 +197,15 @@ public class ToDo implements Comparable<ToDo> {
 		if (this.type.equals(Type.DEADLINE)) {
 			return true;
 		}
-
 		return false;
 	}
 	
-	public void setPriority(String prioritySetByUser) {
-		Priority priorityChosen = Priority.valueOf(prioritySetByUser);
-		priorityLevel = priorityChosen;
+	public void setPriority(Priority prioritySetByUser) {
+		priority = prioritySetByUser;
 	}
 	
 	public Priority getPriority() {
-		return priorityLevel;
+		return priority;
 	}
 
 	@Override

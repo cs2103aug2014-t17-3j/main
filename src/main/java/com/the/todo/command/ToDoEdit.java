@@ -37,6 +37,7 @@ import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 
 import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
+import com.the.todo.model.ToDo.Priority;
 import com.the.todo.model.ToDo.Type;
 import com.the.todo.parser.DateParser;
 import com.the.todo.parser.exception.InvalidDateException;
@@ -251,7 +252,8 @@ public class ToDoEdit extends ToDoCommand {
 			break;
 		case P:
 		case PRIORITY:
-			todo.setPriority(remainingString.toUpperCase());
+			Priority priorityChosen = Priority.valueOf(remainingString.toUpperCase());
+			todo.setPriority(priorityChosen);
 			break;
 		case INVALID:
 			break;
