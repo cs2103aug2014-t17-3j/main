@@ -44,6 +44,9 @@ public class ToDoHint {
 
 	private String determineCommand(String s){
 		String[] str= {"add","search","delete","edit","view","complete","incomplete"} ;
+		if (s.isEmpty()){
+			return "";
+		}
 		if (s.contains(" ")){
 			s= CommandUtil.getFirstPhrase(s);
 		}

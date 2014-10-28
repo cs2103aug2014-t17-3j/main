@@ -285,13 +285,26 @@ public class MainToDoController {
 		}
 
 		// For showing hints
-		if (keyevent.getEventType() == KeyEvent.KEY_TYPED) {
-				String incompleteCommand = mainInput.getText()
-						+ keyevent.getCharacter();
-				ToDoHint hint = new ToDoHint(incompleteCommand);
-				String str = hint.getHints();
-				hintLabel.setText(str);
+		if (keyevent.getEventType() == KeyEvent.KEY_PRESSED) {
+			String incompleteCommand = null;
+			if (keyevent.getCode().equals(KeyCode.BACK_SPACE)){
+				if (mainInput.getLength()>=1){
+					incompleteCommand = mainInput.getText().substring(0, mainInput.getText().length()-1);
+				}
+				else{ 
+					return;
+				}
+			}
+			else {
+				incompleteCommand = mainInput.getText()
+						+ keyevent.getText();
+			}
+			ToDoHint hint = new ToDoHint(incompleteCommand);
+			String str = hint.getHints();
+			hintLabel.setText(str);
 		}
+
 	}
+
 
 }
