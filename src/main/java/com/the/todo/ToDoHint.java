@@ -12,10 +12,10 @@ public class ToDoHint {
 	final String VIEW_HINT = "view all/completed/incompleted";
 	final String COMPLETE_HINT = "complete [ID]";
 	final String INCOMPLETE_HINT = "incomplete [ID]";
-	String string ;
-
+	private String string ;
+	
 	public ToDoHint( String recentlyTypedStr){ 
-		this.string = recentlyTypedStr; 
+		this.string = recentlyTypedStr;		
 
 	}
 
@@ -45,10 +45,17 @@ public class ToDoHint {
 	private String determineCommand(String s){
 		String[] str= {"add","search","delete","edit","view","complete","incomplete"} ;
 		if (s.isEmpty()){
-			return "";
+			return "invalid";
 		}
-		if (s.contains(" ")){
+		if (s.contains(" ")){// full command expected 
 			s= CommandUtil.getFirstPhrase(s);
+			for (int i=0 ; i<str.length;i++){ 
+				if (str[i].equals(s)){ 
+					return str[i];
+				} 
+			}
+		return "invalid";	
+		
 		}
 		for (int i=0 ; i<str.length;i++){ 
 			if (str[i].startsWith(s)){ 

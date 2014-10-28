@@ -98,7 +98,7 @@ public class MainToDoController {
 
 	public void processInput() {
 		String userInput = mainInput.getText();
-
+		
 		commandHistory.add(userInput);
 		currentHistoryIndex = commandHistory.size();
 
@@ -285,26 +285,18 @@ public class MainToDoController {
 		}
 
 		// For showing hints
-		if (keyevent.getEventType() == KeyEvent.KEY_PRESSED) {
-			String incompleteCommand = null;
-			if (keyevent.getCode().equals(KeyCode.BACK_SPACE)){
-				if (mainInput.getLength()>=1){
-					incompleteCommand = mainInput.getText().substring(0, mainInput.getText().length()-1);
+		if (keyevent.getEventType() == KeyEvent.KEY_TYPED && mainInput.isFocused())  {
+			String incompleteCommand = mainInput.getText()
+					+ keyevent.getCharacter();
+			if(incompleteCommand.indexOf("\b")== incompleteCommand.length()-1){ //backspace char at end 
+				if (incompleteCommand.length()>0){
+					incompleteCommand = incompleteCommand.substring(0, incompleteCommand.length()-1);
 				}
-				else{ 
-					return;
-				}
-			}
-			else {
-				incompleteCommand = mainInput.getText()
-						+ keyevent.getText();
-			}
+			}				
 			ToDoHint hint = new ToDoHint(incompleteCommand);
 			String str = hint.getHints();
 			hintLabel.setText(str);
 		}
-
 	}
-
 
 }
