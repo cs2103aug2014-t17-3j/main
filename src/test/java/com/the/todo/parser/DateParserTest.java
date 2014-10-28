@@ -83,7 +83,18 @@ public class DateParserTest {
 			System.out.println(group.getDates());
 		}
 		assertEquals(2, groups.get(0).getDates().size());
-	}	
+	}
+	
+	@Test
+	public void parseTest5() throws Exception {
+		String input = "do 3 PC1432 pyp on today 2pm to tomorrow 6pm";
+		
+		List<DateGroup> groups = DateAndTimeParser.parse(input);
+		for (DateGroup group : groups) {
+			System.out.println(group.getDates());
+		}
+		assertEquals(2, groups.get(0).getDates().size());
+	}
 
 	@Test
 	public void checkValidDatesTest1() {
