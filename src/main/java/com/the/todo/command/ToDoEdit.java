@@ -37,6 +37,7 @@ import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 
 import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
+import com.the.todo.model.ToDo.Priority;
 import com.the.todo.model.ToDo.Type;
 import com.the.todo.parser.DateParser;
 import com.the.todo.parser.exception.InvalidDateException;
@@ -52,7 +53,7 @@ public class ToDoEdit extends ToDoCommand {
 	private static final String EXECUTE_SUCCESS = "A great success updating ToDo: %s";
 
 	private static enum FieldType {
-		T, TITLE, C, CATEGORY, S, STARTDATE, E, ENDDATE, RS, REMOVESTART, RE, REMOVEEND, P, PRIORITY, INVALID
+		T, TITLE, C, CATEGORY, S, STARTDATE, E, ENDDATE, P, PRIORITY, RS, REMOVESTART, RE, REMOVEEND, INVALID
 	};
 
 	private ToDoStore todoStorage;
@@ -251,6 +252,9 @@ public class ToDoEdit extends ToDoCommand {
 			break;
 		case P:
 		case PRIORITY:
+			Priority priorityChosen = Priority.valueOf(remainingString
+					.toUpperCase().replace("+", " ").trim());
+			todo.setPriority(priorityChosen);
 			break;
 		case INVALID:
 			break;

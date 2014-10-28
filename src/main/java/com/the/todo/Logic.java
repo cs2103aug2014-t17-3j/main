@@ -172,6 +172,7 @@ public class Logic {
 			System.out.println("Category: " + todo.getCategory());
 			System.out.println("Completed: " + todo.isCompleted());
 			System.out.println("Delete: " + todo.isDeleted());
+			System.out.println("Priority: " + todo.getPriority());
 		}
 		System.out.println("--------Completed---------");
 		for (ToDo todo : todoStorage.getAllCompleted()) {
@@ -183,6 +184,7 @@ public class Logic {
 			System.out.println("Category: " + todo.getCategory());
 			System.out.println("Completed: " + todo.isCompleted());
 			System.out.println("Delete: " + todo.isDeleted());
+			System.out.println("Priority: " + todo.getPriority());
 		}
 		System.out.println("--------UnCompleted---------");
 		for (ToDo todo : todoStorage.getAllUncompleted()) {
@@ -194,6 +196,7 @@ public class Logic {
 			System.out.println("Category: " + todo.getCategory());
 			System.out.println("Completed: " + todo.isCompleted());
 			System.out.println("Delete: " + todo.isDeleted());
+			System.out.println("Priority: " + todo.getPriority());
 		}
 
 		return commandStatus;

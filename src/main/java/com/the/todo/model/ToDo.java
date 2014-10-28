@@ -38,6 +38,10 @@ public class ToDo implements Comparable<ToDo> {
 		FLOATING, DEADLINE, TIMED
 	};
 
+	public static enum Priority {
+		HIGH, MEDIUM, LOW
+	};
+
 	public static final LocalDateTime INVALID_DATE = new LocalDateTime(
 			"292278993-12-31T23:59:59.999");
 
@@ -48,6 +52,7 @@ public class ToDo implements Comparable<ToDo> {
 	private String category;
 	private LocalDateTime startDate = INVALID_DATE;
 	private LocalDateTime endDate = INVALID_DATE;
+	private Priority priority;
 	private boolean completed = false;
 	private boolean deleted = false;
 
@@ -59,12 +64,14 @@ public class ToDo implements Comparable<ToDo> {
 		this.type = Type.FLOATING;
 		this.id = UUID.randomUUID();
 		this.title = title;
+		this.priority = Priority.LOW;
 	}
 
 	public ToDo(String title, LocalDateTime endDate) {
 		this(title);
 		this.type = Type.DEADLINE;
 		this.endDate = endDate;
+		this.priority = Priority.LOW;
 	}
 
 	public ToDo(String title, LocalDateTime startDate, LocalDateTime endDate) {
@@ -72,15 +79,17 @@ public class ToDo implements Comparable<ToDo> {
 		this.type = Type.TIMED;
 		this.startDate = startDate;
 		this.endDate = endDate;
+		this.priority = Priority.LOW;
 	}
-	
+
 	public ToDo(ToDo oldToDo) {
 		this.id = oldToDo.getId();
 		this.type = oldToDo.getType();
-		this.title = oldToDo.getTitle();	
+		this.title = oldToDo.getTitle();
 		this.category = oldToDo.getCategory();
 		this.startDate = oldToDo.getStartDate();
 		this.endDate = oldToDo.getEndDate();
+		this.priority = oldToDo.getPriority();
 		this.completed = oldToDo.isCompleted();
 		this.deleted = oldToDo.isDeleted();
 	}
@@ -153,6 +162,14 @@ public class ToDo implements Comparable<ToDo> {
 		this.endDate = INVALID_DATE;
 	}
 
+	public Priority getPriority() {
+		return priority;
+	}
+
+	public void setPriority(Priority prioritySetByUser) {
+		priority = prioritySetByUser;
+	}
+
 	public boolean isCompleted() {
 		return completed;
 	}
@@ -189,7 +206,6 @@ public class ToDo implements Comparable<ToDo> {
 		if (this.type.equals(Type.DEADLINE)) {
 			return true;
 		}
-
 		return false;
 	}
 
