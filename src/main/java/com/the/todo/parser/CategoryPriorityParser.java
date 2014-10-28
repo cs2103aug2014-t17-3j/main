@@ -32,10 +32,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-public class CategoryParser {
+public class CategoryPriorityParser {
 
 	private static final String DELIM = " ";
+	private static final String DELIM2 = "+";
 
+	// Keep or Remove?
 	public static String parse(String input) {
 		String category;
 		int categoryStartIndex = input.indexOf("+");
@@ -64,10 +66,19 @@ public class CategoryParser {
 			foundList.add(tokens.nextToken());
 		}
 		for(int i = 0; i < foundList.size(); i++) {
-			if(foundList.get(i).contains("+")) {
-				wantedList.add(foundList.get(i).replace("+", " ").trim());
+			if(foundList.get(i).contains("+")){
+				StringTokenizer tokenCheck = new StringTokenizer(
+						foundList.get(i), DELIM2);
+				while (tokenCheck.hasMoreTokens()) {
+					wantedList.add(tokenCheck.nextToken());
+				}
 			}
 		}
+//		for (int i = 0; i < foundList.size(); i++) {
+//			if (foundList.get(i).contains("+")) {
+//				wantedList.add(foundList.get(i).replace("+", " ").trim());
+//			}
+//		}
 
 		return wantedList;
 	}

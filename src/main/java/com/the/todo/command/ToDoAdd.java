@@ -38,7 +38,7 @@ import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
 import com.the.todo.model.ToDo.Priority;
 import com.the.todo.model.ToDo.Type;
-import com.the.todo.parser.CategoryParser;
+import com.the.todo.parser.CategoryPriorityParser;
 import com.the.todo.parser.DateParser;
 import com.the.todo.parser.exception.InvalidDateException;
 import com.the.todo.storage.ToDoStore;
@@ -89,30 +89,34 @@ public class ToDoAdd extends ToDoCommand {
 
 	private ToDo createToDo(String input) throws InvalidDateException {
 		ToDo.Type type;
-		List<String> foundList = CategoryParser.parseAll(input);
+		List<String> foundList = CategoryPriorityParser.parseAll(input);
 		String categoryFound = null;
 		String priorityFound = null;
+		String originalPriorityInString = null;
 		String title = null;
 		ToDo.Priority priority = null;
-		
-		for(int i = 0; i < foundList.size(); i++) {
+
+		for (int i = 0; i < foundList.size(); i++) {
 			if (foundList.get(i).toUpperCase().equals(HIGH)
 					|| foundList.get(i).toUpperCase().equals(LOW)
 					|| foundList.get(i).toUpperCase().equals(MEDIUM)) {
-				priorityFound = foundList.get(i).toUpperCase();
+				originalPriorityInString = foundList.get(i);
+				priorityFound = originalPriorityInString.toUpperCase();
 				priority = ToDo.Priority.valueOf(priorityFound);
 				priorityFound = "+" + priorityFound.toLowerCase();
 			} else {
 				categoryFound = "+" + foundList.get(i);
 			}
 		}
-		title = CategoryParser.removeStringFromTitle(input, categoryFound).trim();
-		title = CategoryParser.removeStringFromTitle(title, priorityFound).trim();
+		title = CategoryPriorityParser.removeStringFromTitle(input,
+				categoryFound).trim();
+		title = CategoryPriorityParser.removeStringFromTitle(title,
+				priorityFound).trim();
 		List<DateGroup> dateGroup = DateParser.parse(title);
 		type = getToDoType(dateGroup);
-		
+
 		todo = createToDoType(type, title, dateGroup, categoryFound, priority);
-		
+
 		return todo;
 	}
 
