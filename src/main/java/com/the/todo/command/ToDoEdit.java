@@ -252,7 +252,8 @@ public class ToDoEdit extends ToDoCommand {
 			break;
 		case P:
 		case PRIORITY:
-			Priority priorityChosen = Priority.valueOf(remainingString.toUpperCase().replace("+", " ").trim());
+			Priority priorityChosen = Priority.valueOf(remainingString
+					.toUpperCase().replace("+", " ").trim());
 			todo.setPriority(priorityChosen);
 			break;
 		case INVALID:

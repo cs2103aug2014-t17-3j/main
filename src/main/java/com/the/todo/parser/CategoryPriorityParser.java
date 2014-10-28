@@ -34,8 +34,8 @@ import java.util.StringTokenizer;
 
 public class CategoryPriorityParser {
 
-	private static final String DELIM = " ";
-	private static final String DELIM2 = "+";
+	private static final String SPACE_DELIM = " ";
+	private static final String PLUS_DELIM = "+";
 
 	// Keep or Remove?
 	public static String parse(String input) {
@@ -60,15 +60,15 @@ public class CategoryPriorityParser {
 	public static List<String> parseAll(String input) {
 		List<String> foundList = new ArrayList<String>();
 		List<String> wantedList = new ArrayList<String>();
-		StringTokenizer tokens = new StringTokenizer(input, DELIM);
+		StringTokenizer tokens = new StringTokenizer(input, SPACE_DELIM);
 
 		while (tokens.hasMoreTokens()) {
 			foundList.add(tokens.nextToken());
 		}
-		for(int i = 0; i < foundList.size(); i++) {
-			if(foundList.get(i).contains("+")){
+		for (int i = 0; i < foundList.size(); i++) {
+			if (foundList.get(i).contains("+")) {
 				StringTokenizer tokenCheck = new StringTokenizer(
-						foundList.get(i), DELIM2);
+						foundList.get(i), PLUS_DELIM);
 				while (tokenCheck.hasMoreTokens()) {
 					wantedList.add(tokenCheck.nextToken());
 				}

@@ -37,6 +37,7 @@ public class ToDo implements Comparable<ToDo> {
 	public static enum Type {
 		FLOATING, DEADLINE, TIMED
 	};
+
 	public static enum Priority {
 		HIGH, MEDIUM, LOW
 	};
@@ -80,17 +81,17 @@ public class ToDo implements Comparable<ToDo> {
 		this.endDate = endDate;
 		this.priority = Priority.LOW;
 	}
-	
+
 	public ToDo(ToDo oldToDo) {
 		this.id = oldToDo.getId();
 		this.type = oldToDo.getType();
-		this.title = oldToDo.getTitle();	
+		this.title = oldToDo.getTitle();
 		this.category = oldToDo.getCategory();
 		this.startDate = oldToDo.getStartDate();
 		this.endDate = oldToDo.getEndDate();
+		this.priority = oldToDo.getPriority();
 		this.completed = oldToDo.isCompleted();
 		this.deleted = oldToDo.isDeleted();
-		this.priority = oldToDo.getPriority();
 	}
 
 	public UUID getId() {
@@ -161,6 +162,14 @@ public class ToDo implements Comparable<ToDo> {
 		this.endDate = INVALID_DATE;
 	}
 
+	public Priority getPriority() {
+		return priority;
+	}
+
+	public void setPriority(Priority prioritySetByUser) {
+		priority = prioritySetByUser;
+	}
+
 	public boolean isCompleted() {
 		return completed;
 	}
@@ -198,14 +207,6 @@ public class ToDo implements Comparable<ToDo> {
 			return true;
 		}
 		return false;
-	}
-	
-	public void setPriority(Priority prioritySetByUser) {
-		priority = prioritySetByUser;
-	}
-	
-	public Priority getPriority() {
-		return priority;
 	}
 
 	@Override

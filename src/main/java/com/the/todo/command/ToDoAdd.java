@@ -28,7 +28,6 @@
 
 package com.the.todo.command;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.LocalDateTime;
