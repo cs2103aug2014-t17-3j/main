@@ -103,7 +103,7 @@ public class ToDoAdd extends ToDoCommand {
 				originalPriorityInString = foundList.get(i);
 				priorityFound = originalPriorityInString.toUpperCase();
 				priority = ToDo.Priority.valueOf(priorityFound);
-				priorityFound = "+" + priorityFound.toLowerCase();
+				originalPriorityInString = "+" + originalPriorityInString;
 			} else {
 				categoryFound = "+" + foundList.get(i);
 			}
@@ -111,7 +111,7 @@ public class ToDoAdd extends ToDoCommand {
 		title = CategoryPriorityParser.removeStringFromTitle(input,
 				categoryFound).trim();
 		title = CategoryPriorityParser.removeStringFromTitle(title,
-				priorityFound).trim();
+				originalPriorityInString).trim();
 		List<DateGroup> dateGroup = DateParser.parse(title);
 		type = getToDoType(dateGroup);
 

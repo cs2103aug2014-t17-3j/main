@@ -85,6 +85,14 @@ public class EditFunctionTest {
 		assertEquals(1, todoStorage.count());
 		assertEquals("+test", todoStorage.getAll().get(0).getCategory());
 	}
+	
+	@Test
+	public void testUpdatePriority() {
+		appLogic.processCommand("edit 1 -priority +high");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(0).getPriority());
+	}
 
 //	@Test
 //	public void testUpdateStartDateNumberFormat() throws Exception {
@@ -165,6 +173,14 @@ public class EditFunctionTest {
 		assertEquals(1, todoStorage.count());
 		assertEquals("+ShortForm", todoStorage.getAll().get(0).getCategory());
 	}
+	
+	@Test
+	public void testUpdateP() {
+		appLogic.processCommand("edit 1 -p +Medium");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals(ToDo.Priority.MEDIUM, todoStorage.getAll().get(0).getPriority());
+	}
 
 //	@Test
 //	public void testUpdateSDateNumberFormat() throws Exception {
@@ -240,6 +256,17 @@ public class EditFunctionTest {
 				.getTitle());
 		assertEquals("+test", todoStorage.getAll().get(0).getCategory());
 	}
+	
+	@Test
+	public void testUpdateTitleWithPriority() {
+		appLogic.processCommand("edit 1 -title CS2101 developer guide -priority +High");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("CS2101 developer guide", todoStorage.getAll().get(0)
+				.getTitle());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(0).getPriority());
+	}
+
 
 	// @Test
 	// public void testUpdateTitleWithStartDateNumberFormat() throws Exception {
@@ -329,6 +356,16 @@ public class EditFunctionTest {
 				.getTitle());
 		assertEquals("+test", todoStorage.getAll().get(0).getCategory());
 	}
+	
+	@Test
+	public void testUpdateTWithP() {
+		appLogic.processCommand("edit 1 -t CS2101 developer guide -p +Low");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("CS2101 developer guide", todoStorage.getAll().get(0)
+				.getTitle());
+		assertEquals(ToDo.Priority.LOW, todoStorage.getAll().get(0).getPriority());
+	}
 
 	@Test
 	public void testUpdateTWithSDateNumberFormat() throws Exception {
@@ -408,6 +445,19 @@ public class EditFunctionTest {
 
 	/************************************************* edit 3 items *******************************************/
 	@Test
+	public void testUpdateTitleWithPriorityAndCategory()
+			throws Exception {
+		LocalDateTime expectedDate = new LocalDateTime(DateParser
+				.parse("25/05/2014").get(0).getDates().get(0));
+		appLogic.processCommand("edit 1 -title test 3 items -priority +High -category +test");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("test 3 items", todoStorage.getAll().get(0).getTitle());
+		assertEquals("+test", todoStorage.getAll().get(0).getCategory());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(0).getPriority());
+	}
+	
+	@Test
 	public void testUpdateTitleWithCategoryAndStartDateNumberFormat()
 			throws Exception {
 		LocalDateTime expectedDate = new LocalDateTime(DateParser
@@ -432,6 +482,32 @@ public class EditFunctionTest {
 		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
 		assertEquals("+test", todoStorage.getAll().get(0).getCategory());
 	}
+	
+	@Test
+	public void testUpdateTitleWithPriorityAndStartDateNumberFormat()
+			throws Exception {
+		LocalDateTime expectedDate = new LocalDateTime(DateParser
+				.parse("25/05/2014").get(0).getDates().get(0));
+		appLogic.processCommand("edit 1 -title test 3 items -priority +High -enddate 25/05/2014");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("test 3 items", todoStorage.getAll().get(0).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(0).getPriority());
+	}
+
+	@Test
+	public void testUpdateTitleWithPriorityAndStartDateRelativeFormat()
+			throws Exception {
+		LocalDateTime expectedDate = new LocalDateTime(DateParser
+				.parse("friday").get(0).getDates().get(0));
+		appLogic.processCommand("edit 1 -title test 3 items -priority +High -enddate friday");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("test 3 items", todoStorage.getAll().get(0).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(0).getPriority());
+	}
 
 	/*********************************************** edit 4 items *****************************************/
 	@Test
@@ -449,6 +525,55 @@ public class EditFunctionTest {
 		assertEquals(expectedDate2, todoStorage.getAll().get(0).getEndDate());
 		assertEquals("+test", todoStorage.getAll().get(0).getCategory());
 	}
+	
+	@Test
+	public void testUpdateTitleWithPriorityAndStartAndEndDateRelativeFormat()
+			throws Exception {
+		LocalDateTime expectedDate1 = new LocalDateTime(DateParser
+				.parse("25/05/2014").get(0).getDates().get(0));
+		LocalDateTime expectedDate2 = new LocalDateTime(DateParser
+				.parse("1/06/2014").get(0).getDates().get(0));
+		appLogic.processCommand("edit 1 -title test 3 items -priority +High -startdate 25/05/2014 -enddate 1/06/2014");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("test 3 items", todoStorage.getAll().get(0).getTitle());
+		assertEquals(expectedDate1, todoStorage.getAll().get(0).getStartDate());
+		assertEquals(expectedDate2, todoStorage.getAll().get(0).getEndDate());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(0).getPriority());
+	}
+	
+	@Test
+	public void testUpdateTitleWithCategoryAndPriorityAndEndDateRelativeFormat()
+			throws Exception {
+		LocalDateTime expectedDate2 = new LocalDateTime(DateParser
+				.parse("1/06/2014").get(0).getDates().get(0));
+		appLogic.processCommand("edit 1 -title test 3 items -category +test -priority +High -enddate 1/06/2014");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("test 3 items", todoStorage.getAll().get(0).getTitle());
+		assertEquals(expectedDate2, todoStorage.getAll().get(0).getEndDate());
+		assertEquals("+test", todoStorage.getAll().get(0).getCategory());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(0).getPriority());
+	}
+	
+	/**************************************************** 5 Items******************************************/
+	@Test
+	public void testUpdateTitleWithCategoryAndPriorityAndStartAndEndDateRelativeFormat()
+			throws Exception {
+		LocalDateTime expectedDate1 = new LocalDateTime(DateParser
+				.parse("25/05/2014").get(0).getDates().get(0));
+		LocalDateTime expectedDate2 = new LocalDateTime(DateParser
+				.parse("1/06/2014").get(0).getDates().get(0));
+		appLogic.processCommand("edit 1 -title test 3 items -category +test -priority +High -startdate 25/05/2014 -enddate 1/06/2014");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("test 3 items", todoStorage.getAll().get(0).getTitle());
+		assertEquals(expectedDate1, todoStorage.getAll().get(0).getStartDate());
+		assertEquals(expectedDate2, todoStorage.getAll().get(0).getEndDate());
+		assertEquals("+test", todoStorage.getAll().get(0).getCategory());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(0).getPriority());
+	}
+	
 
 	/**************************************************** Undo Edit Function ******************************/
 	@Test

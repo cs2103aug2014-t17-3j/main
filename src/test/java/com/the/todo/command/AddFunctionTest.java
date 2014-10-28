@@ -196,6 +196,42 @@ public class AddFunctionTest {
 		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
 		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(1).getPriority());
 	}
+	
+	@Test
+	public void testAddPriorityRandomPlace4() {
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
+		appLogic.processCommand("add remember to get present on Friday +HigH");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(1).getPriority());
+	}
+
+	@Test
+	public void testAddPriorityRandomPlace5() {
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
+		appLogic.processCommand("add remember to get present +meDiUm on Friday");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+		assertEquals(ToDo.Priority.MEDIUM, todoStorage.getAll().get(1).getPriority());
+	}
+
+	@Test
+	public void testAddPriorityRandomPlace6() {
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
+		appLogic.processCommand("add +hIGh remember to get present on Friday");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(1).getPriority());
+	}
 
 	/*****************************************Test Adding Priority With category near each other****************************************/
 	@Test

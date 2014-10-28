@@ -7,7 +7,7 @@ import java.util.ListIterator;
 
 import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
-import com.the.todo.parser.CategoryParser;
+import com.the.todo.parser.CategoryPriorityParser;
 import com.the.todo.storage.ToDoStore;
 
 public class ToDoSearch extends ToDoCommand {
@@ -35,10 +35,10 @@ public class ToDoSearch extends ToDoCommand {
 
 		ArrayList<ToDo> allToDos = (ArrayList<ToDo>) todoStorage.getAll();
 
-		String category = CategoryParser.parse(query);
+		String category = CategoryPriorityParser.parse(query);
 		List<ToDo> todoWithCategory = searchByCategory(allToDos, category);
 
-		String queryWithoutCategory = CategoryParser.removeStringFromTitle(query,
+		String queryWithoutCategory = CategoryPriorityParser.removeStringFromTitle(query,
 				category);
 		List<ToDo> results = searchByKeywords(todoWithCategory,
 				queryWithoutCategory);

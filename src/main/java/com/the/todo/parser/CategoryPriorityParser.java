@@ -74,11 +74,6 @@ public class CategoryPriorityParser {
 				}
 			}
 		}
-//		for (int i = 0; i < foundList.size(); i++) {
-//			if (foundList.get(i).contains("+")) {
-//				wantedList.add(foundList.get(i).replace("+", " ").trim());
-//			}
-//		}
 
 		return wantedList;
 	}
