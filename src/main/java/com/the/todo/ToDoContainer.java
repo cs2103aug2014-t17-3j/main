@@ -120,7 +120,7 @@ public class ToDoContainer extends AnchorPane {
 
 	private void setCategory(String category) {
 		if (category != null)
-		todoMisc.setText(category.substring(1));
+		todoMisc.setText(category);
 	}
 	
 	private void setComplete(Boolean isCompleted){
