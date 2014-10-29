@@ -107,6 +107,10 @@
 	-fx-padding: 0;
 }
 
+#mainInput{
+	-fx-font-size: 12;
+}
+
 #mainInput:focused { 
  	-fx-background-color: transparent,-fx-box-border,-fx-control-inner-background;
   	-fx-background-insets: -1.4, 0, 1;
@@ -115,6 +119,7 @@
 }
 
 #hintLabel{
+	-fx-font-size: 12; 
 	-fx-text-fill: #777777;
 	-fx-label-padding: 0 5 0 5;
 }

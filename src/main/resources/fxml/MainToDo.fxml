@@ -21,7 +21,7 @@
             </Button>
                </children>
             </AnchorPane>
-            <ScrollPane id="mainScrollpane" fx:id="mainScrollpane" hbarPolicy="NEVER" layoutX="16.0" layoutY="139.0" pannable="true" styleClass="unDecorated" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="32.0">
+            <ScrollPane id="mainScrollpane" fx:id="mainScrollpane" hbarPolicy="NEVER" layoutX="16.0" layoutY="139.0" pannable="true" styleClass="unDecorated" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="32.0">
                <content>
                   <VBox fx:id="mainVBox" />
                </content>
