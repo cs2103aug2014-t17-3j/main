@@ -51,10 +51,12 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 
 import com.the.todo.command.CommandStatus;
 import com.the.todo.model.ToDo;
+import com.the.todo.task.ReminderTask;
 
 public class MainToDoController {
 
@@ -75,7 +77,7 @@ public class MainToDoController {
 
 	private FadeTransition fadeOut;
 
-	private static Logic appLogic;
+	private Logic appLogic = Logic.getInstance();
 
 	private ArrayList<String> commandHistory = new ArrayList<String>();
 	private int currentHistoryIndex;
@@ -83,17 +85,16 @@ public class MainToDoController {
 	@FXML
 	void initialize() {
 		mainScrollpane.setFitToWidth(true);
+		fadeOut = new FadeTransition(Duration.millis(3000), promptLabel);
 
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
 				mainInput.requestFocus();
+				updateUI(appLogic.getToDoMapDisplay());
+				generateAllReminders();
 			}
 		});
-
-		fadeOut = new FadeTransition(Duration.millis(3000), promptLabel);
-		appLogic = new Logic();
-		updateUI(appLogic.getToDoMapDisplay());
 	}
 
 	public void processInput() {
@@ -296,6 +297,19 @@ public class MainToDoController {
 			ToDoHint hint = new ToDoHint(incompleteCommand);
 			String str = hint.getHints();
 			hintLabel.setText(str);
+		}
+	}
+	
+	private void generateAllReminders() {
+		LocalDateTime currentDateTime = new LocalDateTime();
+		LocalDateTime tomorrowDateTime = new LocalDateTime().plusDays(1);
+		
+		for (ToDo todo : appLogic.getTodoStorage().getAll()) {
+			if (todo.isDeadlineToDo()) {
+				if (todo.getEndDate().isBefore(tomorrowDateTime) && todo.getEndDate().isAfter(currentDateTime)) {
+					new ReminderTask(todo, currentDateTime);
+				}
+			}
 		}
 	}
 
