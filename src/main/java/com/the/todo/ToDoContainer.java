@@ -106,16 +106,16 @@ public class ToDoContainer extends AnchorPane {
 			todoDate.setText(formatDate(endDate)); 
 		}
 		if (todo.isTimedToDo()){
-			todoDate.setText(formatDate(startDate)+ "     to       " + formatDate(endDate)); 
+			todoDate.setText(formatDate(endDate)); 
 		
 		}
 	
 	
 	}
 	private String formatDate(LocalDateTime date){ 
-		String dateStr = date.toLocalDate().toString(DateTimeFormat.forPattern("dd MMMM yyyy"));
+		//String dateStr = date.toLocalDate().toString(DateTimeFormat.forPattern("dd MMMM yyyy"));
 		String timeStr = date.toLocalTime().toString(DateTimeFormat.forPattern("hh:mm aa"));
-		return "Date: "+ dateStr + " Time: "+ timeStr;
+		return "Time: "+ timeStr;
 	}
 
 	private void setCategory(String category) {
