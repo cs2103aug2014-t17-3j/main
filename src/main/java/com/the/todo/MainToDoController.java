@@ -70,13 +70,20 @@ public class MainToDoController {
 	private Button minimizeButton;
 	@FXML
 	private SplitPane mainPane;
+	@FXML
+	private Label hintLabel;
 
 	private FadeTransition fadeOut;
 
 	private static Logic appLogic;
 
+	private ArrayList<String> commandHistory = new ArrayList<String>();
+	private int currentHistoryIndex;
+
 	@FXML
 	void initialize() {
+		mainScrollpane.setFitToWidth(true);
+
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
@@ -91,6 +98,10 @@ public class MainToDoController {
 
 	public void processInput() {
 		String userInput = mainInput.getText();
+		
+		commandHistory.add(userInput);
+		currentHistoryIndex = commandHistory.size();
+
 		processInput(userInput);
 	}
 
@@ -205,6 +216,7 @@ public class MainToDoController {
 				for (ToDo todo : entry.getValue()) {
 					try {
 						ToDoContainer item = new ToDoContainer(index, todo);
+						detectCheckBoxChanges(item);
 						contentsToDisplay.add(item);
 						index++;
 					} catch (Exception e) {
@@ -213,38 +225,6 @@ public class MainToDoController {
 				}
 			}
 		}
-
-		// else {
-		// // Implement main label here (Date-ToDo, search, view)
-		// for (Entry<LocalDateTime, List<ToDo>> entry : todoItems.entrySet()) {
-		// try {
-		// SimpleStringProperty checkedStatus = new SimpleStringProperty(
-		// "");
-		// ToDoContainer temp = new ToDoContainer(index, todo);
-		// contentsToDisplay.add(temp);
-		// temp.getCheckedStatus().addListener(
-		// new ChangeListener<String>() {
-		// @Override
-		// public void changed(
-		// ObservableValue<? extends String> ov,
-		// String old_val, String new_val) {
-		// checkedStatus.set(new_val);
-		// showPrompt(checkedStatus.toString());
-		// processInput("complete "
-		// + checkedStatus.toString().charAt(
-		// checkedStatus.toString()
-		// .length() - 2));
-		// }
-		// });
-		//
-		// index++;
-		// } catch (Exception e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		//
-		// }
-		// }
 		mainVBox.getChildren().setAll(contentsToDisplay);
 	}
 
@@ -268,26 +248,54 @@ public class MainToDoController {
 		stage.hide();
 	}
 
-	public Label createGroupLabel (String text){
+	public Label createGroupLabel(String text) {
 		Label label = new Label(text);
 		label.getStyleClass().add("groupLabel");
-		
+		label.setMaxWidth(Double.MAX_VALUE);
+
 		return label;
 	}
+
 	public void processKeyEvents(KeyEvent keyevent) {
+
 		if (keyevent.getEventType() == KeyEvent.KEY_PRESSED
 				&& keyevent.isControlDown()) {
 
 			if (keyevent.getCode() == KeyCode.UP) {
 				mainScrollpane.setVvalue(mainScrollpane.getVvalue() - 0.1);
-				keyevent.consume();
 			} else if (keyevent.getCode() == KeyCode.DOWN) {
 				mainScrollpane.setVvalue(mainScrollpane.getVvalue() + 0.1);
-				keyevent.consume();
 			} else if (keyevent.getCode() == KeyCode.Z) {
 				processInput("undo");
-				keyevent.consume();
 			}
+		}
+
+		if (keyevent.getEventType() == KeyEvent.KEY_PRESSED) {
+			if (keyevent.getCode() == KeyCode.UP) {
+				if (currentHistoryIndex > 0) {
+					currentHistoryIndex--;
+					mainInput.setText(commandHistory.get(currentHistoryIndex));
+				}
+			} else if (keyevent.getCode() == KeyCode.DOWN) {
+				if (currentHistoryIndex < commandHistory.size() - 1) {
+					currentHistoryIndex++;
+					mainInput.setText(commandHistory.get(currentHistoryIndex));
+				}
+			}
+		}
+
+		// For showing hints
+		if (keyevent.getEventType() == KeyEvent.KEY_TYPED && mainInput.isFocused())  {
+			String incompleteCommand = mainInput.getText()
+					+ keyevent.getCharacter();
+			if(incompleteCommand.indexOf("\b")== incompleteCommand.length()-1){ //backspace char at end 
+				if (incompleteCommand.length()>0){
+					incompleteCommand = incompleteCommand.substring(0, incompleteCommand.length()-1);
+				}
+			}				
+			ToDoHint hint = new ToDoHint(incompleteCommand);
+			String str = hint.getHints();
+			hintLabel.setText(str);
 		}
 	}
 
