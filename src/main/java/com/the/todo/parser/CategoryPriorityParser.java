@@ -32,10 +32,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import com.the.todo.model.ToDo;
+
 public class CategoryPriorityParser {
 
 	private static final String SPACE_DELIM = " ";
 	private static final String PLUS_DELIM = "+";
+	private static final String MEDIUM = "MEDIUM";
+	private static final String LOW = "LOW";
+	private static final String HIGH = "HIGH";
 
 	// Keep or Remove?
 	public static String parse(String input) {
@@ -76,6 +81,30 @@ public class CategoryPriorityParser {
 		}
 
 		return wantedList;
+	}
+
+	public static String parseCategory(List<String> searchList) {
+		String category = null;
+		for(int i = 0; i < searchList.size(); i++) {
+			if (!searchList.get(i).toUpperCase().equals(HIGH)
+					|| !searchList.get(i).toUpperCase().equals(LOW)
+					|| !searchList.get(i).toUpperCase().equals(MEDIUM)) {
+				category = searchList.get(i);
+			}
+		}
+		return category;
+	}
+	
+	public static String parsePriority(List<String> searchList) {
+		String priority = null;
+		for(int i = 0; i < searchList.size(); i++) {
+			if (searchList.get(i).toUpperCase().equals(HIGH)
+					|| searchList.get(i).toUpperCase().equals(LOW)
+					|| searchList.get(i).toUpperCase().equals(MEDIUM)) {
+				priority = searchList.get(i);
+			}
+		}
+		return priority;
 	}
 
 	public static String removeStringFromTitle(String input, String category) {
