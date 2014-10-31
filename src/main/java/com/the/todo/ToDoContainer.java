@@ -101,19 +101,15 @@ public class ToDoContainer extends AnchorPane {
 		Node tag ;
 		
 		if (todo.isDeadlineToDo()){
-			tag=createLabel("Deadline","lightgreen");
-			todoTitle.setText(todo.getTitle());						
+			tag=createLabel("Deadline","lightgreen");							
 		}
 		else if (todo.isTimedToDo()){
 			tag=createLabel("Timed","lightblue");
-			todoTitle.setText(todo.getTitle());
-
 		}
 		else {
-			tag= createLabel("Floating","yellow");
-			todoTitle.setText(todo.getTitle());			
+			tag= createLabel("Floating","yellow");		
 		}
-	
+		todoTitle.setText(todo.getTitle());		
 		todoTitle.setContentDisplay(ContentDisplay.RIGHT);
 		todoTitle.setGraphic(tag);
 	

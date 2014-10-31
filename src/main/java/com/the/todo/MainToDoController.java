@@ -206,12 +206,7 @@ public class MainToDoController {
 
 			for (Entry<LocalDate, List<ToDo>> entry : todoItems.entrySet()) {
 				System.out.println(entry.getKey() + " = " + entry.getValue());
-				if (entry.getKey().equals(ToDo.INVALID_DATE.toLocalDate())) {
-					lblDate = createGroupLabel("Someday");
-				} else {
-					lblDate = createGroupLabel(entry.getKey().toString(
-							DateTimeFormat.forPattern("EEEE, dd MMMM yyyy")));
-				}
+				lblDate = createGroupLabel(entry.getKey());
 				contentsToDisplay.add(lblDate);
 
 				for (ToDo todo : entry.getValue()) {
@@ -248,15 +243,25 @@ public class MainToDoController {
 		Stage stage = (Stage) minimizeButton.getScene().getWindow();
 		stage.hide();
 	}
+	public Label createGroupLabel(LocalDate date) {
+		
+		LocalDate currentDate = new LocalDate();
+		Label label = new Label(date.toString(		DateTimeFormat.forPattern("EEEE, dd MMMM yyyy")));
+		
+		if (date.equals(ToDo.INVALID_DATE.toLocalDate())) {
+			label = new Label("Someday");
+		}
+		
+		if (date.isBefore(currentDate) ){		
+			label.setStyle("-fx-background-color: red;");
+		}
 
-	public Label createGroupLabel(String text) {
-		Label label = new Label(text);
 		label.getStyleClass().add("groupLabel");
 		label.setMaxWidth(Double.MAX_VALUE);
-
 		return label;
-	}
 
+	}
+	
 	public void processKeyEvents(KeyEvent keyevent) {
 
 		if (keyevent.getEventType() == KeyEvent.KEY_PRESSED
