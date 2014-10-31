@@ -67,7 +67,7 @@ public class ToDoContainer extends AnchorPane {
 				"/fxml/todoContainer.fxml"));
 		fxmlLoader.setRoot(this);
 		fxmlLoader.setController(this);
-
+			
 		try {
 			fxmlLoader.load();
 
@@ -111,9 +111,10 @@ public class ToDoContainer extends AnchorPane {
 			tag= createLabel("Floating","yellow");
 			todoTitle.setText(todo.getTitle());			
 		}
+	
 		todoTitle.setContentDisplay(ContentDisplay.RIGHT);
 		todoTitle.setGraphic(tag);
-		//	todoTitle.setWrapText(true);
+	
 	}
 
 	private void setDate(ToDo todo){
