@@ -33,6 +33,7 @@ import java.io.IOException;
 import javafx.beans.property.BooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
@@ -97,13 +98,14 @@ public class ToDoContainer extends AnchorPane {
 	}
 
 	private void setTitle(ToDo todo) {
-		Label tag = new Label();
+		Node tag ;
+		
 		if (todo.isDeadlineToDo()){
-			tag=createLabel("Deadline","brown");
+			tag=createLabel("Deadline","lightgreen");
 			todoTitle.setText(todo.getTitle());						
 		}
 		else if (todo.isTimedToDo()){
-			tag=createLabel("Timed","blue");
+			tag=createLabel("Timed","lightblue");
 			todoTitle.setText(todo.getTitle());
 
 		}
@@ -127,27 +129,21 @@ public class ToDoContainer extends AnchorPane {
 		}
 		if (todo.isTimedToDo()){
 			todoDate.setText(formatDate(endDate)); 
-
 		}
 
 
 	}
 
-	private Label createLabel(String text, String color){
+	private Node createLabel(String text, String color){
 		Label tag= new Label(text);
 
-		tag.setStyle("-fx-font-size: 10;"
-				+ "-fx-border-style: solid;"
-				+"-fx-border-radius: 2em;"
-				//				+ "-fx-border-bottom-left-radius: 2em;"
+		tag.setStyle("-fx-background-color:"+ color+ ";"
+				+ "-fx-background-radius: 1em;"
+				+"-fx-font-size: 10;"
 				);
-		tag.setStyle("-fx-background-color:" +color +";");
-		//tag.setTextFill(Paint.valueOf(color));
-
-
-
 		return tag;
 	}
+	
 	private String formatDate(LocalDateTime date){ 
 		//String dateStr = date.toLocalDate().toString(DateTimeFormat.forPattern("dd MMMM yyyy"));
 		String timeStr = date.toLocalTime().toString(DateTimeFormat.forPattern("hh:mm aa"));
