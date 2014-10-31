@@ -34,8 +34,10 @@ import javafx.beans.property.BooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Paint;
 
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -55,20 +57,21 @@ public class ToDoContainer extends AnchorPane {
 	@FXML 
 	private CheckBox completeChkBox; 
 
+
+
 	private int id; 
-	
-	
+
+
 	public ToDoContainer() {
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(
 				"/fxml/todoContainer.fxml"));
 		fxmlLoader.setRoot(this);
 		fxmlLoader.setController(this);
-			
 
 		try {
 			fxmlLoader.load();
-			
-			
+
+
 		} catch (IOException exception) {
 			throw new RuntimeException(exception);
 		}
@@ -81,20 +84,36 @@ public class ToDoContainer extends AnchorPane {
 			throw new Exception("Invalid todo");
 		} else {
 			setID(id);
-			setTitle(todo.getTitle());
+			setTitle(todo);
 			setDate(todo);
 			setCategory(todo.getCategory()); 
 			setComplete(todo.isCompleted());
 		}
-		
+
 	}
 
 	private void setID(int id) {
 		todoID.setText(String.valueOf(id));
 	}
 
-	private void setTitle(String title) {
-		todoTitle.setText(title);
+	private void setTitle(ToDo todo) {
+		Label tag = new Label();
+		if (todo.isDeadlineToDo()){
+			tag=createLabel("Deadline","brown");
+			todoTitle.setText(todo.getTitle());						
+		}
+		else if (todo.isTimedToDo()){
+			tag=createLabel("Timed","blue");
+			todoTitle.setText(todo.getTitle());
+
+		}
+		else {
+			tag= createLabel("Floating","yellow");
+			todoTitle.setText(todo.getTitle());			
+		}
+		todoTitle.setContentDisplay(ContentDisplay.RIGHT);
+		todoTitle.setGraphic(tag);
+		//	todoTitle.setWrapText(true);
 	}
 
 	private void setDate(ToDo todo){
@@ -107,10 +126,26 @@ public class ToDoContainer extends AnchorPane {
 		}
 		if (todo.isTimedToDo()){
 			todoDate.setText(formatDate(endDate)); 
-		
+
 		}
-	
-	
+
+
+	}
+
+	private Label createLabel(String text, String color){
+		Label tag= new Label(text);
+
+		tag.setStyle("-fx-font-size: 10;"
+				+ "-fx-border-style: solid;"
+				+"-fx-border-radius: 2em;"
+				//				+ "-fx-border-bottom-left-radius: 2em;"
+				);
+		tag.setStyle("-fx-background-color:" +color +";");
+		//tag.setTextFill(Paint.valueOf(color));
+
+
+
+		return tag;
 	}
 	private String formatDate(LocalDateTime date){ 
 		//String dateStr = date.toLocalDate().toString(DateTimeFormat.forPattern("dd MMMM yyyy"));
@@ -120,9 +155,9 @@ public class ToDoContainer extends AnchorPane {
 
 	private void setCategory(String category) {
 		if (category != null)
-		todoMisc.setText(category);
+			todoMisc.setText(category);
 	}
-	
+
 	private void setComplete(Boolean isCompleted){
 		if(isCompleted){
 			completeChkBox.setSelected(true);
@@ -146,10 +181,10 @@ public class ToDoContainer extends AnchorPane {
 
 		return true;
 	}
-	
+
 	public BooleanProperty getCheckedProperty(){
 		return completeChkBox.selectedProperty(); 
-		
+
 	}
 	public int getID(){ 
 		return id; 
