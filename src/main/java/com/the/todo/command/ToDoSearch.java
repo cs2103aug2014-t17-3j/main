@@ -7,10 +7,15 @@ import java.util.ListIterator;
 
 import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
+import com.the.todo.model.ToDo.Priority;
 import com.the.todo.parser.CategoryPriorityParser;
 import com.the.todo.storage.ToDoStore;
 
 public class ToDoSearch extends ToDoCommand {
+	private static final String MEDIUM = "MEDIUM";
+	private static final String LOW = "LOW";
+	private static final String HIGH = "HIGH";
+	
 	private static final String EXECUTE_ILLEGAL_ARGUMENT = "Please enter a valid input.";
 
 	ToDoStore todoStorage;
@@ -22,29 +27,46 @@ public class ToDoSearch extends ToDoCommand {
 		this.todoStorage = todoStorage;
 		this.updateList = updateList;
 		this.query = query;
-		
+
 		this.undoable = false;
 	}
 
 	@Override
 	protected CommandStatus performExecute() {
-
 		if (query.equals("") || query == null) {
 			return new CommandStatus(Status.ERROR, EXECUTE_ILLEGAL_ARGUMENT);
 		}
 
 		ArrayList<ToDo> allToDos = (ArrayList<ToDo>) todoStorage.getAll();
+		List<ToDo> interimResults, finalResults;
+		List<String> foundList = CategoryPriorityParser.parseAll(query);
+		String categoryFound = null;
+		String priorityFound = null;
+		String originalPriorityInString = null;
+		Priority priority = null;
 
-		String category = CategoryPriorityParser.parse(query);
-		List<ToDo> todoWithCategory = searchByCategory(allToDos, category);
+		for (int i = 0; i < foundList.size(); i++) {
+			if (foundList.get(i).toUpperCase().equals(HIGH)
+					|| foundList.get(i).toUpperCase().equals(LOW)
+					|| foundList.get(i).toUpperCase().equals(MEDIUM)) {
+				originalPriorityInString = foundList.get(i);
+				priorityFound = originalPriorityInString.toUpperCase();
+				priority = ToDo.Priority.valueOf(priorityFound);
+				originalPriorityInString = "+" + originalPriorityInString;
+			} else {
+				categoryFound = "+" + foundList.get(i);
+			}
+		}
 
-		String queryWithoutCategory = CategoryPriorityParser.removeStringFromTitle(query,
-				category);
-		List<ToDo> results = searchByKeywords(todoWithCategory,
-				queryWithoutCategory);
+		String keywords = CategoryPriorityParser.removeStringFromTitle(query, categoryFound);
+		keywords = CategoryPriorityParser.removeStringFromTitle(keywords, originalPriorityInString);
+		
+		interimResults = searchByCategory(allToDos, categoryFound);
+		interimResults = searchByPriority(interimResults, priority);
+		finalResults = searchByKeywords(interimResults, keywords);
 
 		updateList.clear();
-		for (ToDo todo : results) {
+		for (ToDo todo : finalResults) {
 			updateList.add(todo);
 		}
 
@@ -58,8 +80,9 @@ public class ToDoSearch extends ToDoCommand {
 
 		if (category != null) {
 			while (i.hasNext()) {
-				ToDo nextToDo = i.next();
-				if (nextToDo.getCategory() == null || !nextToDo.getCategory().equals(category)) {
+				ToDo next = i.next();
+				String nextCategory = next.getCategory();
+				if (nextCategory == null || !nextCategory.equals(category)) {
 					i.remove();
 				}
 			}
@@ -85,6 +108,23 @@ public class ToDoSearch extends ToDoCommand {
 		return results;
 	}
 
+	private List<ToDo> searchByPriority(List<ToDo> todos, Priority priority) {
+		List<ToDo> results = new ArrayList<ToDo>(todos);
+		ListIterator<ToDo> i = results.listIterator();
+
+		if (priority != null) {
+			while (i.hasNext()) {
+				ToDo next = i.next();
+				Priority nextPriority = next.getPriority();
+				if (nextPriority == null || !nextPriority.equals(priority)) {
+					i.remove();
+				}
+			}
+		}
+
+		return results;
+	}
+
 	private boolean containsAll(String data, String query) {
 		String[] tokenizedData = data.split(" ");
 		String[] tokenizedQuery = query.split(" ");
@@ -95,7 +135,7 @@ public class ToDoSearch extends ToDoCommand {
 				&& tokenizedQueryList.size() != 0; i++) {
 			ListIterator<String> j = tokenizedQueryList.listIterator();
 			while (j.hasNext()) {
-				if (j.next().equals(tokenizedData[i])) {
+				if (j.next().equalsIgnoreCase(tokenizedData[i])) {
 					j.remove();
 					break;
 				}
