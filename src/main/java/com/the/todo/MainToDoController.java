@@ -37,6 +37,7 @@ import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -82,6 +83,8 @@ public class MainToDoController {
 	private ArrayList<String> commandHistory = new ArrayList<String>();
 	private int currentHistoryIndex;
 
+	private ObservableList<Node> oldVBoxitems;
+	
 	@FXML
 	void initialize() {
 		mainScrollpane.setFitToWidth(true);
@@ -113,6 +116,11 @@ public class MainToDoController {
 		switch (status.getStatus()) {
 		case SUCCESS:
 			updateUI(appLogic.getToDoMapDisplay());
+			ObservableList<Node> ol = mainVBox.getChildren();
+			for (Node node : ol){
+				System.out.println(node.toString());
+				System.out.println(node.getLayoutY());
+			}
 			showPrompt(status.getMessage());
 			break;
 
@@ -196,32 +204,31 @@ public class MainToDoController {
 		clearUI();
 
 		int index = 1;
-		ArrayList<Node> contentsToDisplay = new ArrayList<Node>();
+		ObservableList<Node> newVBoxItems = mainVBox.getChildren();
 
 		if (todoItems == null || todoItems.isEmpty()) {
 			Label temp = new Label("No items to show.");
-			contentsToDisplay.add(temp);
+			newVBoxItems.add(temp);
 		} else {
 			Label lblDate;
 
 			for (Entry<LocalDate, List<ToDo>> entry : todoItems.entrySet()) {
 				System.out.println(entry.getKey() + " = " + entry.getValue());
 				lblDate = createGroupLabel(entry.getKey());
-				contentsToDisplay.add(lblDate);
+				newVBoxItems.add(lblDate);
 
 				for (ToDo todo : entry.getValue()) {
 					try {
 						ToDoContainer item = new ToDoContainer(index, todo);
 						detectCheckBoxChanges(item);
-						contentsToDisplay.add(item);
+						newVBoxItems.add(item);
 						index++;
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
 			}
-		}
-		mainVBox.getChildren().setAll(contentsToDisplay);
+		}	
 	}
 
 	private void detectCheckBoxChanges(ToDoContainer container) {
@@ -272,7 +279,13 @@ public class MainToDoController {
 			} else if (keyevent.getCode() == KeyCode.DOWN) {
 				mainScrollpane.setVvalue(mainScrollpane.getVvalue() + 0.1);
 			} else if (keyevent.getCode() == KeyCode.Z) {
-				processInput("undo");
+				//processInput("undo");
+				System.out.println("vbox height:" + mainVBox.getHeight());
+				ObservableList<Node> ol = mainVBox.getChildren();
+				for (Node node : ol){
+					System.out.println(node.toString());
+					System.out.println(node.getLayoutY());
+				}
 			}
 		}
 
@@ -317,5 +330,8 @@ public class MainToDoController {
 			}
 		}
 	}
-
+	
+	private void scrollToUpdatedArea (){
+		
+	}
 }
