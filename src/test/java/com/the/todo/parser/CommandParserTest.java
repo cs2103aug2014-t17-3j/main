@@ -71,6 +71,55 @@ public class CommandParserTest {
 	}
 	
 	@Test
+	public void testDeleteUpperCase() {
+		appLogic.processCommand("DELETE 1");
+
+		assertEquals(0, todoStorage.count());
+	}
+	
+	@Test
+	public void testRM() {
+		appLogic.processCommand("rm 1");
+
+		assertEquals(0, todoStorage.count());
+	}
+	
+	@Test
+	public void testRMUpperCase() {
+		appLogic.processCommand("RM 1");
+
+		assertEquals(0, todoStorage.count());
+	}
+	
+	@Test
+	public void testShortFormDelete() {
+		appLogic.processCommand("d 1");
+
+		assertEquals(0, todoStorage.count());
+	}
+	
+	@Test
+	public void testShortFormDeleteUpperCase() {
+		appLogic.processCommand("D 1");
+
+		assertEquals(0, todoStorage.count());
+	}
+	
+	@Test
+	public void testDel() {
+		appLogic.processCommand("del 1");
+
+		assertEquals(0, todoStorage.count());
+	}
+	
+	@Test
+	public void testDelUpperCase() {
+		appLogic.processCommand("DEL 1");
+
+		assertEquals(0, todoStorage.count());
+	}
+	
+	@Test
 	public void testComplete() {
 		appLogic.processCommand("complete 1");
 
@@ -79,9 +128,59 @@ public class CommandParserTest {
 	}
 	
 	@Test
+	public void testC() {
+		appLogic.processCommand("c 1");
+
+		assertEquals(1, todoStorage.count());
+		assertTrue(todoStorage.getAll().get(0).isCompleted());
+	}
+	
+	@Test
+	public void testDone() {
+		appLogic.processCommand("done 1");
+
+		assertEquals(1, todoStorage.count());
+		assertTrue(todoStorage.getAll().get(0).isCompleted());
+	}
+	
+	@Test
+	public void testCompleteUpperCase() {
+		appLogic.processCommand("COMPLETE 1");
+
+		assertEquals(1, todoStorage.count());
+		assertTrue(todoStorage.getAll().get(0).isCompleted());
+	}
+	
+	@Test
+	public void testCUpperCase() {
+		appLogic.processCommand("C 1");
+
+		assertEquals(1, todoStorage.count());
+		assertTrue(todoStorage.getAll().get(0).isCompleted());
+	}
+	
+	@Test
+	public void testDoneUpperCase() {
+		appLogic.processCommand("DONE 1");
+
+		assertEquals(1, todoStorage.count());
+		assertTrue(todoStorage.getAll().get(0).isCompleted());
+	}
+	
+	
+	@Test
 	public void testUndoComplete() {
 		appLogic.processCommand("complete 1");
 		appLogic.processCommand("undo");
+
+		assertEquals(1, todoStorage.count());
+		assertFalse(todoStorage.getAll().get(0).isCompleted());
+	}
+	
+	@Test
+	public void testUndoCompleteUpperCase() {
+		appLogic.processCommand("COMPLETE 1");
+		appLogic.processCommand("UNDO");
 
 		assertEquals(1, todoStorage.count());
 		assertFalse(todoStorage.getAll().get(0).isCompleted());
@@ -99,6 +198,16 @@ public class CommandParserTest {
 	public void testUndoInComplete() {
 		appLogic.processCommand("incomplete 1");
 		appLogic.processCommand("undo");
+
+		assertEquals(1, todoStorage.count());
+		assertTrue(todoStorage.getAll().get(0).isCompleted());
+	}
+	
+	
+	@Test
+	public void testUndoInCompleteUpperCase() {
+		appLogic.processCommand("INCOMPLETE 1");
+		appLogic.processCommand("UNDO");
 
 		assertEquals(1, todoStorage.count());
 		assertTrue(todoStorage.getAll().get(0).isCompleted());

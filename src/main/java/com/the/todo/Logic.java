@@ -103,8 +103,9 @@ public class Logic {
 	}
 
 	public CommandStatus processCommand(String input) {
-		String command = CommandUtil.getFirstPhrase(input);
-		String params = CommandUtil.getParams(command, input);
+		String originlCommand = CommandUtil.getFirstPhrase(input);
+		String command = originlCommand.toLowerCase();
+		String params = CommandUtil.getParams(originlCommand, input);
 		CommandType commandType = getCommandType(command);
 
 		ToDoCommand todoCommand = null;
@@ -211,20 +212,30 @@ public class Logic {
 		String command = CommandUtil.getFirstPhrase(input);
 
 		switch (command) {
+		case "a":
 		case "add":
 			return CommandType.ADD;
+		case "v":
 		case "view":
 			return CommandType.VIEW;
+		case "e":
 		case "edit":
 			return CommandType.EDIT;
+		case "d":
+		case "rm":
+		case "del":
 		case "delete":
 			return CommandType.DELETE;
+		case "c":
+		case "done":
 		case "complete":
 			return CommandType.COMPLETE;
 		case "incomplete":
 			return CommandType.INCOMPLETE;
+		case "s":
 		case "search":
 			return CommandType.SEARCH;
+		case "u":
 		case "undo":
 			return CommandType.UNDO;
 		default:
