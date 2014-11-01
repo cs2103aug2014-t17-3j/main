@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.the.todo.model.ToDo;
+import com.the.todo.model.ToDo.Priority;
 import com.the.todo.storage.InMemoryStore;
 
 /*
@@ -31,6 +32,10 @@ public class ToDoSearchTest {
 		todo2.setCategory("+add");
 		todo3.setCategory("+test");
 		todo4.setCategory("+test");
+		
+		todo2.setPriority(Priority.LOW);
+		todo3.setPriority(Priority.MEDIUM);
+		todo4.setPriority(Priority.HIGH);
 
 		storeStub = new InMemoryStore();
 		storeStub.save(todo1);
@@ -63,12 +68,20 @@ public class ToDoSearchTest {
 		searchTest("+search", "Lorem");
 		searchTest("+test", "dolor sit amet",
 				"amet consectetur adipiscing elit.");
-
+		
+		/*Search with only priority specified*/
+		searchTest("+meDiUm", "dolor sit amet");
+		
 		/*Search with both keywords and category specified*/
 		searchTest("dolor sit +add", "ipsum dolor sit");
 		searchTest("amet +test", "dolor sit amet",
 				"amet consectetur adipiscing elit.");
-
+		
+		/*Search with keywords and priority specified*/
+		searchTest("dolor sit +low", "ipsum dolor sit");
+		
+		/*Search with category and priority specified*/
+		searchTest("+high +test", "amet consectetur adipiscing elit.");
 	}
 
 	public void searchTest(String query, String... expected) {
