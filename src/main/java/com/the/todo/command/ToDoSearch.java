@@ -135,7 +135,7 @@ public class ToDoSearch extends ToDoCommand {
 				&& tokenizedQueryList.size() != 0; i++) {
 			ListIterator<String> j = tokenizedQueryList.listIterator();
 			while (j.hasNext()) {
-				if (j.next().equals(tokenizedData[i])) {
+				if (j.next().equalsIgnoreCase(tokenizedData[i])) {
 					j.remove();
 					break;
 				}

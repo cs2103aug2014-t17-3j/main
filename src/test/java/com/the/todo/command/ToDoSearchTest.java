@@ -62,7 +62,7 @@ public class ToDoSearchTest {
 		searchTest("elit.", "amet consectetur adipiscing elit.");
 		
 		/*Search using multiple keywords*/
-		searchTest("dolor sit", "ipsum dolor sit", "dolor sit amet");
+		searchTest("doLor sit", "ipsum dolor sit", "dolor sit amet");
 
 		/*Search with only category specified*/
 		searchTest("+search", "Lorem");
