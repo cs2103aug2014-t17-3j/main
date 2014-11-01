@@ -260,7 +260,7 @@ public class MainToDoController {
 		}
 		
 		if (date.isBefore(currentDate) ){		
-			label.setStyle("-fx-background-color: red;");
+			label.setStyle("-fx-background-color: #FF5050;");
 		}
 
 		label.getStyleClass().add("groupLabel");
@@ -286,14 +286,17 @@ public class MainToDoController {
 					System.out.println(node.toString());
 					System.out.println(node.getLayoutY());
 				}
+				
 			}
+		
+			
 		}
 
-		if (keyevent.getEventType() == KeyEvent.KEY_PRESSED) {
+		else if (keyevent.getEventType() == KeyEvent.KEY_PRESSED){
 			if (keyevent.getCode() == KeyCode.UP) {
 				if (currentHistoryIndex > 0) {
 					currentHistoryIndex--;
-					mainInput.setText(commandHistory.get(currentHistoryIndex));
+					mainInput.setText(commandHistory.get(currentHistoryIndex));				
 				}
 			} else if (keyevent.getCode() == KeyCode.DOWN) {
 				if (currentHistoryIndex < commandHistory.size() - 1) {
