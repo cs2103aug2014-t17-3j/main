@@ -55,7 +55,7 @@ public class ToDoView extends ToDoCommand {
 			for (ToDo todo : todoStorage.getAll()) {
 				todoList.add(new ToDo(todo));
 			}
-		} else if (input.equals("completed")) {
+		} else if (input.equals("completed") || input.equals("c") || input.equals("done")) {
 			for (ToDo todo : todoStorage.getAllCompleted()) {
 				todoList.add(new ToDo(todo));
 			}
