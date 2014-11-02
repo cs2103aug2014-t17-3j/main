@@ -138,6 +138,7 @@ public class ToDoContainer extends AnchorPane {
 		tag.setStyle("-fx-background-color:"+ color+ ";"
 				+ "-fx-background-radius: 1em;"
 				+"-fx-font-size: 10;"
+				+ "-fx-padding: 0 5 0 5 ;"
 				);
 		return tag;
 	}

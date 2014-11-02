@@ -5,10 +5,10 @@ import com.the.todo.util.CommandUtil;
 
 public class ToDoHint {
 
-	final String ADD_HINT = "add [Task] on [Date] at [Time]";
-	final String SEARCH_HINT = "search [keyword]";
+	final String ADD_HINT = "add [Task] from [Start Date] to/on/by [End Date] at [Time] +[Category] +[Priority]";
+	final String SEARCH_HINT = "search [Keyword]/[Category]";
 	final String DELETE_HINT = "delete [ID]";
-	final String  EDIT_HINT= "edit [ID] -title [title] -category [Category] -startdate [Start Date] -enddate [End Date] ";
+	final String  EDIT_HINT= "edit [ID] -title [title] -category [Category] -startdate [Start Date] -enddate [End Date] -priority [Priority] ";
 	final String VIEW_HINT = "view all/completed/incompleted";
 	final String COMPLETE_HINT = "complete [ID]";
 	final String INCOMPLETE_HINT = "incomplete [ID]";
