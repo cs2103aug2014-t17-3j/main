@@ -131,13 +131,13 @@ public class App extends Application implements HotKeyListener {
 			trayIcon.addActionListener(event -> Platform
 					.runLater(this::showStage));
 
-			java.awt.MenuItem openItem = new java.awt.MenuItem("hello, world");
-			openItem.addActionListener(event -> Platform
-					.runLater(this::showStage));
-
-			java.awt.Font defaultFont = java.awt.Font.decode(null);
-			java.awt.Font boldFont = defaultFont.deriveFont(java.awt.Font.BOLD);
-			openItem.setFont(boldFont);
+//			java.awt.MenuItem openItem = new java.awt.MenuItem("hello, world");
+//			openItem.addActionListener(event -> Platform
+//					.runLater(this::showStage));
+//
+//			java.awt.Font defaultFont = java.awt.Font.decode(null);
+//			java.awt.Font boldFont = defaultFont.deriveFont(java.awt.Font.BOLD);
+//			openItem.setFont(boldFont);
 
 			java.awt.MenuItem exitItem = new java.awt.MenuItem("Quit");
 			exitItem.addActionListener(event -> {
@@ -145,10 +145,14 @@ public class App extends Application implements HotKeyListener {
 				Platform.exit();
 				tray.remove(trayIcon);
 			});
+			
+			java.awt.Font defaultFont = java.awt.Font.decode(null);
+			java.awt.Font boldFont = defaultFont.deriveFont(java.awt.Font.BOLD);
+			exitItem.setFont(boldFont);
 
 			final java.awt.PopupMenu popup = new java.awt.PopupMenu();
-			popup.add(openItem);
-			popup.addSeparator();
+//			popup.add(openItem);
+//			popup.addSeparator();
 			popup.add(exitItem);
 			trayIcon.setPopupMenu(popup);
 
