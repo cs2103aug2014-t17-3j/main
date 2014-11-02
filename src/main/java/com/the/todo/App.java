@@ -43,8 +43,13 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import javax.imageio.ImageIO;
+import javax.swing.KeyStroke;
 
-public class App extends Application {
+import com.tulskiy.keymaster.common.HotKey;
+import com.tulskiy.keymaster.common.HotKeyListener;
+import com.tulskiy.keymaster.common.Provider;
+
+public class App extends Application implements HotKeyListener {
 
 	private static final String MAIN_FXML = "/fxml/MainToDo.fxml";
 	private static final String MAIN_STYLE = "/styles/styles.css";
@@ -52,6 +57,9 @@ public class App extends Application {
 
 	private static final int MAIN_FRAME_HEIGHT = 600;
 	private static final int MAIN_FRAME_WIDTH = 800;
+
+	private static Provider globalShortcut = null;
+	private static String launchShortcut = "alt SPACE";
 
 	private Stage primaryStage;
 	private ChangeListener<Boolean> focusListener;
@@ -67,7 +75,7 @@ public class App extends Application {
 			public void changed(ObservableValue<? extends Boolean> ov,
 					Boolean t, Boolean t1) {
 				if (t && !t1) {
-					primaryStage.hide();
+					hideStage();
 				}
 			}
 		};
@@ -83,6 +91,8 @@ public class App extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		this.primaryStage = stage;
+
+		initializeGlobalShortcut();
 
 		Platform.setImplicitExit(false);
 		javax.swing.SwingUtilities.invokeLater(this::addAppToTray);
@@ -131,6 +141,7 @@ public class App extends Application {
 
 			java.awt.MenuItem exitItem = new java.awt.MenuItem("Quit");
 			exitItem.addActionListener(event -> {
+				stopGlobalShortcut();
 				Platform.exit();
 				tray.remove(trayIcon);
 			});
@@ -152,6 +163,72 @@ public class App extends Application {
 		if (primaryStage != null) {
 			primaryStage.show();
 			primaryStage.toFront();
+		}
+	}
+
+	private void hideStage() {
+		if (primaryStage != null) {
+			primaryStage.hide();
+		}
+	}
+
+	private void initializeGlobalShortcut() {
+		App app = this;
+
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					if (globalShortcut == null) {
+						globalShortcut = Provider.getCurrentProvider(false);
+					}
+
+					globalShortcut.reset();
+					globalShortcut.register(
+							KeyStroke.getKeyStroke(launchShortcut), app);
+				} catch (Exception ex) {
+
+				}
+			}
+		}).start();
+	}
+
+	private void stopGlobalShortcut() {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				if (globalShortcut != null) {
+					globalShortcut.reset();
+					globalShortcut.stop();
+				}
+			}
+		}).start();
+	}
+
+	private void toggleStage() {
+		if (primaryStage.isShowing()) {
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					hideStage();
+				}
+			});
+		} else {
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					showStage();
+				}
+			});
+		}
+	}
+
+	@Override
+	public void onHotKey(HotKey hotKey) {
+		switch (hotKey.keyStroke.getKeyCode()) {
+		case java.awt.event.KeyEvent.VK_SPACE:
+			toggleStage();
+			break;
 		}
 	}
 
