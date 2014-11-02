@@ -47,6 +47,7 @@ import com.the.todo.model.ToDo;
 
 public class ToDoContainer extends AnchorPane {
 
+	private ToDo todo;
 	@FXML
 	private Label todoID;
 	@FXML
@@ -80,6 +81,7 @@ public class ToDoContainer extends AnchorPane {
 
 	public ToDoContainer(int id, ToDo todo) throws Exception {
 		this();
+		this.todo = todo;
 		this.id = id; 
 		if (!isValidTodo(todo)) {
 			throw new Exception("Invalid todo");
@@ -182,4 +184,26 @@ public class ToDoContainer extends AnchorPane {
 	public int getID(){ 
 		return id; 
 	}
+
+	public ToDo getToDo (){
+		return this.todo;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ToDoContainer other = (ToDoContainer) obj;
+		if (todo == null) {
+			if (other.todo != null)
+				return false;
+		} else if (!todo.equals(other.todo))
+			return false;
+		return true;
+	}
+	
 }

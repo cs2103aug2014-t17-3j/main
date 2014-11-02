@@ -29,6 +29,7 @@
 package com.the.todo;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -83,8 +84,8 @@ public class MainToDoController {
 	private ArrayList<String> commandHistory = new ArrayList<String>();
 	private int currentHistoryIndex;
 
-	private ObservableList<Node> oldVBoxitems;
-	
+	private ArrayList<Node> oldVBoxItems = new ArrayList<Node>();
+
 	@FXML
 	void initialize() {
 		mainScrollpane.setFitToWidth(true);
@@ -102,7 +103,7 @@ public class MainToDoController {
 
 	public void processInput() {
 		String userInput = mainInput.getText();
-		
+
 		commandHistory.add(userInput);
 		currentHistoryIndex = commandHistory.size();
 
@@ -116,11 +117,9 @@ public class MainToDoController {
 		switch (status.getStatus()) {
 		case SUCCESS:
 			updateUI(appLogic.getToDoMapDisplay());
-			ObservableList<Node> ol = mainVBox.getChildren();
-			for (Node node : ol){
-				System.out.println(node.toString());
-				System.out.println(node.getLayoutY());
-			}
+			scrollToUpdatedArea();
+			oldVBoxItems.clear();
+			oldVBoxItems.addAll(mainVBox.getChildren());
 			showPrompt(status.getMessage());
 			break;
 
@@ -228,7 +227,7 @@ public class MainToDoController {
 					}
 				}
 			}
-		}	
+		}
 	}
 
 	private void detectCheckBoxChanges(ToDoContainer container) {
@@ -250,16 +249,18 @@ public class MainToDoController {
 		Stage stage = (Stage) minimizeButton.getScene().getWindow();
 		stage.hide();
 	}
+
 	public Label createGroupLabel(LocalDate date) {
-		
+
 		LocalDate currentDate = new LocalDate();
-		Label label = new Label(date.toString(		DateTimeFormat.forPattern("EEEE, dd MMMM yyyy")));
-		
+		Label label = new Label(date.toString(DateTimeFormat
+				.forPattern("EEEE, dd MMMM yyyy")));
+
 		if (date.equals(ToDo.INVALID_DATE.toLocalDate())) {
 			label = new Label("Someday");
 		}
-		
-		if (date.isBefore(currentDate) ){		
+
+		if (date.isBefore(currentDate)) {
 			label.setStyle("-fx-background-color: red;");
 		}
 
@@ -268,7 +269,7 @@ public class MainToDoController {
 		return label;
 
 	}
-	
+
 	public void processKeyEvents(KeyEvent keyevent) {
 
 		if (keyevent.getEventType() == KeyEvent.KEY_PRESSED
@@ -279,13 +280,14 @@ public class MainToDoController {
 			} else if (keyevent.getCode() == KeyCode.DOWN) {
 				mainScrollpane.setVvalue(mainScrollpane.getVvalue() + 0.1);
 			} else if (keyevent.getCode() == KeyCode.Z) {
-				//processInput("undo");
+				processInput("undo");
+				/*System.out.println("vvalue: " + mainScrollpane.getVvalue());
 				System.out.println("vbox height:" + mainVBox.getHeight());
 				ObservableList<Node> ol = mainVBox.getChildren();
-				for (Node node : ol){
+				for (Node node : ol) {
 					System.out.println(node.toString());
 					System.out.println(node.getLayoutY());
-				}
+				}*/
 			}
 		}
 
@@ -304,34 +306,83 @@ public class MainToDoController {
 		}
 
 		// For showing hints
-		if (keyevent.getEventType() == KeyEvent.KEY_TYPED && mainInput.isFocused())  {
+		if (keyevent.getEventType() == KeyEvent.KEY_TYPED
+				&& mainInput.isFocused()) {
 			String incompleteCommand = mainInput.getText()
 					+ keyevent.getCharacter();
-			if(incompleteCommand.indexOf("\b")== incompleteCommand.length()-1){ //backspace char at end 
-				if (incompleteCommand.length()>0){
-					incompleteCommand = incompleteCommand.substring(0, incompleteCommand.length()-1);
+			if (incompleteCommand.indexOf("\b") == incompleteCommand.length() - 1) { // backspace
+																						// char
+																						// at
+																						// end
+				if (incompleteCommand.length() > 0) {
+					incompleteCommand = incompleteCommand.substring(0,
+							incompleteCommand.length() - 1);
 				}
-			}				
+			}
 			ToDoHint hint = new ToDoHint(incompleteCommand);
 			String str = hint.getHints();
 			hintLabel.setText(str);
 		}
 	}
-	
+
 	private void generateAllReminders() {
 		LocalDateTime currentDateTime = new LocalDateTime();
 		LocalDateTime tomorrowDateTime = new LocalDateTime().plusDays(1);
-		
+
 		for (ToDo todo : appLogic.getTodoStorage().getAll()) {
 			if (todo.isDeadlineToDo()) {
-				if (todo.getEndDate().isBefore(tomorrowDateTime) && todo.getEndDate().isAfter(currentDateTime)) {
+				if (todo.getEndDate().isBefore(tomorrowDateTime)
+						&& todo.getEndDate().isAfter(currentDateTime)) {
 					new ReminderTask(todo, currentDateTime);
 				}
 			}
 		}
 	}
-	
-	private void scrollToUpdatedArea (){
-		
+
+	private void scrollToUpdatedArea() {
+		if (oldVBoxItems.isEmpty()) {
+			return;
+		}
+
+		double y = 0;
+
+		mainScrollpane.applyCss();
+		mainScrollpane.layout();
+
+		ObservableList<Node> newVBoxItems = mainVBox.getChildren();
+
+		Iterator<Node> i = oldVBoxItems.iterator();
+		Iterator<Node> j = newVBoxItems.iterator();
+
+		while (i.hasNext() && j.hasNext()) {
+			Node oldItem = i.next();
+			Node newItem = j.next();
+
+			try {
+				Label oldLabel = (Label) oldItem;
+				Label newLabel = (Label) newItem;
+
+				if (!oldLabel.getText().equals(newLabel.getText())) {
+					y = newItem.getLayoutY();
+					break;
+				}
+			} catch (ClassCastException e) {
+				if (!oldItem.equals(newItem)) {
+					y = newItem.getLayoutY();
+					break;
+				}
+			}
+		}
+
+		// TODO manage these conditions
+		if (i.hasNext()) { // delete occurred at last position
+
+		} else if (j.hasNext()) { // add occurred at last position
+
+		} else { // something else happened
+
+		}
+
+		mainScrollpane.setVvalue(y / mainVBox.getHeight());
 	}
 }
