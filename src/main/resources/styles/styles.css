@@ -134,12 +134,13 @@
 	-fx-border-color: transparent darkred transparent transparent;
 }
 
-.label { 
+#todoDate, #todoMisc { 
 	-fx-padding: 0 5 0 5 ;
 } 
 
 #todoTitle {
 	-fx-font-size: 14;
+	-fx-padding: 0 5 0 5 ;
 }
 
 .check-box .box {
