@@ -81,8 +81,7 @@ public class MainToDoController {
 
 	private Logic appLogic = Logic.getInstance();
 
-	private ArrayList<String> commandHistory = new ArrayList<String>();
-	private int currentHistoryIndex;
+	private CommandHistory commandHistory = new CommandHistory();
 
 	private ArrayList<Node> oldVBoxItems = new ArrayList<Node>();
 
@@ -105,7 +104,6 @@ public class MainToDoController {
 		String userInput = mainInput.getText();
 
 		commandHistory.add(userInput);
-		currentHistoryIndex = commandHistory.size();
 
 		processInput(userInput);
 	}
@@ -259,8 +257,8 @@ public class MainToDoController {
 		if (date.equals(ToDo.INVALID_DATE.toLocalDate())) {
 			label = new Label("Someday");
 		}
-		
-		if (date.isBefore(currentDate) ){		
+
+		if (date.isBefore(currentDate)) {
 			label.setStyle("-fx-background-color: #FF5050;");
 		}
 
@@ -281,27 +279,34 @@ public class MainToDoController {
 				mainScrollpane.setVvalue(mainScrollpane.getVvalue() + 0.1);
 			} else if (keyevent.getCode() == KeyCode.Z) {
 				processInput("undo");
-				/*System.out.println("vvalue: " + mainScrollpane.getVvalue());
+
+				System.out.println("vvalue: " + mainScrollpane.getVvalue());
 				System.out.println("vbox height:" + mainVBox.getHeight());
 				ObservableList<Node> ol = mainVBox.getChildren();
 				for (Node node : ol) {
 					System.out.println(node.toString());
 					System.out.println(node.getLayoutY());
-				}*/
+				}
 			}
 		}
 
-		else if (keyevent.getEventType() == KeyEvent.KEY_PRESSED){
+		else if (keyevent.getEventType() == KeyEvent.KEY_PRESSED) {
 			if (keyevent.getCode() == KeyCode.UP) {
-				if (currentHistoryIndex > 0) {
-					currentHistoryIndex--;
-					mainInput.setText(commandHistory.get(currentHistoryIndex));				
+				String prevCmd = commandHistory.previous();
+				if (prevCmd != null) {
+					mainInput.setText(prevCmd);
 				}
+				mainInput.end();
+				keyevent.consume();
 			} else if (keyevent.getCode() == KeyCode.DOWN) {
-				if (currentHistoryIndex < commandHistory.size() - 1) {
-					currentHistoryIndex++;
-					mainInput.setText(commandHistory.get(currentHistoryIndex));
+				String nextCmd = commandHistory.next();
+				if (nextCmd != null) {
+					mainInput.setText(nextCmd);
+				} else {
+					mainInput.setText("");
 				}
+				mainInput.end();
+				keyevent.consume();
 			}
 		}
 
