@@ -38,12 +38,15 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
 
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 
 import com.the.todo.model.ToDo;
+import com.the.todo.model.ToDo.Priority;
+import com.the.todo.model.ToDo.Type;
 
 public class ToDoContainer extends AnchorPane {
 
@@ -62,14 +65,14 @@ public class ToDoContainer extends AnchorPane {
 
 
 	private int id; 
-
+	HBox hbox = new HBox();
 
 	public ToDoContainer() {
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(
 				"/fxml/todoContainer.fxml"));
 		fxmlLoader.setRoot(this);
 		fxmlLoader.setController(this);
-			
+
 		try {
 			fxmlLoader.load();
 
@@ -91,6 +94,8 @@ public class ToDoContainer extends AnchorPane {
 			setDate(todo);
 			setCategory(todo.getCategory()); 
 			setComplete(todo.isCompleted());
+			setType();
+			setPriority(); 
 		}
 
 	}
@@ -100,21 +105,10 @@ public class ToDoContainer extends AnchorPane {
 	}
 
 	private void setTitle(ToDo todo) {
-		Node tag ;
-		
-		if (todo.isDeadlineToDo()){
-			tag=createLabel("Deadline","lightgreen");							
-		}
-		else if (todo.isTimedToDo()){
-			tag=createLabel("Timed","lightblue");
-		}
-		else {
-			tag= createLabel("Floating","yellow");		
-		}
+
 		todoTitle.setText(todo.getTitle());		
-		todoTitle.setContentDisplay(ContentDisplay.RIGHT);
-		todoTitle.setGraphic(tag);
-	
+
+
 	}
 
 	private void setDate(ToDo todo){
@@ -132,7 +126,7 @@ public class ToDoContainer extends AnchorPane {
 
 	}
 
-	private Node createLabel(String text, String color){
+	private Node createTag(String text, String color){
 		Label tag= new Label(text);
 
 		tag.setStyle("-fx-background-color:"+ color+ ";"
@@ -142,7 +136,10 @@ public class ToDoContainer extends AnchorPane {
 				);
 		return tag;
 	}
-	
+
+
+
+
 	private String formatDate(LocalDateTime date){ 
 		//String dateStr = date.toLocalDate().toString(DateTimeFormat.forPattern("dd MMMM yyyy"));
 		String timeStr = date.toLocalTime().toString(DateTimeFormat.forPattern("hh:mm aa"));
@@ -161,6 +158,54 @@ public class ToDoContainer extends AnchorPane {
 		else{ 
 			completeChkBox.setSelected(false);
 		}
+	}
+
+	private void setType(){
+		Type type = todo.getType();
+		Node typeTag ;
+
+		if (type.equals(Type.DEADLINE)){ 
+			typeTag=createTag("Deadline","lightgreen");
+		}
+		else if (type.equals(Type.FLOATING)){ 
+			typeTag= createTag("Floating","yellow");			
+		}
+		else {
+			typeTag=createTag("Timed","lightblue");
+		}
+
+		todoTitle.setContentDisplay(ContentDisplay.RIGHT);
+		hbox.getChildren().add(typeTag);
+		todoTitle.setGraphic(hbox);
+
+	}
+	private void setPriority(){
+
+		//Solid border design 
+		Priority priority = todo.getPriority();
+		switch (priority){
+		case HIGH:
+			todoID.setStyle("-fx-border-color: red;");		
+			break;
+		case LOW:
+			todoID.setStyle("-fx-border-color: black;");
+			break;
+		case MEDIUM:
+			todoID.setStyle("-fx-border-color: blue;");
+			break;
+		}
+
+		//		//tag design		
+		//			Node priorityTag; 
+		//			if (priority == Priority.HIGH)
+		//				priorityTag= createTag("HIGH","red");				
+		//			else if (priority == Priority.MEDIUM)			
+		//				priorityTag=createTag("MEDIUM","blue");
+		//			else 
+		//				priorityTag=createTag("LOW","grey");			
+		//			hbox.getChildren().add(tag);
+		//			hbox.setSpacing(5);		
+		//					
 	}
 
 	/**
@@ -189,7 +234,7 @@ public class ToDoContainer extends AnchorPane {
 	public ToDo getToDo (){
 		return this.todo;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -206,5 +251,5 @@ public class ToDoContainer extends AnchorPane {
 			return false;
 		return true;
 	}
-	
+
 }

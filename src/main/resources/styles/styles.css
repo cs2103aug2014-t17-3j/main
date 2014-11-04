@@ -131,7 +131,8 @@
 
 #todoID {	
 	-fx-alignment: center;
-	-fx-border-color: transparent darkred transparent transparent;
+	-fx-border-style: none solid none none;
+	-fx-border-width:0 3 0 0 ;
 }
 
 #todoDate, #todoMisc { 
