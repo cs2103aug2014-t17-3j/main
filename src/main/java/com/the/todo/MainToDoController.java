@@ -388,6 +388,6 @@ public class MainToDoController {
 
 		}
 
-		mainScrollpane.setVvalue(y / mainVBox.getHeight());
+		mainScrollpane.setVvalue(y / (mainVBox.getHeight() - mainScrollpane.getViewportBounds().getHeight()));
 	}
 }
