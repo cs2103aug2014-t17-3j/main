@@ -29,7 +29,6 @@
 package com.the.todo;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -83,7 +82,7 @@ public class MainToDoController {
 
 	private CommandHistory commandHistory = new CommandHistory();
 
-	private ArrayList<Node> oldVBoxItems = new ArrayList<Node>();
+	private ArrayList<Object> oldVBoxItems = new ArrayList<Object>();
 
 	@FXML
 	void initialize() {
@@ -95,6 +94,7 @@ public class MainToDoController {
 			public void run() {
 				mainInput.requestFocus();
 				updateUI(appLogic.getToDoMapDisplay());
+				oldVBoxItems.addAll(mapToList(appLogic.getToDoMapDisplay()));
 				generateAllReminders();
 			}
 		});
@@ -114,10 +114,32 @@ public class MainToDoController {
 
 		switch (status.getStatus()) {
 		case SUCCESS:
-			updateUI(appLogic.getToDoMapDisplay());
-			scrollToUpdatedArea();
-			oldVBoxItems.clear();
-			oldVBoxItems.addAll(mainVBox.getChildren());
+			Map<LocalDate, List<ToDo>> newDisplayMap = appLogic
+					.getToDoMapDisplay();
+			switch (appLogic.getDisplayType()) {
+			case ALL:
+				updateUI(newDisplayMap);
+				List<Object> newDisplayList = mapToList(newDisplayMap);
+				int changedPosition = indexOfFirstChange(oldVBoxItems,
+						newDisplayList);
+				// DELETE AFTER CONFIRMED
+				System.out.println("Changed position: " + changedPosition);
+
+				scrollToIndex(changedPosition);
+				highlightItem(changedPosition);
+				oldVBoxItems.clear();
+				oldVBoxItems.addAll(newDisplayList);
+				break;
+
+			case SEARCH:
+				updateUI(newDisplayMap);
+				mainScrollpane.setVvalue(0);
+				break;
+
+			default:
+				break;
+			}
+
 			showPrompt(status.getMessage());
 			break;
 
@@ -130,6 +152,17 @@ public class MainToDoController {
 		default:
 			showPrompt(status.getMessage());
 			break;
+		}
+	}
+
+	private void highlightItem(int index) {
+		try {
+			Label item = (Label) mainVBox.getChildren().get(index);
+			mainVBox.getChildren().get(index + 1)
+					.setStyle("-fx-border-color: red;");
+		} catch (ClassCastException e) {
+			mainVBox.getChildren().get(index)
+					.setStyle("-fx-border-color: red;");
 		}
 	}
 
@@ -344,50 +377,48 @@ public class MainToDoController {
 		}
 	}
 
-	private void scrollToUpdatedArea() {
-		if (oldVBoxItems.isEmpty()) {
-			return;
-		}
-
-		double y = 0;
-
+	private void scrollToIndex(int index) {
 		mainScrollpane.applyCss();
 		mainScrollpane.layout();
 
-		ObservableList<Node> newVBoxItems = mainVBox.getChildren();
+		double yValue = mainVBox.getChildren().get(index).getLayoutY();
 
-		Iterator<Node> i = oldVBoxItems.iterator();
-		Iterator<Node> j = newVBoxItems.iterator();
+		if (mainVBox.getHeight() > mainScrollpane.getViewportBounds().getHeight()) {
+			mainScrollpane.setVvalue(yValue / (mainVBox.getHeight() - mainScrollpane.getViewportBounds().getHeight()));
+		} else {
+			mainScrollpane.setVvalue(0);
+		}
+	}
 
-		while (i.hasNext() && j.hasNext()) {
-			Node oldItem = i.next();
-			Node newItem = j.next();
+	private List<Object> mapToList(Map<LocalDate, List<ToDo>> map) {
+		List<Object> list = new ArrayList<Object>();
 
-			try {
-				Label oldLabel = (Label) oldItem;
-				Label newLabel = (Label) newItem;
-
-				if (!oldLabel.getText().equals(newLabel.getText())) {
-					y = newItem.getLayoutY();
-					break;
-				}
-			} catch (ClassCastException e) {
-				if (!oldItem.equals(newItem)) {
-					y = newItem.getLayoutY();
-					break;
-				}
+		for (Entry<LocalDate, List<ToDo>> entry : map.entrySet()) {
+			list.add(entry.getKey());
+			for (ToDo todo : entry.getValue()) {
+				list.add(todo);
 			}
 		}
+		return list;
+	}
 
-		// TODO manage these conditions
-		if (i.hasNext()) { // delete occurred at last position
+	private static int indexOfFirstChange(List<Object> oldList,
+			List<Object> newList) {
+		int firstChanged = 0;
+		List<Object> oldCopy = new ArrayList<Object>(oldList);
+		List<Object> newCopy = new ArrayList<Object>(newList);
 
-		} else if (j.hasNext()) { // add occurred at last position
-
-		} else { // something else happened
-
+		if (oldCopy.size() <= newCopy.size()) {
+			newCopy.removeAll(oldCopy);
+			firstChanged = newList.indexOf(newCopy.get(0));
+		} else {
+			oldCopy.removeAll(newCopy);
+			firstChanged = oldList.indexOf(oldCopy.get(0));
 		}
+		return firstChanged;
+	}
 
-		mainScrollpane.setVvalue(y / (mainVBox.getHeight() - mainScrollpane.getViewportBounds().getHeight()));
+	public static int test(List<Object> oldList, List<Object> newList) {
+		return indexOfFirstChange(oldList, newList);
 	}
 }
