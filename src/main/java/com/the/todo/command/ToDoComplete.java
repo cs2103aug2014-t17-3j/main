@@ -6,10 +6,11 @@ import com.the.todo.storage.ToDoStore;
 
 public class ToDoComplete extends ToDoCommand {
 
-	private static final String EXECUTE_DOES_NOT_EXIST = "It seems like ToDo %s does not exist.";
-	private static final String EXECUTE_ILLEGAL_ARGUMENT = "Mmm ... Seems like you are missing some argument.";
+	private static final String EXECUTE_DOES_NOT_EXIST = "ToDo %s does not exist.";
+	private static final String EXECUTE_ILLEGAL_ARGUMENT = "Seems like you are missing somethings.";
 	private static final String EXECUTE_ERROR = "An error occured while updating ToDo.";
-	private static final String EXECUTE_SUCCESS = "A great success updating ToDo: %s";
+	private static final String EXECUTE_SUCCESS = "Successful";
+	private static final String EXECUTE_DONE = "Task had been completed";
 
 	private ToDoStore todoStorage;
 	private ToDo todo;
@@ -27,13 +28,17 @@ public class ToDoComplete extends ToDoCommand {
 
 		newtodo = new ToDo(todo);
 		todoStorage.update(newtodo.getId(), newtodo);
-		
+
 		if (this.newtodo == null) {
 			return new CommandStatus(Status.ERROR, String.format(
 					EXECUTE_DOES_NOT_EXIST, ""));
 		}
 
-		this.newtodo = isCompleteToDo(this.newtodo);
+		if (newtodo.isCompleted()) {
+			return new CommandStatus(Status.ERROR);
+		} else {
+			this.newtodo = isCompleteToDo(this.newtodo);
+		}
 
 		if (this.newtodo == null) {
 			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);

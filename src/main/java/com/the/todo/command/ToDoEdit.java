@@ -46,11 +46,16 @@ import com.the.todo.util.StringUtil;
 
 public class ToDoEdit extends ToDoCommand {
 
+	
+	private static final String DELIM_SPACE = " ";
+	private static final String DELIM_PLUS = "+";
 	private static final String DELIM = "-";
-	private static final String EXECUTE_DOES_NOT_EXIST = "It seems like ToDo %s does not exist.";
-	private static final String EXECUTE_ILLEGAL_ARGUMENT = "Mmm ... Seems like you are missing some argument.";
+	private static final String EXECUTE_DOES_NOT_EXIST = "ToDo %s does not exist.";
+	private static final String EXECUTE_ILLEGAL_ARGUMENT = "Seems like you are missing somethings.";
+	private static final String EXECUTE_ILLEGAL_FLOATINGWITHOUTENDDATE = "Seems like you forget your end-date.";
 	private static final String EXECUTE_ERROR = "An error occured while updating ToDo.";
-	private static final String EXECUTE_SUCCESS = "A great success updating ToDo: %s";
+	private static final String EXECUTE_SUCCESS = "Successful";
+	private static final String EXECUTE_INVALID_DATE = "Invalid date!";
 
 	private static enum FieldType {
 		T, TITLE, C, CATEGORY, S, STARTDATE, E, ENDDATE, P, PRIORITY, RS, REMOVESTART, RE, REMOVEEND, INVALID
@@ -73,7 +78,7 @@ public class ToDoEdit extends ToDoCommand {
 	protected CommandStatus performExecute() {
 
 		String todoTitle = input;
-		String[] todoStrings = input.split(" ", 2);
+		String[] todoStrings = input.split(DELIM_SPACE, 2);
 		newtodo = new ToDo(todo);
 		todoStorage.update(newtodo.getId(), newtodo);
 
@@ -95,18 +100,18 @@ public class ToDoEdit extends ToDoCommand {
 			if (newtodo.getType() == Type.FLOATING) {
 				if ((input.contains("-s")) && !input.contains("-e")) {
 					return new CommandStatus(Status.ERROR,
-							EXECUTE_ILLEGAL_ARGUMENT);
+							EXECUTE_ILLEGAL_FLOATINGWITHOUTENDDATE);
 				}
 			}
 			this.newtodo = editToDo(this.newtodo, todoTitle);
 		} catch (InvalidDateException e) {
-			return new CommandStatus(Status.ERROR, "Invalid date!");
+			return new CommandStatus(Status.ERROR, EXECUTE_INVALID_DATE);
 		} catch (Exception e) {
 			return new CommandStatus(Status.ERROR, EXECUTE_ILLEGAL_ARGUMENT);
 		}
 
 		if (this.newtodo == null) {
-			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
+			return new CommandStatus(Status.ERROR, EXECUTE_DOES_NOT_EXIST);
 		}
 
 		return new CommandStatus(Status.SUCCESS, String.format(EXECUTE_SUCCESS,
@@ -117,7 +122,7 @@ public class ToDoEdit extends ToDoCommand {
 	protected CommandStatus performUndo() {
 		todoStorage.update(todo.getId(), todo);
 		if (this.newtodo == null) {
-			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
+			return new CommandStatus(Status.ERROR, EXECUTE_DOES_NOT_EXIST);
 		}
 
 		return new CommandStatus(Status.SUCCESS, String.format(EXECUTE_SUCCESS,
@@ -217,7 +222,7 @@ public class ToDoEdit extends ToDoCommand {
 
 	private String[] stringSplit(String subStringInput, int numberOfParts) {
 		String[] splitSubInputArr;
-		splitSubInputArr = StringUtil.splitString(subStringInput, " ",
+		splitSubInputArr = StringUtil.splitString(subStringInput, DELIM_SPACE,
 				numberOfParts);
 		return splitSubInputArr;
 	}
@@ -253,7 +258,7 @@ public class ToDoEdit extends ToDoCommand {
 		case P:
 		case PRIORITY:
 			Priority priorityChosen = Priority.valueOf(remainingString
-					.toUpperCase().replace("+", " ").trim());
+					.toUpperCase().replace(DELIM_PLUS, DELIM_SPACE).trim());
 			todo.setPriority(priorityChosen);
 			break;
 		case INVALID:
