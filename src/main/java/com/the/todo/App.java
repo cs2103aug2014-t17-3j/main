@@ -51,8 +51,8 @@ import com.tulskiy.keymaster.common.Provider;
 
 public class App extends Application implements HotKeyListener {
 
-	private static final String MAIN_FXML = "/fxml/MainToDo.fxml";
-	private static final String MAIN_STYLE = "/styles/styles.css";
+	private static final String MAIN_FXML = "/fxml/mainTest.fxml";
+	private static final String MAIN_STYLE = "/styles/styles2.css";
 	private static final String ICON_TRAY = "/images/ic_thetodo.jpg";
 
 	private static final int MAIN_FRAME_HEIGHT = 600;

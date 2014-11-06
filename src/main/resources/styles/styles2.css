@@ -34,6 +34,7 @@
 
 #appTitlePane {
 	-fx-background-color: #333333;
+	-fx-padding: 5;
 }
 
 #appTitleIcon {
@@ -43,14 +44,14 @@
 
 #appTitle {
 	-fx-font-family: Helvetica, sans-serif;
-	-fx-font-size: 16;
+	-fx-font-size: 1.4em;
 	-fx-font-weight: bold;
 	-fx-text-fill: white;
 }
 
 .groupLabel {
 	-fx-background-color:  #3E506F;
-	-fx-font-size: 14;
+	-fx-font-size: 1.2em;
 	-fx-font-family: "Lucida Grande", sans-serif;
 	-fx-font-weight: bold;
 	-fx-label-padding: 10;
@@ -109,18 +110,18 @@
 }
 
 #mainInput{
-	-fx-font-size: 12;
+	-fx-font-size: 1em;
+	-fx-padding: 8;
 }
 
 #mainInput:focused { 
  	-fx-background-color: transparent,-fx-box-border,-fx-control-inner-background;
   	-fx-background-insets: -1.4, 0, 1;
   	-fx-background-radius: 1.4, 2.5, 2.5;
-	-fx-padding: 5; 
 }
 
 #hintLabel{
-	-fx-font-size: 12; 
+	-fx-font-size: 1em; 
 	-fx-text-fill: #777777;
 	-fx-label-padding: 0 5 0 5;
 }
@@ -138,12 +139,12 @@
 }
 
 #todoDate, #todoMisc { 
-	-fx-font-size: 12;
+	-fx-font-size: 1em;
 	-fx-padding: 0 5 0 5 ;
 } 
 
 #todoTitle {
-	-fx-font-size: 14;
+	-fx-font-size: 1.2em;
 	-fx-padding: 0 5 0 5 ;
 }
 

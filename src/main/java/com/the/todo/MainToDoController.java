@@ -49,6 +49,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -74,7 +75,7 @@ public class MainToDoController {
 	@FXML
 	private Button minimizeButton;
 	@FXML
-	private SplitPane mainPane;
+	private BorderPane mainPane;
 	@FXML
 	private Label hintLabel;
 
@@ -121,33 +122,36 @@ public class MainToDoController {
 					.getToDoMapDisplay();
 			switch (appLogic.getDisplayType()) {
 			case ALL:
-				//updateUI(newDisplayMap);
+				// updateUI(newDisplayMap);
 				List<Object> newDisplayList = mapToList(newDisplayMap);
-				if (oldVBoxItems.size() <= newDisplayList.size()){
+				if (oldVBoxItems.size() <= newDisplayList.size()) {
 					int changedPosition = indexOfFirstChange(oldVBoxItems,
 							newDisplayList);
 					updateUI(newDisplayMap);
 					scrollToIndex(changedPosition);
 					highlightItem(changedPosition);
 				} else {
-					int changedPosition = indexOfFirstChange(newDisplayList, oldVBoxItems);
+					int changedPosition = indexOfFirstChange(newDisplayList,
+							oldVBoxItems);
 					scrollToIndex(changedPosition);
-					Node changedItem = mainVBox.getChildren().get(changedPosition);
-					FadeTransition ft = new FadeTransition(Duration.millis(2000), changedItem);
+					Node changedItem = mainVBox.getChildren().get(
+							changedPosition);
+					FadeTransition ft = new FadeTransition(
+							Duration.millis(2000), changedItem);
 					ft.setFromValue(1.0);
-				    ft.setToValue(0);
-				    ft.play();
-				    Timer timer = new Timer();
-				    timer.schedule(new TimerTask(){
+					ft.setToValue(0);
+					ft.play();
+					Timer timer = new Timer();
+					timer.schedule(new TimerTask() {
 						@Override
-						public void run(){
-							Platform.runLater(new Runnable(){
-								public void run(){
+						public void run() {
+							Platform.runLater(new Runnable() {
+								public void run() {
 									updateUI(newDisplayMap);
 								}
 							});
 						}
-					}, 2000);
+					}, 1000);
 				}
 				oldVBoxItems.clear();
 				oldVBoxItems.addAll(newDisplayList);
@@ -406,8 +410,11 @@ public class MainToDoController {
 
 		double yValue = mainVBox.getChildren().get(index).getLayoutY();
 
-		if (mainVBox.getHeight() > mainScrollpane.getViewportBounds().getHeight()) {
-			mainScrollpane.setVvalue(yValue / (mainVBox.getHeight() - mainScrollpane.getViewportBounds().getHeight()));
+		if (mainVBox.getHeight() > mainScrollpane.getViewportBounds()
+				.getHeight()) {
+			mainScrollpane.setVvalue(yValue
+					/ (mainVBox.getHeight() - mainScrollpane
+							.getViewportBounds().getHeight()));
 		} else {
 			mainScrollpane.setVvalue(0);
 		}
@@ -435,19 +442,15 @@ public class MainToDoController {
 			newCopy.removeAll(oldCopy);
 			firstChanged = newList.indexOf(newCopy.get(0));
 		} else {
-			firstChanged = -1;	// newlist size must be >= oldlist size
+			firstChanged = -1; // newlist size must be >= oldlist size
 		}
 		return firstChanged;
 	}
 
-	public static int test(List<Object> oldList, List<Object> newList) {
-		return indexOfFirstChange(oldList, newList);
-	}
-	
-	private void scrollToToday (){
-		LocalDate today = new LocalDate();		
+	private void scrollToToday() {
+		LocalDate today = new LocalDate();
 		int todayIndex = oldVBoxItems.indexOf(today);
-		if (todayIndex == -1){
+		if (todayIndex == -1) {
 			todayIndex = 0;
 		}
 		scrollToIndex(todayIndex);
