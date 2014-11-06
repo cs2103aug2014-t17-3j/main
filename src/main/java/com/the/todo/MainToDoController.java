@@ -97,6 +97,7 @@ public class MainToDoController {
 				mainInput.requestFocus();
 				updateUI(appLogic.getToDoMapDisplay());
 				oldVBoxItems.addAll(mapToList(appLogic.getToDoMapDisplay()));
+				scrollToToday();
 				generateAllReminders();
 			}
 		});
@@ -441,5 +442,14 @@ public class MainToDoController {
 
 	public static int test(List<Object> oldList, List<Object> newList) {
 		return indexOfFirstChange(oldList, newList);
+	}
+	
+	private void scrollToToday (){
+		LocalDate today = new LocalDate();		
+		int todayIndex = oldVBoxItems.indexOf(today);
+		if (todayIndex == -1){
+			todayIndex = 0;
+		}
+		scrollToIndex(todayIndex);
 	}
 }
