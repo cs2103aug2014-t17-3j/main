@@ -34,10 +34,10 @@ import com.the.todo.storage.ToDoStore;
 
 public class ToDoDelete extends ToDoCommand {
 
-	private static final String EXECUTE_DOES_NOT_EXIST = "It seems like ToDo %s does not exist.";
-	private static final String EXECUTE_ILLEGAL_ARGUMENT = "Mmm ... Seems like you are missing some argument.";
-	private static final String EXECUTE_ERROR = "An error occured while deleting ToDo.";
-	private static final String EXECUTE_SUCCESS = "A great success deleting ToDo: %s";
+	private static final String EXECUTE_DOES_NOT_EXIST = "ToDo %s does not exist.";
+	private static final String EXECUTE_ILLEGAL_ARGUMENT = "Seems like you are missing somethings.";
+	private static final String EXECUTE_ERROR = "An error occured while updating ToDo.";
+	private static final String EXECUTE_SUCCESS = "Successful";
 
 	private ToDoStore todoStorage;
 	private ToDo todo;

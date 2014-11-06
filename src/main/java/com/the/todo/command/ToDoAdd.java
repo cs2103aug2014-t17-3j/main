@@ -47,9 +47,9 @@ public class ToDoAdd extends ToDoCommand {
 	private static final String MEDIUM = "MEDIUM";
 	private static final String LOW = "LOW";
 	private static final String HIGH = "HIGH";
-	private static final String EXECUTE_ILLEGAL_ARGUMENT = "Mmm ... Seems like you are missing some argument.";
-	private static final String EXECUTE_ERROR = "An error occured while adding ToDo.";
-	private static final String EXECUTE_SUCCESS = "A great success adding ToDo: %s";
+	private static final String EXECUTE_ILLEGAL_ARGUMENT = "Seems like you are missing somethings.";
+	private static final String EXECUTE_ERROR = "An error occured while updating ToDo.";
+	private static final String EXECUTE_SUCCESS = "Successful";
 
 	ToDoStore todoStorage;
 	ToDo todo;
