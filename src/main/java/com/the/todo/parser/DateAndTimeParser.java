@@ -28,6 +28,7 @@
 
 package com.the.todo.parser;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,11 +38,12 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import org.joda.time.format.DateTimeParser;
-import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 
+import com.joestelmach.natty.DateGroup;
 import com.the.todo.parser.exception.InvalidDateException;
+import com.the.todo.util.StringUtil;
 
-public class DateParser {
+public class DateAndTimeParser {
 
 	private static final DateTimeFormatter YEAR_MONTH_DAY_SLASH = DateTimeFormat
 			.forPattern("yyyy/MM/dd");
@@ -62,10 +64,38 @@ public class DateParser {
 		}
 
 		String formattedInput = changeDateStringsFormat(input);
-		PrettyTimeParserWrapper prettyTime = PrettyTimeParserWrapper
-				.getInstance();
+		formattedInput = removeAllIntegers(formattedInput);
+		formattedInput = formattedInput.replaceAll("([A-Za-z]+\\d+)", "");
 
-		return prettyTime.parseDateOnly(formattedInput);
+		NattyParserWrapper prettyTime = NattyParserWrapper.getInstance();
+
+		List<DateGroup> groups = prettyTime.parseDateOnly(formattedInput);
+		List<DateGroup> newGroups = new ArrayList<DateGroup>();
+		for (DateGroup group : groups) {
+			String matchingValue = group.getText();
+			String regex = ".*\\b" + matchingValue + "\\b.*"; // TODO: Not sure this is useful (KIV).
+
+			if (formattedInput.matches(regex)) {
+				newGroups.add(group);
+			}
+		}
+
+		return newGroups;
+	}
+
+	private static String removeAllIntegers(String input) {
+		String output = input;
+		String[] tokens = StringUtil.splitString(input, " ");
+
+		for (String token : tokens) {
+			try {
+				Integer.parseInt(token);
+				output = output.replaceFirst(token, "");
+			} catch (NumberFormatException ex) {
+			}
+		}
+
+		return output;
 	}
 
 	public static boolean checkValidDates(String input) {

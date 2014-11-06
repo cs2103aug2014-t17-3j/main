@@ -31,14 +31,14 @@ package com.the.todo.command;
 import java.util.List;
 
 import org.joda.time.LocalDateTime;
-import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 
+import com.joestelmach.natty.DateGroup;
 import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
 import com.the.todo.model.ToDo.Priority;
 import com.the.todo.model.ToDo.Type;
 import com.the.todo.parser.CategoryPriorityParser;
-import com.the.todo.parser.DateParser;
+import com.the.todo.parser.DateAndTimeParser;
 import com.the.todo.parser.exception.InvalidDateException;
 import com.the.todo.storage.ToDoStore;
 
@@ -111,9 +111,9 @@ public class ToDoAdd extends ToDoCommand {
 				categoryFound).trim();
 		title = CategoryPriorityParser.removeStringFromTitle(title,
 				originalPriorityInString).trim();
-		List<DateGroup> dateGroup = DateParser.parse(title);
-		type = getToDoType(dateGroup);
+		List<DateGroup> dateGroup = DateAndTimeParser.parse(title);
 
+		type = getToDoType(dateGroup);
 		todo = createToDoType(type, title, dateGroup, categoryFound, priority);
 
 		return todo;

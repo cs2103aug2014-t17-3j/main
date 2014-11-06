@@ -33,13 +33,13 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.joda.time.LocalDateTime;
-import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 
+import com.joestelmach.natty.DateGroup;
 import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
 import com.the.todo.model.ToDo.Priority;
 import com.the.todo.model.ToDo.Type;
-import com.the.todo.parser.DateParser;
+import com.the.todo.parser.DateAndTimeParser;
 import com.the.todo.parser.exception.InvalidDateException;
 import com.the.todo.storage.ToDoStore;
 import com.the.todo.util.StringUtil;
@@ -245,13 +245,13 @@ public class ToDoEdit extends ToDoCommand {
 			break;
 		case S:
 		case STARTDATE:
-			groups = DateParser.parse(remainingString);
+			groups = DateAndTimeParser.parse(remainingString);
 			date = new LocalDateTime(groups.get(0).getDates().get(0));
 			todo.setStartDate(date);
 			break;
 		case E:
 		case ENDDATE:
-			groups = DateParser.parse(remainingString);
+			groups = DateAndTimeParser.parse(remainingString);
 			date = new LocalDateTime(groups.get(0).getDates().get(0));
 			todo.setEndDate(date);
 			break;
