@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
@@ -118,15 +120,34 @@ public class MainToDoController {
 					.getToDoMapDisplay();
 			switch (appLogic.getDisplayType()) {
 			case ALL:
-				updateUI(newDisplayMap);
+				//updateUI(newDisplayMap);
 				List<Object> newDisplayList = mapToList(newDisplayMap);
-				int changedPosition = indexOfFirstChange(oldVBoxItems,
-						newDisplayList);
-				// DELETE AFTER CONFIRMED
-				System.out.println("Changed position: " + changedPosition);
-
-				scrollToIndex(changedPosition);
-				highlightItem(changedPosition);
+				if (oldVBoxItems.size() <= newDisplayList.size()){
+					int changedPosition = indexOfFirstChange(oldVBoxItems,
+							newDisplayList);
+					updateUI(newDisplayMap);
+					scrollToIndex(changedPosition);
+					highlightItem(changedPosition);
+				} else {
+					int changedPosition = indexOfFirstChange(newDisplayList, oldVBoxItems);
+					scrollToIndex(changedPosition);
+					Node changedItem = mainVBox.getChildren().get(changedPosition);
+					FadeTransition ft = new FadeTransition(Duration.millis(2000), changedItem);
+					ft.setFromValue(1.0);
+				    ft.setToValue(0);
+				    ft.play();
+				    Timer timer = new Timer();
+				    timer.schedule(new TimerTask(){
+						@Override
+						public void run(){
+							Platform.runLater(new Runnable(){
+								public void run(){
+									updateUI(newDisplayMap);
+								}
+							});
+						}
+					}, 2000);
+				}
 				oldVBoxItems.clear();
 				oldVBoxItems.addAll(newDisplayList);
 				break;
@@ -134,6 +155,7 @@ public class MainToDoController {
 			case SEARCH:
 				updateUI(newDisplayMap);
 				mainScrollpane.setVvalue(0);
+				oldVBoxItems.clear();
 				break;
 
 			default:
@@ -412,8 +434,7 @@ public class MainToDoController {
 			newCopy.removeAll(oldCopy);
 			firstChanged = newList.indexOf(newCopy.get(0));
 		} else {
-			oldCopy.removeAll(newCopy);
-			firstChanged = oldList.indexOf(oldCopy.get(0));
+			firstChanged = -1;	// newlist size must be >= oldlist size
 		}
 		return firstChanged;
 	}
