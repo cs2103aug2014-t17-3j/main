@@ -196,6 +196,7 @@ public class CommandParserTest {
 	
 	@Test
 	public void testUndoInComplete() {
+		appLogic.processCommand("complete 1");
 		appLogic.processCommand("incomplete 1");
 		appLogic.processCommand("undo");
 
@@ -206,6 +207,7 @@ public class CommandParserTest {
 	
 	@Test
 	public void testUndoInCompleteUpperCase() {
+		appLogic.processCommand("COMPLETE 1");
 		appLogic.processCommand("INCOMPLETE 1");
 		appLogic.processCommand("UNDO");
 
