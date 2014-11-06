@@ -13,6 +13,7 @@ public class ToDoComplete extends ToDoCommand {
 
 	private ToDoStore todoStorage;
 	private ToDo todo;
+	private ToDo newtodo;
 
 	public ToDoComplete(ToDoStore todoStorage, ToDo todo) {
 		super();
@@ -24,14 +25,17 @@ public class ToDoComplete extends ToDoCommand {
 	@Override
 	protected CommandStatus performExecute() {
 
-		if (this.todo == null) {
+		newtodo = new ToDo(todo);
+		todoStorage.update(newtodo.getId(), newtodo);
+		
+		if (this.newtodo == null) {
 			return new CommandStatus(Status.ERROR, String.format(
 					EXECUTE_DOES_NOT_EXIST, ""));
 		}
 
-		this.todo = isCompleteToDo(this.todo);
+		this.newtodo = isCompleteToDo(this.newtodo);
 
-		if (this.todo == null) {
+		if (this.newtodo == null) {
 			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
 		}
 
@@ -41,9 +45,10 @@ public class ToDoComplete extends ToDoCommand {
 
 	@Override
 	protected CommandStatus performUndo() {
-		this.todo = undoCompleteToDo(this.todo);
+		todoStorage.update(newtodo.getId(), newtodo);
+		this.newtodo = undoCompleteToDo(this.newtodo);
 
-		if (this.todo == null) {
+		if (this.newtodo == null) {
 			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
 		}
 
