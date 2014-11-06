@@ -63,15 +63,17 @@ public class Logic {
 	private Map<LocalDate, List<ToDo>> todoMapDisplay;
 	private List<UUID> todoIdStorage;
 	private Stack<ToDoCommand> undoStack;
+	private CommandType lastCommand;
+	private DisplayType displayType;
 
 	private static Logic logic = null;
 	private static final String FILENAME = "thetodo.json";
 
-	private static enum CommandType {
+	public static enum CommandType {
 		ADD, VIEW, EDIT, DELETE, COMPLETE, INCOMPLETE, SEARCH, UNDO, INVALID
 	};
 
-	private static enum DisplayType {
+	public static enum DisplayType {
 		ALL, SEARCH
 	};
 
@@ -81,6 +83,8 @@ public class Logic {
 		todoMapDisplay = new TreeMap<LocalDate, List<ToDo>>();
 		todoIdStorage = new ArrayList<UUID>();
 		undoStack = new Stack<ToDoCommand>();
+		lastCommand = null;
+		displayType = DisplayType.ALL;
 
 		initializeDisplayList();
 		updateDisplayItems(todoStorage.getAll());
@@ -109,7 +113,7 @@ public class Logic {
 		CommandType commandType = getCommandType(command);
 
 		ToDoCommand todoCommand = null;
-		DisplayType displayType = DisplayType.ALL;
+		displayType = DisplayType.ALL;
 
 		CommandStatus commandStatus;
 
@@ -128,8 +132,9 @@ public class Logic {
 			try {
 				todoCommand = parseToDoCommand(commandType, params);
 			} catch (Exception e) {
-				commandType = CommandType.INVALID; 
-				commandStatus = new CommandStatus(Status.INVALID, "Invalid command.");
+				commandType = CommandType.INVALID;
+				commandStatus = new CommandStatus(Status.INVALID,
+						"Invalid command.");
 			}
 			break;
 		case SEARCH:
@@ -158,6 +163,8 @@ public class Logic {
 					&& commandStatus.getStatus() == Status.SUCCESS) {
 				undoStack.push(todoCommand);
 			}
+
+			lastCommand = commandType;
 		} else {
 			commandStatus = new CommandStatus(Status.INVALID,
 					"Invalid command.");
@@ -296,7 +303,8 @@ public class Logic {
 		updateIdStorage(todoIdStorage, todoMapDisplay);
 	}
 
-	private ToDoCommand parseToDoCommand(CommandType commandType, String input) throws Exception {
+	private ToDoCommand parseToDoCommand(CommandType commandType, String input)
+			throws Exception {
 
 		String index = CommandUtil.getFirstPhrase(input);
 		String params = CommandUtil.getParams(index, input);
@@ -304,7 +312,7 @@ public class Logic {
 		try {
 			UUID id = getId(Integer.valueOf(index));
 			ToDo todo = getToDo(id);
-			
+
 			switch (commandType) {
 			case EDIT:
 				return new ToDoEdit(todoStorage, todo, params);
@@ -349,4 +357,11 @@ public class Logic {
 		return id;
 	}
 
+	public CommandType getLastCommand() {
+		return lastCommand;
+	}
+
+	public DisplayType getDisplayType() {
+		return displayType;
+	}
 }

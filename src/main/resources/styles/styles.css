@@ -131,15 +131,19 @@
 
 #todoID {	
 	-fx-alignment: center;
-	-fx-border-color: transparent darkred transparent transparent;
+	-fx-border-style: none solid none none;
+	-fx-border-color: transparent darkred transparent transparent; 
+	-fx-border-width:0 1 0 0 ;
 }
 
-.label { 
+#todoDate, #todoMisc { 
+	-fx-font-size: 12;
 	-fx-padding: 0 5 0 5 ;
 } 
 
 #todoTitle {
 	-fx-font-size: 14;
+	-fx-padding: 0 5 0 5 ;
 }
 
 .check-box .box {

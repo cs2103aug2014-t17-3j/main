@@ -29,7 +29,7 @@
             <TextField fx:id="mainInput" onAction="#processInput" prefHeight="30.0" promptText="Enter your command here" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
             <FlowPane alignment="CENTER" prefHeight="25.0" AnchorPane.bottomAnchor="55.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                <children>
-                  <Label id="promptLabel" fx:id="promptLabel">
+                  <Label id="promptLabel" fx:id="promptLabel" maxWidth="500.0" wrapText="true">
                      <effect>
                         <BoxBlur iterations="0">
                            <input>

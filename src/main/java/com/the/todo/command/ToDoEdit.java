@@ -92,7 +92,7 @@ public class ToDoEdit extends ToDoCommand {
 			if (todoTitle.isEmpty()) {
 				return new CommandStatus(Status.ERROR, EXECUTE_ILLEGAL_ARGUMENT);
 			}
-			if (todo.getType() == Type.FLOATING) {
+			if (newtodo.getType() == Type.FLOATING) {
 				if ((input.contains("-s")) && !input.contains("-e")) {
 					return new CommandStatus(Status.ERROR,
 							EXECUTE_ILLEGAL_ARGUMENT);
