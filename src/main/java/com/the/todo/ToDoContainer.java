@@ -181,31 +181,21 @@ public class ToDoContainer extends AnchorPane {
 	}
 	private void setPriority(){
 
-		//Solid border design 
+	 
 		Priority priority = todo.getPriority();
-		switch (priority){
-		case HIGH:
-			todoID.setStyle("-fx-border-color: red;");		
-			break;
-		case LOW:
-			todoID.setStyle("-fx-border-color: black;");
-			break;
-		case MEDIUM:
-			todoID.setStyle("-fx-border-color: blue;");
-			break;
-		}
+	
 
-		//		//tag design		
-		//			Node priorityTag; 
-		//			if (priority == Priority.HIGH)
-		//				priorityTag= createTag("HIGH","red");				
-		//			else if (priority == Priority.MEDIUM)			
-		//				priorityTag=createTag("MEDIUM","blue");
-		//			else 
-		//				priorityTag=createTag("LOW","grey");			
-		//			hbox.getChildren().add(tag);
-		//			hbox.setSpacing(5);		
-		//					
+				//tag design		
+					Node priorityTag; 
+					if (priority == Priority.HIGH)
+						priorityTag= createTag("HIGH","red");				
+					else if (priority == Priority.MEDIUM)			
+						priorityTag=createTag("MEDIUM","blue");
+					else 
+						priorityTag=createTag("LOW","pink");			
+					hbox.getChildren().add(priorityTag);
+					hbox.setSpacing(5);		
+							
 	}
 
 	/**
@@ -249,6 +239,8 @@ public class ToDoContainer extends AnchorPane {
 				return false;
 		} else if (!todo.equals(other.todo))
 			return false;
+		if (todo.isCompleted()!= other.todo.isCompleted())
+			return false ; 
 		return true;
 	}
 
