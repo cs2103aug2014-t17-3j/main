@@ -63,7 +63,6 @@ public class App extends Application implements HotKeyListener {
 
 	private Stage primaryStage;
 	private ChangeListener<Boolean> focusListener;
-	private EventHandler<KeyEvent> keyEvent;
 
 	public static void main(String[] args) throws Exception {
 		launch(args);
@@ -77,13 +76,6 @@ public class App extends Application implements HotKeyListener {
 				if (t && !t1) {
 					hideStage();
 				}
-			}
-		};
-
-		keyEvent = new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent event) {
-				controller.processKeyEvents(event);
 			}
 		};
 	}
@@ -105,7 +97,6 @@ public class App extends Application implements HotKeyListener {
 
 		Scene scene = new Scene(rootNode, MAIN_FRAME_WIDTH, MAIN_FRAME_HEIGHT);
 		scene.getStylesheets().add(MAIN_STYLE);
-		scene.addEventFilter(KeyEvent.ANY, keyEvent);
 
 		primaryStage.focusedProperty().addListener(focusListener);
 		primaryStage.initStyle(StageStyle.UNDECORATED);

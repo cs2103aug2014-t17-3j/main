@@ -40,6 +40,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -86,12 +87,29 @@ public class MainToDoController {
 	private CommandHistory commandHistory = new CommandHistory();
 
 	private ArrayList<Object> oldVBoxItems = new ArrayList<Object>();
+	
+	
+	/************************ALL KEY EVENT HANDLERS***************************/
+	private EventHandler<KeyEvent> ctrlUpHandler;
+	private EventHandler<KeyEvent> ctrlDownHandler;
+	private EventHandler<KeyEvent> ctrlZHandler;
+	private EventHandler<KeyEvent> upHandler;
+	private EventHandler<KeyEvent> downHandler;
+	
 
 	@FXML
 	void initialize() {
 		mainScrollpane.setFitToWidth(true);
 		fadeOut = new FadeTransition(Duration.millis(3000), promptLabel);
 
+		initilizeHandlers();
+		mainPane.addEventFilter(KeyEvent.KEY_PRESSED, ctrlUpHandler);
+		mainPane.addEventFilter(KeyEvent.KEY_PRESSED, ctrlDownHandler);
+		mainPane.addEventFilter(KeyEvent.KEY_PRESSED, ctrlZHandler);
+		
+		mainInput.addEventFilter(KeyEvent.KEY_PRESSED, upHandler);
+		mainInput.addEventFilter(KeyEvent.KEY_PRESSED, downHandler);
+		
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
@@ -322,47 +340,6 @@ public class MainToDoController {
 	}
 
 	public void processKeyEvents(KeyEvent keyevent) {
-
-		if (keyevent.getEventType() == KeyEvent.KEY_PRESSED
-				&& keyevent.isControlDown()) {
-
-			if (keyevent.getCode() == KeyCode.UP) {
-				mainScrollpane.setVvalue(mainScrollpane.getVvalue() - 0.1);
-			} else if (keyevent.getCode() == KeyCode.DOWN) {
-				mainScrollpane.setVvalue(mainScrollpane.getVvalue() + 0.1);
-			} else if (keyevent.getCode() == KeyCode.Z) {
-				processInput("undo");
-
-				System.out.println("vvalue: " + mainScrollpane.getVvalue());
-				System.out.println("vbox height:" + mainVBox.getHeight());
-				ObservableList<Node> ol = mainVBox.getChildren();
-				for (Node node : ol) {
-					System.out.println(node.toString());
-					System.out.println(node.getLayoutY());
-				}
-			}
-		}
-
-		else if (keyevent.getEventType() == KeyEvent.KEY_PRESSED) {
-			if (keyevent.getCode() == KeyCode.UP) {
-				String prevCmd = commandHistory.previous();
-				if (prevCmd != null) {
-					mainInput.setText(prevCmd);
-				}
-				mainInput.end();
-				keyevent.consume();
-			} else if (keyevent.getCode() == KeyCode.DOWN) {
-				String nextCmd = commandHistory.next();
-				if (nextCmd != null) {
-					mainInput.setText(nextCmd);
-				} else {
-					mainInput.setText("");
-				}
-				mainInput.end();
-				keyevent.consume();
-			}
-		}
-
 		// For showing hints
 		if (keyevent.getEventType() == KeyEvent.KEY_TYPED
 				&& mainInput.isFocused()) {
@@ -456,5 +433,62 @@ public class MainToDoController {
 			todayIndex = 0;
 		}
 		scrollToIndex(todayIndex);
+	}
+	
+	private void initilizeHandlers (){
+		ctrlUpHandler = new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent keyevent) {
+				if (keyevent.getCode().equals(KeyCode.UP) && keyevent.isControlDown()){
+					mainScrollpane.setVvalue(mainScrollpane.getVvalue() - 0.1);
+				}
+			}
+		};
+		
+		ctrlDownHandler = new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent keyevent) {
+				if (keyevent.getCode().equals(KeyCode.DOWN) && keyevent.isControlDown()){
+					mainScrollpane.setVvalue(mainScrollpane.getVvalue() + 0.1);
+				}
+			}
+		};
+		
+		ctrlZHandler = new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent keyevent) {
+				if (keyevent.getCode().equals(KeyCode.Z) && keyevent.isControlDown()){
+					processInput("undo");
+				}
+			}
+		};
+		
+		upHandler = new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent keyevent) {
+				if (keyevent.getCode().equals(KeyCode.UP)){
+					String prevCmd = commandHistory.previous();
+					if (prevCmd != null) {
+						mainInput.setText(prevCmd);
+					}
+					mainInput.end();
+				}
+			}
+		};
+		
+		downHandler = new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent keyevent) {
+				if (keyevent.getCode().equals(KeyCode.DOWN)){
+					String nextCmd = commandHistory.next();
+					if (nextCmd != null) {
+						mainInput.setText(nextCmd);
+					} else {
+						mainInput.setText("");
+					}
+					mainInput.end();
+				}
+			}
+		};
 	}
 }
