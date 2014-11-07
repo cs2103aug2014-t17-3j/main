@@ -30,11 +30,11 @@ package com.the.todo;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
-import java.util.TreeMap;
 import java.util.UUID;
 
 import org.joda.time.LocalDate;
@@ -51,6 +51,7 @@ import com.the.todo.command.ToDoSearch;
 import com.the.todo.command.ToDoUndo;
 import com.the.todo.command.ToDoView;
 import com.the.todo.model.ToDo;
+import com.the.todo.model.ToDo.Type;
 import com.the.todo.storage.JsonFileStore;
 import com.the.todo.storage.ToDoStore;
 import com.the.todo.util.CommandUtil;
@@ -60,7 +61,7 @@ public class Logic {
 	private ToDoStore todoStorage;
 
 	private List<ToDo> todoDisplay;
-	private Map<LocalDate, List<ToDo>> todoMapDisplay;
+	private Map<DateCategory, List<ToDo>> todoMapDisplay;
 	private List<UUID> todoIdStorage;
 	private Stack<ToDoCommand> undoStack;
 	private CommandType lastCommand;
@@ -77,10 +78,14 @@ public class Logic {
 		ALL, SEARCH
 	};
 
+	public static enum DateCategory {
+		OVERDUE, TODAY, TOMORROW, SOMEDAY
+	}
+
 	public Logic() {
 		todoStorage = new JsonFileStore(FILENAME);
 		todoDisplay = new ArrayList<ToDo>();
-		todoMapDisplay = new TreeMap<LocalDate, List<ToDo>>();
+		todoMapDisplay = new LinkedHashMap<DateCategory, List<ToDo>>();
 		todoIdStorage = new ArrayList<UUID>();
 		undoStack = new Stack<ToDoCommand>();
 		lastCommand = null;
@@ -102,7 +107,7 @@ public class Logic {
 		return todoStorage;
 	}
 
-	public Map<LocalDate, List<ToDo>> getToDoMapDisplay() {
+	public Map<DateCategory, List<ToDo>> getToDoMapDisplay() {
 		return todoMapDisplay;
 	}
 
@@ -250,40 +255,83 @@ public class Logic {
 		}
 	}
 
-	private void sortByDate(Map<LocalDate, List<ToDo>> todoMap,
+	private void sortByDate(Map<DateCategory, List<ToDo>> todoMap,
 			List<ToDo> todoList) {
 		todoMap.clear();
 
-		List<ToDo> todoByDate;
-		LocalDate date;
+		Type todoType;
+		LocalDate startDate;
+		LocalDate endDate;
+		LocalDate today = new LocalDate();
+		LocalDate tomorrow = new LocalDate().plusDays(1);
+
+		List<ToDo> todoOverdue = new ArrayList<ToDo>();
+		List<ToDo> todoToday = new ArrayList<ToDo>();
+		List<ToDo> todoTomorrow = new ArrayList<ToDo>();
+		List<ToDo> todoSomeday = new ArrayList<ToDo>();
 
 		for (ToDo todo : todoList) {
-			date = todo.getEndDate().toLocalDate();
+			todoType = todo.getType();
+			startDate = todo.getStartDate().toLocalDate();
+			endDate = todo.getEndDate().toLocalDate();
 
-			if (todoMap.containsKey(date)) {
-				todoByDate = todoMap.get(date);
-				todoByDate.add(todo);
-			} else {
-				todoByDate = new ArrayList<ToDo>();
-				todoByDate.add(todo);
-				todoMap.put(date, todoByDate);
+			if (todoType == Type.FLOATING) {
+				todoSomeday.add(todo);
 			}
-		}
 
-		for (Entry<LocalDate, List<ToDo>> entry : todoMap.entrySet()) {
+			if (todoType == Type.DEADLINE) {
+				if (endDate.isBefore(today)) {
+					todoOverdue.add(todo);
+				} else if (endDate.equals(today)) {
+					todoToday.add(todo);
+				} else if (endDate.equals(tomorrow)) {
+					todoTomorrow.add(todo);
+				}
+			}
+			
+			if (todoType == Type.TIMED) {
+				if (endDate.isBefore(today)) {
+					todoOverdue.add(todo);
+				}
+				if (!today.isBefore(startDate) && !today.isAfter(endDate)) {
+					todoToday.add(todo);
+				}
+				if (!tomorrow.isBefore(startDate) && !tomorrow.isAfter(endDate)) {
+					todoTomorrow.add(todo);
+				}
+			}
+			
+			todoMap.put(DateCategory.OVERDUE, todoOverdue);
+			todoMap.put(DateCategory.TODAY, todoToday);
+			todoMap.put(DateCategory.TOMORROW, todoTomorrow);
+			todoMap.put(DateCategory.SOMEDAY, todoSomeday);
+
+//			if (todoMap.containsKey(date)) {
+//				todoByDate = todoMap.get(date);
+//				todoByDate.add(todo);
+//			} else {
+//				todoByDate = new ArrayList<ToDo>();
+//				todoByDate.add(todo);
+//				todoMap.put(date, todoByDate);
+//			}
+		}
+		
+		
+
+		for (Entry<DateCategory, List<ToDo>> entry : todoMap.entrySet()) {
 			Collections.sort(entry.getValue());
 		}
 	}
 
 	private void updateIdStorage(List<UUID> todoIdStorage,
-			Map<LocalDate, List<ToDo>> todoMap) {
+			Map<DateCategory, List<ToDo>> todoMap) {
 		if (todoMap == null || todoMap.isEmpty()) {
 			return;
 		}
 
 		todoIdStorage.clear();
 
-		for (Entry<LocalDate, List<ToDo>> entry : todoMap.entrySet()) {
+		for (Entry<DateCategory, List<ToDo>> entry : todoMap.entrySet()) {
 			for (ToDo todo : entry.getValue()) {
 				todoIdStorage.add(todo.getId());
 			}
@@ -364,4 +412,5 @@ public class Logic {
 	public DisplayType getDisplayType() {
 		return displayType;
 	}
+	
 }
