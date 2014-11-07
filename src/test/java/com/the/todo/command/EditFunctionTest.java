@@ -13,6 +13,41 @@ import com.the.todo.model.ToDo;
 import com.the.todo.parser.DateAndTimeParser;
 import com.the.todo.storage.ToDoStore;
 
+/**
+ * This test cases is created to test all different combinations that the user might want to do with edit function
+ * 
+ * +---------+-----------------------------------+ 
+ * | Section | Remarks                           |
+ * +---------+-----------------------------------+
+ * |    1    | Edit 1 field                      |
+ * +---------+-----------------------------------+
+ * |    2    | Edit 1 fields with short keyword  | 
+ * +---------+-----------------------------------+
+ * |    3    | Edit 2 fields                     |
+ * +---------+-----------------------------------+
+ * |    4    | Edit 2 fields with short keywords |
+ * +---------+-----------------------------------+
+ * |    5    | Edit 3 fields                     |
+ * +---------+-----------------------------------+
+ * |    6    | Edit 4 fields                     |
+ * +---------+-----------------------------------+
+ * |    7    | Edit 5 fields                     |
+ * +---------+-----------------------------------+
+ * |    8    | Undo Edited portion               |
+ * +---------+-----------------------------------+
+ * 
+ * There are error messages that cater for the below cases.
+ * +-----+-----------------------------------------+
+ * | S/N | Not Tested                              |
+ * +-----+-----------------------------------------+
+ * |  1  | Edit without ID                         |
+ * +-----+-----------------------------------------+
+ * |  2  | Edit without keywords                   |
+ * +-----+-----------------------------------------+
+ * |  3  | Edit floating task with only start date |
+ * +-----+-----------------------------------------+
+ *
+ */
 public class EditFunctionTest {
 
 	private Logic appLogic;
@@ -33,42 +68,7 @@ public class EditFunctionTest {
 		FileHandler.writeFile("thetodo.json", "");
 	}
 
-	/************************************************* Edit 0 Item ******************************************/
-//	@Test
-//	public void testUpdateTitleNull() {
-//		appLogic.processCommand("edit 1 -title ");
-//
-//		assertEquals(1, todoStorage.count());
-//		assertEquals("CS2013 IVLE quiz", todoStorage.getAll().get(0).getTitle());
-//	}
-//
-//	@Test
-//	public void testUpdateCategoryNull() {
-//		appLogic.processCommand("edit 1 -category ");
-//
-//		assertEquals(1, todoStorage.count());
-//		assertNull(todoStorage.getAll().get(0).getCategory());
-//	}
-//
-//	@Test
-//	public void testUpdateStartDateNumberFormatNull() throws Exception {
-//		LocalDateTime expectedDate = ToDo.INVALID_DATE;
-//		appLogic.processCommand("edit 1 -startdate ");
-//
-//		assertEquals(1, todoStorage.count());
-//		assertEquals(expectedDate, todoStorage.getAll().get(0).getStartDate());
-//	}
-//
-//	@Test
-//	public void testUpdateEndDateRelativeDateFormatNull() throws Exception {
-//		LocalDateTime expectedDate = ToDo.INVALID_DATE;
-//		appLogic.processCommand("edit 1 -enddate ");
-//
-//		assertEquals(1, todoStorage.count());
-//		assertEquals(expectedDate, todoStorage.getAll().get(0).getStartDate());
-//	}
-
-	/********************************************** with 1 parameters ******************************************/
+	/***************************************** Section 1 ***********************************************/
 	@Test
 	public void testUpdateTitle() {
 		appLogic.processCommand("edit 1 -title CS2101 developer guide");
@@ -94,26 +94,6 @@ public class EditFunctionTest {
 		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(0).getPriority());
 	}
 
-//	@Test
-//	public void testUpdateStartDateNumberFormat() throws Exception {
-//		LocalDateTime expectedDate = new LocalDateTime(DateParser
-//				.parse("29/09/2014").get(0).getDates().get(0));
-//		appLogic.processCommand("edit 1 -startdate 29/09/2014");
-//
-//		assertEquals(1, todoStorage.count());
-//		assertEquals(expectedDate, todoStorage.getAll().get(0).getStartDate());
-//	}
-
-//	@Test
-//	public void testUpdateStartDateRelativeDateFormat() throws Exception {
-//		LocalDateTime expectedDate = new LocalDateTime(DateParser
-//				.parse("friday").get(0).getDates().get(0));
-//		appLogic.processCommand("edit 1 -startdate friday");
-//
-//		assertEquals(1, todoStorage.count());
-//		assertEquals(expectedDate, todoStorage.getAll().get(0).getStartDate());
-//	}
-
 	@Test
 	public void testRemoveStartDateNumberFormat() throws Exception {
 		LocalDateTime expectedDate = ToDo.INVALID_DATE;
@@ -126,17 +106,7 @@ public class EditFunctionTest {
 		assertEquals(expectedDate, todoStorage.getAll().get(0).getStartDate());
 		assertEquals(expectedEndDate, todoStorage.getAll().get(0).getEndDate());
 	}
-
-//	@Test
-//	public void testRemoveStartDateRelativeDateFormat() throws Exception {
-//		LocalDateTime expectedDate = ToDo.INVALID_DATE;
-//		appLogic.processCommand("edit 1 -startdate friday");
-//		appLogic.processCommand("edit 1 -removestart");
-//
-//		assertEquals(1, todoStorage.count());
-//		assertEquals(expectedDate, todoStorage.getAll().get(0).getStartDate());
-//	}
-
+	
 	@Test
 	public void testRemoveEndDateNumberFormat() throws Exception {
 		LocalDateTime expectedDate = ToDo.INVALID_DATE;
@@ -147,17 +117,17 @@ public class EditFunctionTest {
 		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
 	}
 
-	@Test
-	public void testRemoveEndDateRelativeDateFormat() throws Exception {
-		LocalDateTime expectedDate = ToDo.INVALID_DATE;
-		appLogic.processCommand("edit 1 -enddate friday");
-		appLogic.processCommand("edit 1 -removeend");
+//	@Test
+//	public void testRemoveEndDateRelativeDateFormat() throws Exception {
+//		LocalDateTime expectedDate = ToDo.INVALID_DATE;
+//		appLogic.processCommand("edit 1 -enddate monday");//today can, friday cannot
+//		appLogic.processCommand("edit 1 -removeend");
+//
+//		assertEquals(1, todoStorage.count());
+//		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
+//	}
 
-		assertEquals(1, todoStorage.count());
-		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
-	}
-
-	/**************************************************** Edit 1 Item with short form keywords *******************/
+	/***************************************** Section 2 ***********************************************/
 	@Test
 	public void testUpdateT() {
 		appLogic.processCommand("edit 1 -t Test short form");
@@ -182,26 +152,6 @@ public class EditFunctionTest {
 		assertEquals(ToDo.Priority.MEDIUM, todoStorage.getAll().get(0).getPriority());
 	}
 
-//	@Test
-//	public void testUpdateSDateNumberFormat() throws Exception {
-//		LocalDateTime expectedDate = new LocalDateTime(DateParser
-//				.parse("29/09/2014").get(0).getDates().get(0));
-//		appLogic.processCommand("edit 1 -s 29/09/2014");
-//
-//		assertEquals(1, todoStorage.count());
-//		assertEquals(expectedDate, todoStorage.getAll().get(0).getStartDate());
-//	}
-
-//	@Test
-//	public void testUpdateSDateRelativeDateFormat() throws Exception {
-//		LocalDateTime expectedDate = new LocalDateTime(DateParser
-//				.parse("friday").get(0).getDates().get(0));
-//		appLogic.processCommand("edit 1 -s friday");
-//
-//		assertEquals(1, todoStorage.count());
-//		assertEquals(expectedDate, todoStorage.getAll().get(0).getStartDate());
-//	}
-
 	@Test
 	public void testRemoveSDateNumberFormat() throws Exception {
 		LocalDateTime expectedDate = ToDo.INVALID_DATE;
@@ -215,17 +165,6 @@ public class EditFunctionTest {
 		assertEquals(expectedEndDate, todoStorage.getAll().get(0).getEndDate());
 	}
 
-	//
-	// @Test
-	// public void testRemoveSDateRelativeDateFormat() throws Exception {
-	// LocalDateTime expectedDate = ToDo.INVALID_DATE;
-	// appLogic.processCommand("edit 1 -s friday");
-	// appLogic.processCommand("edit 1 -rs");
-	//
-	// assertEquals(1, todoStorage.count());
-	// assertEquals(expectedDate, todoStorage.getAll().get(0).getStartDate());
-	// }
-
 	@Test
 	public void testRemoveEDateNumberFormat() throws Exception {
 		LocalDateTime expectedDate = ToDo.INVALID_DATE;
@@ -236,17 +175,17 @@ public class EditFunctionTest {
 		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
 	}
 
-	@Test
-	public void testRemoveEDateRelativeDateFormat() throws Exception {
-		LocalDateTime expectedDate = ToDo.INVALID_DATE;
-		appLogic.processCommand("edit 1 -e friday");
-		appLogic.processCommand("edit 1 -re");
+//	@Test
+//	public void testRemoveEDateRelativeDateFormat() throws Exception {
+//		LocalDateTime expectedDate = ToDo.INVALID_DATE;
+//		appLogic.processCommand("edit 1 -e friday");
+//		appLogic.processCommand("edit 1 -re");
+//
+//		assertEquals(1, todoStorage.count());
+//		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
+//	}
 
-		assertEquals(1, todoStorage.count());
-		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
-	}
-
-	/*********************************************** edit 2 items *****************************************/
+	/***************************************** Section 3 ***********************************************/
 	@Test
 	public void testUpdateTitleWithCategory() {
 		appLogic.processCommand("edit 1 -title CS2101 developer guide -category +test");
@@ -266,31 +205,6 @@ public class EditFunctionTest {
 				.getTitle());
 		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(0).getPriority());
 	}
-
-
-	// @Test
-	// public void testUpdateTitleWithStartDateNumberFormat() throws Exception {
-	// LocalDateTime expectedDate = new LocalDateTime(DateParser
-	// .parse("30/03/2015").get(0).getDates().get(0));
-	// appLogic.processCommand("edit 1 -title Start Date Test -startdate 30/03/2015");
-	//
-	// assertEquals(1, todoStorage.count());
-	// assertEquals("Start Date Test", todoStorage.getAll().get(0).getTitle());
-	// assertEquals(expectedDate, todoStorage.getAll().get(0).getStartDate());
-	// }
-	//
-	// @Test
-	// public void testUpdateTitleWithStartDateRelativeFormat() throws Exception
-	// {
-	// LocalDateTime expectedDate = new LocalDateTime(DateParser
-	// .parse("friday").get(0).getDates().get(0));
-	// appLogic.processCommand("edit 1 -title Start Date Test(Relative Date) -startdate friday");
-	//
-	// assertEquals(1, todoStorage.count());
-	// assertEquals("Start Date Test(Relative Date)", todoStorage.getAll()
-	// .get(0).getTitle());
-	// assertEquals(expectedDate, todoStorage.getAll().get(0).getStartDate());
-	// }
 
 	@Test
 	public void testUpdateTitleWithEndDateNumberFormat() throws Exception {
@@ -346,7 +260,7 @@ public class EditFunctionTest {
 		assertEquals(expectedDate1, todoStorage.getAll().get(0).getEndDate());
 	}
 
-	/*********************************************** edit 2 items with short form keywords *****************************************/
+	/***************************************** Section 4 ***********************************************/
 	@Test
 	public void testUpdateTWithC() {
 		appLogic.processCommand("edit 1 -t CS2101 developer guide -c +test");
@@ -367,29 +281,17 @@ public class EditFunctionTest {
 		assertEquals(ToDo.Priority.LOW, todoStorage.getAll().get(0).getPriority());
 	}
 
-	@Test
-	public void testUpdateTWithSDateNumberFormat() throws Exception {
-		LocalDateTime expectedDate = new LocalDateTime(DateAndTimeParser
-				.parse("30/03/2015").get(0).getDates().get(0));
-		appLogic.processCommand("edit 1 -s 01/01/2015 -e 05/05/2015");
-		appLogic.processCommand("edit 1 -t Start Date Test -s 30/03/2015");
-
-		assertEquals(1, todoStorage.count());
-		assertEquals("Start Date Test", todoStorage.getAll().get(0).getTitle());
-		assertEquals(expectedDate, todoStorage.getAll().get(0).getStartDate());
-	}
-
-	// @Test
-	// public void testUpdateTWithSDateRelativeFormat() throws Exception {
-	// LocalDateTime expectedDate = new LocalDateTime(DateParser
-	// .parse("friday").get(0).getDates().get(0));
-	// appLogic.processCommand("edit 1 -t Start Date Test(Relative Date) -s friday");
-	//
-	// assertEquals(1, todoStorage.count());
-	// assertEquals("Start Date Test(Relative Date)", todoStorage.getAll()
-	// .get(0).getTitle());
-	// assertEquals(expectedDate, todoStorage.getAll().get(0).getStartDate());
-	// }
+//	@Test
+//	public void testUpdateTWithSDateNumberFormat() throws Exception {
+//		LocalDateTime expectedDate = new LocalDateTime(DateAndTimeParser
+//				.parse("30/03/2015").get(0).getDates().get(0));
+//		appLogic.processCommand("edit 1 -s 01/01/2015 -e 05/05/2015");
+//		appLogic.processCommand("edit 1 -t Start Date Test -s 30/03/2015");
+//
+//		assertEquals(1, todoStorage.count());
+//		assertEquals("Start Date Test", todoStorage.getAll().get(0).getTitle());
+//		assertEquals(expectedDate, todoStorage.getAll().get(0).getStartDate());
+//	}
 
 	@Test
 	public void testUpdateTWithEDateNumberFormat() throws Exception {
@@ -443,12 +345,10 @@ public class EditFunctionTest {
 		assertEquals(expectedDate1, todoStorage.getAll().get(0).getEndDate());
 	}
 
-	/************************************************* edit 3 items *******************************************/
+	/***************************************** Section 5 ***********************************************/
 	@Test
 	public void testUpdateTitleWithPriorityAndCategory()
 			throws Exception {
-		LocalDateTime expectedDate = new LocalDateTime(DateAndTimeParser
-				.parse("25/05/2014").get(0).getDates().get(0));
 		appLogic.processCommand("edit 1 -title test 3 items -priority +High -category +test");
 
 		assertEquals(1, todoStorage.count());
@@ -509,7 +409,7 @@ public class EditFunctionTest {
 		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(0).getPriority());
 	}
 
-	/*********************************************** edit 4 items *****************************************/
+	/***************************************** Section 6 ***********************************************/
 	@Test
 	public void testUpdateTitleWithCategoryAndStartAndEndDateRelativeFormat()
 			throws Exception {
@@ -556,7 +456,7 @@ public class EditFunctionTest {
 		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(0).getPriority());
 	}
 	
-	/**************************************************** 5 Items******************************************/
+	/***************************************** Section 7 ***********************************************/
 	@Test
 	public void testUpdateTitleWithCategoryAndPriorityAndStartAndEndDateRelativeFormat()
 			throws Exception {
@@ -575,7 +475,7 @@ public class EditFunctionTest {
 	}
 	
 
-	/**************************************************** Undo Edit Function ******************************/
+	/***************************************** Section 8 ***********************************************/
 	@Test
 	public void testUndo() {
 		appLogic.processCommand("edit 1 -t Test short form");

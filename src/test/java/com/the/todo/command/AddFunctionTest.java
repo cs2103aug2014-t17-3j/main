@@ -13,6 +13,31 @@ import com.the.todo.io.FileHandler;
 import com.the.todo.model.ToDo;
 import com.the.todo.storage.ToDoStore;
 
+/**
+ * This test cases is created to test all different combinations that the user might put in the input String
+ * 
+ * +---------+-----------------------------------------------------------------+
+ * | Section |                             Remarks                             |
+ * +---------+-----------------------------------------------------------------+
+ * |    1    | Title Only                                                      |
+ * +---------+-----------------------------------------------------------------+
+ * |    2    | Title + Date[Number & Relative]                                 |
+ * +---------+-----------------------------------------------------------------+
+ * |    3    | Title + Category                                                |
+ * +---------+-----------------------------------------------------------------+
+ * |    4    | Title+ Category + Date                                          |
+ * +---------+-----------------------------------------------------------------+
+ * |    5    | Title + Priority                                                |
+ * +---------+-----------------------------------------------------------------+
+ * |    6    | Title + Priority + Category[P & C near each other]              |
+ * +---------+-----------------------------------------------------------------+
+ * |    7    | Title + Priority + Category[P & C far from each other]          |
+ * +---------+-----------------------------------------------------------------+
+ * |    8    | Title + Priority + Category[P & C Stick Together Without Space] |
+ * +---------+-----------------------------------------------------------------+
+ * 
+ *
+ */
 public class AddFunctionTest {
 
 	private Logic appLogic;
@@ -33,7 +58,7 @@ public class AddFunctionTest {
 		FileHandler.writeFile("thetodo.json", "");
 	}
 
-	/***************************************** Add 1 task ***********************************************/
+	/***************************************** Section 1 ***********************************************/
 	// Add 1 task without start and end date.
 	// Type will be floating task
 	@Test
@@ -47,7 +72,7 @@ public class AddFunctionTest {
 				.getTitle());
 	}
 
-	/***************************************** Add 1 task with Number & relative date ***********************************************/
+	/***************************************** Section 2 ***********************************************/
 	// Add 1 task with end date.
 	// Type will be deadline task
 	@Test
@@ -90,7 +115,7 @@ public class AddFunctionTest {
 		assertEquals(expectedDate, todoStorage.getAll().get(1).getStartDate());
 	}
 
-	/***************************************** Add 1 task With category ***********************************************/
+	/***************************************** Section 3 ***********************************************/
 	@Test
 	public void testAddCategoryRandomPlace1WithTitle() {
 		appLogic.processCommand("add remember to get present +Birthday");
@@ -111,7 +136,7 @@ public class AddFunctionTest {
 		assertEquals("+Birthday", todoStorage.getAll().get(1).getCategory());
 	}
 
-	/***************************************** Add 1 task With category With Date ***********************************************/
+	/***************************************** Section 4 ***********************************************/
 	@Test
 	public void testAddCategoryRandomPlaceWithDate() {
 		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
@@ -160,7 +185,7 @@ public class AddFunctionTest {
 		assertEquals("+Birthday", todoStorage.getAll().get(1).getCategory());
 	}
 
-/*****************************************Test Adding Priority Without category****************************************/
+	/***************************************** Section 5 ***********************************************/
 	@Test
 	public void testAddPriorityRandomPlace1() {
 		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
@@ -233,7 +258,7 @@ public class AddFunctionTest {
 		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(1).getPriority());
 	}
 
-	/*****************************************Test Adding Priority With category near each other****************************************/
+	/***************************************** Section 6 ***********************************************/
 	@Test
 	public void testAddPriorityCategoryRandomPlace1() {
 		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
@@ -273,7 +298,7 @@ public class AddFunctionTest {
 		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(1).getPriority());
 	}
 
-	/*****************************************Test Adding Priority With category far each other****************************************/
+	/***************************************** Section 7 ***********************************************/
 	@Test
 	public void testAddPriorityCategoryRandomPlace4() {
 		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
@@ -313,7 +338,7 @@ public class AddFunctionTest {
 		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(1).getPriority());
 	}
 	
-	/*****************************************Test Adding Priority With category Without Space****************************************/
+	/***************************************** Section 8 ***********************************************/
 	@Test
 	public void testAddPriorityCategoryRandomPlace7() {
 		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
@@ -352,7 +377,7 @@ public class AddFunctionTest {
 		assertEquals("+Gift", todoStorage.getAll().get(1).getCategory());
 		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(1).getPriority());
 	}
-	
+	/****************************************************** End *******************************************************/
 	private LocalDateTime calcNextFriday(LocalDateTime d) {
 		if (d.getDayOfWeek() >= DateTimeConstants.FRIDAY) {
 			d = d.plusWeeks(1);
