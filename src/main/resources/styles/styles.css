@@ -136,7 +136,15 @@
 	-fx-border-width:0 1 0 0 ;
 }
 
-#todoDate, #todoMisc { 
+#todoDate {
+	-fx-padding: 0 5 0 5;
+}
+
+#todoDate .DateTime {
+	-fx-font-size: 1em;
+}
+
+#todoMisc { 
 	-fx-font-size: 12;
 	-fx-padding: 0 5 0 5 ;
 } 
