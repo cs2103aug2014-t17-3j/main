@@ -37,6 +37,8 @@ import java.util.Stack;
 import java.util.TreeMap;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.LocalDate;
 
 import com.the.todo.command.CommandStatus;
@@ -50,6 +52,7 @@ import com.the.todo.command.ToDoIncomplete;
 import com.the.todo.command.ToDoSearch;
 import com.the.todo.command.ToDoUndo;
 import com.the.todo.command.ToDoView;
+import com.the.todo.io.FileHandler;
 import com.the.todo.model.ToDo;
 import com.the.todo.storage.JsonFileStore;
 import com.the.todo.storage.ToDoStore;
@@ -68,6 +71,7 @@ public class Logic {
 
 	private static Logic logic = null;
 	private static final String FILENAME = "thetodo.json";
+	private static final Logger LOG = LogManager.getLogger(Logic.class);
 
 	public static enum CommandType {
 		ADD, VIEW, EDIT, DELETE, COMPLETE, INCOMPLETE, SEARCH, UNDO, INVALID
@@ -112,6 +116,8 @@ public class Logic {
 		String params = CommandUtil.getParams(originlCommand, input);
 		CommandType commandType = getCommandType(command);
 
+		LOG.info("Inputs: [" + input + "].");
+		
 		ToDoCommand todoCommand = null;
 		displayType = DisplayType.ALL;
 
@@ -206,6 +212,8 @@ public class Logic {
 			System.out.println("Delete: " + todo.isDeleted());
 			System.out.println("Priority: " + todo.getPriority());
 		}
+		
+		LOG.info("System Message: [" + commandStatus.getMessage() + "].");
 
 		return commandStatus;
 	}
