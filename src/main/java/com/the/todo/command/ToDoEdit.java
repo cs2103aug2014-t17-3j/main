@@ -241,7 +241,11 @@ public class ToDoEdit extends ToDoCommand {
 			break;
 		case C:
 		case CATEGORY:
-			todo.setCategory(remainingString);
+			if(remainingString.contains("+")){
+				todo.setCategory(remainingString);
+			} else {
+				todo.setCategory("+" + remainingString);
+			}
 			break;
 		case S:
 		case STARTDATE:

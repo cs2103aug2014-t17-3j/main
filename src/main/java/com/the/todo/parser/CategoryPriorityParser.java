@@ -42,26 +42,6 @@ public class CategoryPriorityParser {
 	private static final String LOW = "LOW";
 	private static final String HIGH = "HIGH";
 
-	// Keep or Remove?
-	public static String parse(String input) {
-		String category;
-		int categoryStartIndex = input.indexOf("+");
-		int categoryEndIndex = input.indexOf(" ", categoryStartIndex + 1);
-
-		if (categoryStartIndex == -1) {
-			category = null;
-		} else {
-			if (categoryEndIndex == -1) {
-				category = input.substring(categoryStartIndex).trim();
-			} else {
-				category = input
-						.substring(categoryStartIndex, categoryEndIndex).trim();
-			}
-		}
-
-		return category;
-	}
-
 	public static List<String> parseAll(String input) {
 		List<String> foundList = new ArrayList<String>();
 		List<String> wantedList = new ArrayList<String>();
@@ -107,9 +87,9 @@ public class CategoryPriorityParser {
 		return priority;
 	}
 
-	public static String removeStringFromTitle(String input, String category) {
-		if (category != null) {
-			return input.replace(category, "").replaceAll("( )+", " ").trim();
+	public static String removeStringFromTitle(String input, String removeString) {
+		if (removeString != null) {
+			return input.replace(removeString, "").replaceAll("( )+", " ").trim();
 		} else {
 			return input;
 		}
