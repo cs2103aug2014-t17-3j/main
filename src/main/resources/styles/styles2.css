@@ -39,6 +39,8 @@
 
 #appTitleIcon {
 	-fx-background-image: url(../images/THETODO.png);
+	-fx-background-position: center;
+	-fx-background-repeat: no-repeat;
 	-fx-background-size: contain;
 }
 
