@@ -125,19 +125,19 @@ public class MainToDoController {
 				// updateUI(newDisplayMap);
 				List<Object> newDisplayList = mapToList(newDisplayMap);
 				if (oldVBoxItems.size() <= newDisplayList.size()) {
-					int changedPosition = indexOfFirstChange(oldVBoxItems,
+					int changedPosition = indexOfFirstChangedToDo(oldVBoxItems,
 							newDisplayList);
 					updateUI(newDisplayMap);
 					scrollToIndex(changedPosition);
 					highlightItem(changedPosition);
 				} else {
-					int changedPosition = indexOfFirstChange(newDisplayList,
+					int changedPosition = indexOfFirstChangedToDo(newDisplayList,
 							oldVBoxItems);
 					scrollToIndex(changedPosition);
 					Node changedItem = mainVBox.getChildren().get(
 							changedPosition);
 					FadeTransition ft = new FadeTransition(
-							Duration.millis(2000), changedItem);
+							Duration.millis(1000), changedItem);
 					ft.setFromValue(1.0);
 					ft.setToValue(0);
 					ft.play();
@@ -183,14 +183,7 @@ public class MainToDoController {
 	}
 
 	private void highlightItem(int index) {
-		try {
-			Label item = (Label) mainVBox.getChildren().get(index);
-			mainVBox.getChildren().get(index + 1)
-					.setStyle("-fx-border-color: red;");
-		} catch (ClassCastException e) {
-			mainVBox.getChildren().get(index)
-					.setStyle("-fx-border-color: red;");
-		}
+		mainVBox.getChildren().get(index).setStyle("-fx-border-color: red;");
 	}
 
 	public void showPrompt(String str) {
@@ -432,19 +425,28 @@ public class MainToDoController {
 		return list;
 	}
 
-	private static int indexOfFirstChange(List<Object> oldList,
+	private static int indexOfFirstChangedToDo(List<Object> oldList,
 			List<Object> newList) {
-		int firstChanged = 0;
-		List<Object> oldCopy = new ArrayList<Object>(oldList);
-		List<Object> newCopy = new ArrayList<Object>(newList);
-
-		if (oldCopy.size() <= newCopy.size()) {
-			newCopy.removeAll(oldCopy);
-			firstChanged = newList.indexOf(newCopy.get(0));
-		} else {
-			firstChanged = -1; // newlist size must be >= oldlist size
+		
+		if (oldList.size() > newList.size()){
+			return -1;
 		}
-		return firstChanged;
+		
+
+		List<Object> oldCopy = new ArrayList<Object>(oldList);
+		List<Object> newCopy = new ArrayList<Object>(newList);		
+
+		newCopy.removeAll(oldCopy);
+		
+		for (Object item: newCopy){
+			try {
+				ToDo firstChanged = (ToDo) item;
+				return newList.indexOf(firstChanged);
+			} catch (ClassCastException e) {
+				continue;
+			}
+		}
+		return 0;
 	}
 
 	private void scrollToToday() {
