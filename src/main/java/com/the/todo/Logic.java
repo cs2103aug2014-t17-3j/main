@@ -75,7 +75,7 @@ public class Logic {
 	};
 
 	public static enum DisplayType {
-		ALL, SEARCH
+		MAIN, ALL, SEARCH
 	};
 
 	public static enum DateCategory {
@@ -288,7 +288,7 @@ public class Logic {
 					todoTomorrow.add(todo);
 				}
 			}
-			
+
 			if (todoType == Type.TIMED) {
 				if (endDate.isBefore(today)) {
 					todoOverdue.add(todo);
@@ -300,23 +300,29 @@ public class Logic {
 					todoTomorrow.add(todo);
 				}
 			}
-			
-			todoMap.put(DateCategory.OVERDUE, todoOverdue);
-			todoMap.put(DateCategory.TODAY, todoToday);
-			todoMap.put(DateCategory.TOMORROW, todoTomorrow);
-			todoMap.put(DateCategory.SOMEDAY, todoSomeday);
 
-//			if (todoMap.containsKey(date)) {
-//				todoByDate = todoMap.get(date);
-//				todoByDate.add(todo);
-//			} else {
-//				todoByDate = new ArrayList<ToDo>();
-//				todoByDate.add(todo);
-//				todoMap.put(date, todoByDate);
-//			}
+			if (todoOverdue.size() > 0) {
+				todoMap.put(DateCategory.OVERDUE, todoOverdue);
+			}
+			if (todoToday.size() > 0) {
+				todoMap.put(DateCategory.TODAY, todoToday);
+			}
+			if (todoTomorrow.size() > 0) {
+				todoMap.put(DateCategory.TOMORROW, todoTomorrow);
+			}
+			if (todoSomeday.size() > 0) {
+				todoMap.put(DateCategory.SOMEDAY, todoSomeday);
+			}
+
+			// if (todoMap.containsKey(date)) {
+			// todoByDate = todoMap.get(date);
+			// todoByDate.add(todo);
+			// } else {
+			// todoByDate = new ArrayList<ToDo>();
+			// todoByDate.add(todo);
+			// todoMap.put(date, todoByDate);
+			// }
 		}
-		
-		
 
 		for (Entry<DateCategory, List<ToDo>> entry : todoMap.entrySet()) {
 			Collections.sort(entry.getValue());
@@ -412,5 +418,5 @@ public class Logic {
 	public DisplayType getDisplayType() {
 		return displayType;
 	}
-	
+
 }
