@@ -91,13 +91,14 @@ public class MainToDoController {
 
 	private ArrayList<Object> oldVBoxItems = new ArrayList<Object>();
 
-	/************************ ALL KEY EVENT HANDLERS ***************************/
+	/************************ ALL HANDLERS ***************************/
 	private EventHandler<KeyEvent> ctrlUpHandler;
 	private EventHandler<KeyEvent> ctrlDownHandler;
 	private EventHandler<KeyEvent> ctrlZHandler;
 	private EventHandler<KeyEvent> upHandler;
 	private EventHandler<KeyEvent> downHandler;
 	private ChangeListener<Boolean> mainInputFocusListener;
+	private ChangeListener<String> textChangeListener;
 
 	@FXML
 	void initialize() {
@@ -115,6 +116,7 @@ public class MainToDoController {
 		mainInput.addEventFilter(KeyEvent.KEY_PRESSED, upHandler);
 		mainInput.addEventFilter(KeyEvent.KEY_PRESSED, downHandler);
 		mainInput.focusedProperty().addListener(mainInputFocusListener);
+		mainInput.textProperty().addListener(textChangeListener);
 
 		Platform.runLater(new Runnable() {
 			@Override
@@ -345,27 +347,6 @@ public class MainToDoController {
 
 	}
 
-	public void processKeyEvents(KeyEvent keyevent) {
-		// For showing hints
-		if (keyevent.getEventType() == KeyEvent.KEY_TYPED
-				&& mainInput.isFocused()) {
-			String incompleteCommand = mainInput.getText()
-					+ keyevent.getCharacter();
-			if (incompleteCommand.indexOf("\b") == incompleteCommand.length() - 1) { // backspace
-																						// char
-																						// at
-																						// end
-				if (incompleteCommand.length() > 0) {
-					incompleteCommand = incompleteCommand.substring(0,
-							incompleteCommand.length() - 1);
-				}
-			}
-			ToDoHint hint = new ToDoHint(incompleteCommand);
-			String str = hint.getHints();
-			hintLabel.setText(str);
-		}
-	}
-
 	private void generateAllReminders() {
 		LocalDateTime currentDateTime = new LocalDateTime();
 		LocalDateTime tomorrowDateTime = new LocalDateTime().plusDays(1);
@@ -498,18 +479,26 @@ public class MainToDoController {
 				}
 			}
 		};
-		
+
 		mainInputFocusListener = new ChangeListener<Boolean>() {
 			@Override
-			public void changed(
-					ObservableValue<? extends Boolean> observable,
+			public void changed(ObservableValue<? extends Boolean> observable,
 					Boolean oldValue, Boolean newValue) {
-				
-				if (oldValue == true && newValue == false){
+
+				if (oldValue == true && newValue == false) {
 					mainInput.requestFocus();
 				}
 			}
-			
+		};
+
+		textChangeListener = new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> ov,
+					String oldStr, String newStr) {
+				ToDoHint hint = new ToDoHint(newStr);
+				String str = hint.getHints();
+				hintLabel.setText(str);
+			}
 		};
 	}
 }
