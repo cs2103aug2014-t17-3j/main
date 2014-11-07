@@ -300,28 +300,19 @@ public class Logic {
 					todoTomorrow.add(todo);
 				}
 			}
-
-			if (todoOverdue.size() > 0) {
-				todoMap.put(DateCategory.OVERDUE, todoOverdue);
-			}
-			if (todoToday.size() > 0) {
-				todoMap.put(DateCategory.TODAY, todoToday);
-			}
-			if (todoTomorrow.size() > 0) {
-				todoMap.put(DateCategory.TOMORROW, todoTomorrow);
-			}
-			if (todoSomeday.size() > 0) {
-				todoMap.put(DateCategory.SOMEDAY, todoSomeday);
-			}
-
-			// if (todoMap.containsKey(date)) {
-			// todoByDate = todoMap.get(date);
-			// todoByDate.add(todo);
-			// } else {
-			// todoByDate = new ArrayList<ToDo>();
-			// todoByDate.add(todo);
-			// todoMap.put(date, todoByDate);
-			// }
+		}
+		
+		if (todoOverdue.size() > 0) {
+			todoMap.put(DateCategory.OVERDUE, todoOverdue);
+		}
+		if (todoToday.size() > 0) {
+			todoMap.put(DateCategory.TODAY, todoToday);
+		}
+		if (todoTomorrow.size() > 0) {
+			todoMap.put(DateCategory.TOMORROW, todoTomorrow);
+		}
+		if (todoSomeday.size() > 0) {
+			todoMap.put(DateCategory.SOMEDAY, todoSomeday);
 		}
 
 		for (Entry<DateCategory, List<ToDo>> entry : todoMap.entrySet()) {
