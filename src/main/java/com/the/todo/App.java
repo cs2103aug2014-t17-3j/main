@@ -66,7 +66,15 @@ public class App extends Application implements HotKeyListener {
 	private EventHandler<KeyEvent> keyEvent;
 
 	public static void main(String[] args) throws Exception {
-		launch(args);
+		
+		JustOneLock ua = new JustOneLock("thetodo");
+	    if (ua.isAppActive()) {
+	      System.exit(1);
+	    } else {
+	    	launch(args);
+	    }
+	    
+//		launch(args);
 	}
 
 	private void initializeListenersAndEvents(MainToDoController controller) {
