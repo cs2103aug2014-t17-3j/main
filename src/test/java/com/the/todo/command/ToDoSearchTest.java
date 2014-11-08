@@ -67,12 +67,12 @@ public class ToDoSearchTest {
 		searchTest("Or +search");
 		
 		/*Search for values at the start/end*/
-		searchTest("lorem ", todo0, todo1);
+		searchTest(" lorem   ", todo0, todo1);
 		searchTest("amet", todo4, todo5);
 		searchTest("elit.", todo5);
 		
 		/*Search using multiple keywords*/
-		searchTest("doLor sit", todo2, todo3, todo4);
+		searchTest("  doLor  sit", todo2, todo3, todo4);
 
 		/*Search with only category specified*/
 		searchTest("+SeaRch", todo1);
@@ -82,7 +82,7 @@ public class ToDoSearchTest {
 		searchTest("+meDiUm", todo2, todo4);
 		
 		/*Search with both keywords and category specified*/
-		searchTest("dolor sit +add", todo3);
+		searchTest("dolor  sit   +add", todo3);
 		searchTest("amet +test", todo4, todo5);
 		
 		/*Search with keywords and priority specified*/

@@ -60,6 +60,7 @@ public class ToDoSearch extends ToDoCommand {
 
 		String keywords = CategoryPriorityParser.removeStringFromTitle(query, categoryFound);
 		keywords = CategoryPriorityParser.removeStringFromTitle(keywords, originalPriorityInString);
+		keywords = keywords.trim();
 		
 		interimResults = searchByCategory(allToDos, categoryFound);
 		interimResults = searchByPriority(interimResults, priority);
@@ -126,8 +127,8 @@ public class ToDoSearch extends ToDoCommand {
 	}
 
 	private boolean containsAll(String data, String query) {
-		String[] tokenizedData = data.split(" ");
-		String[] tokenizedQuery = query.split(" ");
+		String[] tokenizedData = data.split("\\s+");
+		String[] tokenizedQuery = query.split("\\s+");
 		List<String> tokenizedQueryList = new ArrayList<String>(
 				Arrays.asList(tokenizedQuery));
 
