@@ -15,12 +15,12 @@ public class ToDoSearch extends ToDoCommand {
 	private static final String MEDIUM = "MEDIUM";
 	private static final String LOW = "LOW";
 	private static final String HIGH = "HIGH";
-	
+
 	private static final String EXECUTE_ILLEGAL_ARGUMENT = "Please enter a valid input.";
 
-	ToDoStore todoStorage;
-	String query;
-	List<ToDo> updateList;
+	private ToDoStore todoStorage;
+	private String query;
+	private List<ToDo> updateList;
 
 	public ToDoSearch(ToDoStore todoStorage, List<ToDo> updateList, String query) {
 		super();
@@ -33,13 +33,14 @@ public class ToDoSearch extends ToDoCommand {
 
 	@Override
 	protected CommandStatus performExecute() {
-		if (query.equals("") || query == null) {
+		if (query == null || query.equals("")) {
 			return new CommandStatus(Status.ERROR, EXECUTE_ILLEGAL_ARGUMENT);
 		}
 
 		ArrayList<ToDo> allToDos = (ArrayList<ToDo>) todoStorage.getAll();
 		List<ToDo> interimResults, finalResults;
 		List<String> foundList = CategoryPriorityParser.parseAll(query);
+		String keywords = null;
 		String categoryFound = null;
 		String priorityFound = null;
 		String originalPriorityInString = null;
@@ -58,9 +59,12 @@ public class ToDoSearch extends ToDoCommand {
 			}
 		}
 
-		String keywords = CategoryPriorityParser.removeStringFromTitle(query, categoryFound);
-		keywords = CategoryPriorityParser.removeStringFromTitle(keywords, originalPriorityInString);
-		
+		keywords = CategoryPriorityParser.removeStringFromTitle(query,
+				categoryFound);
+		keywords = CategoryPriorityParser.removeStringFromTitle(keywords,
+				originalPriorityInString);
+		keywords = keywords.trim();
+
 		interimResults = searchByCategory(allToDos, categoryFound);
 		interimResults = searchByPriority(interimResults, priority);
 		finalResults = searchByKeywords(interimResults, keywords);
@@ -74,30 +78,33 @@ public class ToDoSearch extends ToDoCommand {
 	}
 
 	private List<ToDo> searchByCategory(List<ToDo> todos, String category) {
-		// assert category to have this format "+"....
 		List<ToDo> results = new ArrayList<ToDo>(todos);
-		ListIterator<ToDo> i = results.listIterator();
+		ListIterator<ToDo> i;
 
 		if (category != null) {
+			i = results.listIterator();
 			while (i.hasNext()) {
 				ToDo next = i.next();
 				String nextCategory = next.getCategory();
-				if (nextCategory == null || !nextCategory.equals(category)) {
+				if (nextCategory == null
+						|| !nextCategory.equalsIgnoreCase(category)) {
 					i.remove();
 				}
 			}
 		}
+		
 		return results;
 	}
 
 	private List<ToDo> searchByKeywords(List<ToDo> todos, String query) {
 		List<ToDo> results = new ArrayList<ToDo>(todos);
+		ListIterator<ToDo> i;
 
-		if (query.equals("") || query == null) {
+		if (query == null || query.equals("")) {
 			return results;
 		}
 
-		ListIterator<ToDo> i = results.listIterator();
+		i = results.listIterator();
 		while (i.hasNext()) {
 			ToDo nextToDo = i.next();
 			if (!containsAll(nextToDo.getTitle(), query)) {
@@ -126,22 +133,15 @@ public class ToDoSearch extends ToDoCommand {
 	}
 
 	private boolean containsAll(String data, String query) {
-		String[] tokenizedData = data.split(" ");
-		String[] tokenizedQuery = query.split(" ");
+		data = data.toLowerCase();
+		query = query.toLowerCase();
+		
+		String[] tokenizedData = data.split("\\s+");
+		String[] tokenizedQuery = query.split("\\s+");
 		List<String> tokenizedQueryList = new ArrayList<String>(
 				Arrays.asList(tokenizedQuery));
 
-		for (int i = 0; i < tokenizedData.length
-				&& tokenizedQueryList.size() != 0; i++) {
-			ListIterator<String> j = tokenizedQueryList.listIterator();
-			while (j.hasNext()) {
-				if (j.next().equalsIgnoreCase(tokenizedData[i])) {
-					j.remove();
-					break;
-				}
-			}
-		}
-
+		tokenizedQueryList.removeAll(Arrays.asList(tokenizedData));
 		if (tokenizedQueryList.size() == 0) {
 			return true;
 		}
