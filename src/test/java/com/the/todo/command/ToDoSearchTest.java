@@ -18,82 +18,89 @@ import com.the.todo.storage.InMemoryStore;
 
 public class ToDoSearchTest {
 
-	private ToDo todo1 = new ToDo("Lorem");
-	private ToDo todo2 = new ToDo("ipsum dolor sit");
-	private ToDo todo3 = new ToDo("dolor sit amet");
-	private ToDo todo4 = new ToDo("amet consectetur adipiscing elit.");
-
+	private ToDo todo0, todo1, todo2, todo3, todo4, todo5;
 	ArrayList<ToDo> updateListStub;
 	InMemoryStore storeStub;
 
 	@Before
 	public void setUp() {
-		todo1.setCategory("+search");
-		todo2.setCategory("+add");
-		todo3.setCategory("+test");
-		todo4.setCategory("+test");
+		todo0 = new ToDo("Lorem");
 		
-		todo2.setPriority(Priority.LOW);
-		todo3.setPriority(Priority.MEDIUM);
-		todo4.setPriority(Priority.HIGH);
+		todo1 = new ToDo("Lorem");
+		todo1.setCategory("+search");
+		
+		todo2 = new ToDo("ipsum dolor sit");
+		todo2.setPriority(Priority.MEDIUM);
+		
+		todo3 = new ToDo("ipsum dolor sit");
+		todo3.setCategory("+add");
+		todo3.setPriority(Priority.LOW);
+		
+		todo4 = new ToDo("dolor sit amet");
+		todo4.setCategory("+test");
+		todo4.setPriority(Priority.MEDIUM);
+		
+		todo5 = new ToDo("amet consectetur adipiscing elit.");
+		todo5.setCategory("+test");
+		todo5.setPriority(Priority.HIGH);
 
 		storeStub = new InMemoryStore();
+		storeStub.save(todo0);
 		storeStub.save(todo1);
 		storeStub.save(todo2);
 		storeStub.save(todo3);
 		storeStub.save(todo4);
+		storeStub.save(todo5);
 
 		updateListStub = new ArrayList<ToDo>();
 	}
 
 	@Test
 	public void test() {
-		/*This is a boundary case for empty input.*/
+		/*This is a boundary case for empty/null input.*/
 		searchTest("");
+		searchTest(null);
 		
 		/*Search that returns no results*/
 		searchTest("or");
 		searchTest("+");
-		searchTest("or +search");
+		searchTest("Or +search");
 		
 		/*Search for values at the start/end*/
-		searchTest("Lorem ", "Lorem");
-		searchTest("amet", "dolor sit amet", "amet consectetur adipiscing elit.");
-		searchTest("elit.", "amet consectetur adipiscing elit.");
+		searchTest("lorem ", todo0, todo1);
+		searchTest("amet", todo4, todo5);
+		searchTest("elit.", todo5);
 		
 		/*Search using multiple keywords*/
-		searchTest("doLor sit", "ipsum dolor sit", "dolor sit amet");
+		searchTest("doLor sit", todo2, todo3, todo4);
 
 		/*Search with only category specified*/
-		searchTest("+search", "Lorem");
-		searchTest("+test", "dolor sit amet",
-				"amet consectetur adipiscing elit.");
+		searchTest("+SeaRch", todo1);
+		searchTest("+test", todo4, todo5);
 		
 		/*Search with only priority specified*/
-		searchTest("+meDiUm", "dolor sit amet");
+		searchTest("+meDiUm", todo2, todo4);
 		
 		/*Search with both keywords and category specified*/
-		searchTest("dolor sit +add", "ipsum dolor sit");
-		searchTest("amet +test", "dolor sit amet",
-				"amet consectetur adipiscing elit.");
+		searchTest("dolor sit +add", todo3);
+		searchTest("amet +test", todo4, todo5);
 		
 		/*Search with keywords and priority specified*/
-		searchTest("dolor sit +low", "ipsum dolor sit");
+		searchTest("dolor sit +low", todo3);
 		
 		/*Search with category and priority specified*/
-		searchTest("+high +test", "amet consectetur adipiscing elit.");
+		searchTest("+high +test", todo5);
+		
+		/*This is another boundary case for empty/null input.*/
+		/*Updatelist should not be changed (i.e. should be same as previous test)*/
+		searchTest("", todo5);
+		searchTest(null, todo5);
 	}
 
-	public void searchTest(String query, String... expected) {
-		ArrayList<String> results = new ArrayList<String>();
-
+	public void searchTest(String query, ToDo... expected) {
 		ToDoSearch test = new ToDoSearch(storeStub, updateListStub, query);
 		test.execute();
 
-		for (ToDo todo : updateListStub) {
-			results.add(todo.getTitle());
-		}
-
-		assertArrayEquals(expected, results.toArray());
+		assertArrayEquals(expected, updateListStub.toArray());
 	}
 }

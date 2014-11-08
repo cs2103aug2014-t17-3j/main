@@ -18,9 +18,9 @@ public class ToDoSearch extends ToDoCommand {
 	
 	private static final String EXECUTE_ILLEGAL_ARGUMENT = "Please enter a valid input.";
 
-	ToDoStore todoStorage;
-	String query;
-	List<ToDo> updateList;
+	private ToDoStore todoStorage;
+	private String query;
+	private List<ToDo> updateList;
 
 	public ToDoSearch(ToDoStore todoStorage, List<ToDo> updateList, String query) {
 		super();
@@ -33,7 +33,7 @@ public class ToDoSearch extends ToDoCommand {
 
 	@Override
 	protected CommandStatus performExecute() {
-		if (query.equals("") || query == null) {
+		if (query == null || query.equals("")) {
 			return new CommandStatus(Status.ERROR, EXECUTE_ILLEGAL_ARGUMENT);
 		}
 
@@ -82,7 +82,7 @@ public class ToDoSearch extends ToDoCommand {
 			while (i.hasNext()) {
 				ToDo next = i.next();
 				String nextCategory = next.getCategory();
-				if (nextCategory == null || !nextCategory.equals(category)) {
+				if (nextCategory == null || !nextCategory.equalsIgnoreCase(category)) {
 					i.remove();
 				}
 			}
@@ -93,7 +93,7 @@ public class ToDoSearch extends ToDoCommand {
 	private List<ToDo> searchByKeywords(List<ToDo> todos, String query) {
 		List<ToDo> results = new ArrayList<ToDo>(todos);
 
-		if (query.equals("") || query == null) {
+		if (query == null || query.equals("")) {
 			return results;
 		}
 
