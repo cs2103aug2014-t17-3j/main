@@ -106,7 +106,8 @@ public class MainToDoController {
 		mainPane.layout();
 		mainScrollpane.setFitToWidth(true);
 		appTitleIcon.minWidthProperty().bind(appTitleIcon.heightProperty());
-		fadeOut = new FadeTransition(Duration.millis(3000), promptLabel);
+		fadeOut = new FadeTransition(Duration.millis(1500), promptLabel);
+		fadeOut.setDelay(Duration.millis(2000));
 
 		initilizeHandlers();
 		mainPane.addEventFilter(KeyEvent.KEY_PRESSED, ctrlUpHandler);
@@ -192,8 +193,6 @@ public class MainToDoController {
 			default:
 				break;
 			}
-
-			showPrompt(status.getMessage());
 			break;
 
 		case ERROR:

@@ -75,9 +75,13 @@
 }
 
 #promptLabel {
-	-fx-background-color: grey;
-	-fx-border-style: dashed;
+	-fx-background-color: #B71C1C;
+	-fx-background-radius: 0.3em;
+	-fx-wrap-text: true;
+	-fx-font-family: "Lucida Grande", sans-serif;
+	-fx-font-size: 1em;
 	-fx-text-fill: white;
+	-fx-label-padding: 2 5 2 5;
 	-fx-opacity: 0;
 }
 
