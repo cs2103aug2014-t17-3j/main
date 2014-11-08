@@ -44,6 +44,7 @@ import com.the.todo.storage.ToDoStore;
 
 public class ToDoAdd extends ToDoCommand {
 
+	private static final String DELIM_SPACE = " ";
 	private static final String MEDIUM = "MEDIUM";
 	private static final String LOW = "LOW";
 	private static final String HIGH = "HIGH";
@@ -64,6 +65,14 @@ public class ToDoAdd extends ToDoCommand {
 
 	@Override
 	protected CommandStatus performExecute() {
+
+		String todoTitle = input;
+		String[] todoStrings = input.split(DELIM_SPACE, 2);
+
+		if (todoStrings.length != 2) {
+			return new CommandStatus(Status.ERROR, EXECUTE_ILLEGAL_ARGUMENT);
+		}
+
 		try {
 			todo = createToDo(input);
 		} catch (InvalidDateException e) {
