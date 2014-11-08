@@ -308,7 +308,7 @@ public class Logic {
 						todoUpcoming.add(todo);
 					}
 				} else if (todoType == Type.TIMED) {
-					if (startDate.isAfter(tomorrow)) {
+					if (endDate.isAfter(tomorrow)) {
 						todoUpcoming.add(todo);
 					}
 				}
@@ -373,6 +373,10 @@ public class Logic {
 		try {
 			UUID id = getId(Integer.valueOf(index));
 			ToDo todo = getToDo(id);
+			
+			if (todo == null) {
+				throw new Exception("Invalid ID.");
+			}
 
 			switch (commandType) {
 			case EDIT:
