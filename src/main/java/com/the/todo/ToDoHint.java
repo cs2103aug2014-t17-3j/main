@@ -9,7 +9,7 @@ public class ToDoHint {
 	final String SEARCH_HINT = "search [Keyword]/[Category]";
 	final String DELETE_HINT = "delete [ID]";
 	final String  EDIT_HINT= "edit [ID] -title [title] -category [Category] -startdate [Start Date] -enddate [End Date] -priority [Priority] ";
-	final String VIEW_HINT = "view all/completed/incompleted";
+	final String VIEW_HINT = "view all/completed/incomplete";
 	final String COMPLETE_HINT = "complete [ID]";
 	final String INCOMPLETE_HINT = "incomplete [ID]";
 	private String string ;
