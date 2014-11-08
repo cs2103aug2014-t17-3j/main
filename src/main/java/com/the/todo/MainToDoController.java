@@ -149,16 +149,20 @@ public class MainToDoController {
 					.getToDoMapDisplay();
 			switch (appLogic.getDisplayType()) {
 			case ALL:
-				// updateUI(newDisplayMap);
 				List<Object> newDisplayList = mapToList(newDisplayMap);
+				int changedPosition;
+				
 				if (oldVBoxItems.size() <= newDisplayList.size()) {
-					int changedPosition = indexOfFirstChangedToDo(oldVBoxItems,
+					changedPosition = indexOfFirstChangedToDo(oldVBoxItems,
 							newDisplayList);
 					updateUI(newDisplayMap);
-					scrollToIndex(changedPosition);
-					highlightItem(changedPosition);
+					if (changedPosition != -1){
+						scrollToIndex(changedPosition);
+						highlightItem(changedPosition);
+					}
+					
 				} else {
-					int changedPosition = indexOfFirstChangedToDo(
+					changedPosition = indexOfFirstChangedToDo(
 							newDisplayList, oldVBoxItems);
 					scrollToIndex(changedPosition);
 					Node changedItem = mainVBox.getChildren().get(
@@ -391,24 +395,22 @@ public class MainToDoController {
 	private static int indexOfFirstChangedToDo(List<Object> oldList,
 			List<Object> newList) {
 
-		if (oldList.size() > newList.size()) {
-			return -1;
-		}
+		if (oldList.size() <= newList.size()) {
+			List<Object> oldCopy = new ArrayList<Object>(oldList);
+			List<Object> newCopy = new ArrayList<Object>(newList);
 
-		List<Object> oldCopy = new ArrayList<Object>(oldList);
-		List<Object> newCopy = new ArrayList<Object>(newList);
+			newCopy.removeAll(oldCopy);
 
-		newCopy.removeAll(oldCopy);
-
-		for (Object item : newCopy) {
-			try {
-				ToDo firstChanged = (ToDo) item;
-				return newList.indexOf(firstChanged);
-			} catch (ClassCastException e) {
-				continue;
+			for (Object item : newCopy) {
+				try {
+					ToDo firstChanged = (ToDo) item;
+					return newList.indexOf(firstChanged);
+				} catch (ClassCastException e) {
+					continue;
+				}
 			}
 		}
-		return 0;
+		return -1;
 	}
 
 	private void scrollToToday() {
@@ -454,7 +456,7 @@ public class MainToDoController {
 		upHandler = new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent keyevent) {
-				if (keyevent.getCode().equals(KeyCode.UP)) {
+				if (keyevent.getCode().equals(KeyCode.UP) && !keyevent.isControlDown()) {
 					String prevCmd = commandHistory.previous();
 					if (prevCmd != null) {
 						mainInput.setText(prevCmd);
@@ -467,7 +469,7 @@ public class MainToDoController {
 		downHandler = new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent keyevent) {
-				if (keyevent.getCode().equals(KeyCode.DOWN)) {
+				if (keyevent.getCode().equals(KeyCode.DOWN) && !keyevent.isControlDown()) {
 					String nextCmd = commandHistory.next();
 					if (nextCmd != null) {
 						mainInput.setText(nextCmd);
