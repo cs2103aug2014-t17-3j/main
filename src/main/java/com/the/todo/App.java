@@ -34,11 +34,10 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -54,6 +53,7 @@ public class App extends Application implements HotKeyListener {
 	private static final String MAIN_FXML = "/fxml/mainTest.fxml";
 	private static final String MAIN_STYLE = "/styles/styles2.css";
 	private static final String ICON_TRAY = "/images/ic_thetodo.jpg";
+	private static final String ICON_TASKBAR = "/images/THETODO.png";
 
 	// Scale scene based on 600*800 in a 12px default font size display
 	private static final double REM = javafx.scene.text.Font.getDefault().getSize();
@@ -67,7 +67,6 @@ public class App extends Application implements HotKeyListener {
 	private ChangeListener<Boolean> focusListener;
 
 	public static void main(String[] args) throws Exception {
-		System.out.println(REM);
 		launch(args);
 	}
 
@@ -87,6 +86,9 @@ public class App extends Application implements HotKeyListener {
 	public void start(Stage stage) throws Exception {
 		this.primaryStage = stage;
 
+		Image taskbarIcon = new Image(ICON_TASKBAR);
+		stage.getIcons().add(taskbarIcon);
+		
 		initializeGlobalShortcut();
 
 		Platform.setImplicitExit(false);
