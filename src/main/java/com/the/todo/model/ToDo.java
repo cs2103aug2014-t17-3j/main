@@ -233,7 +233,7 @@ public class ToDo implements Comparable<ToDo> {
 		if (isSamePriority) {
 			if (isSameDateAndTime) {
 				if (isSameType) {
-					return this.getTitle().compareTo(todo.getTitle());
+					return this.getTitle().compareToIgnoreCase(todo.getTitle());
 				} else {
 					if (this.getType() == Type.FLOATING) {
 						return -1;
