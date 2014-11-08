@@ -208,7 +208,7 @@ public class MainToDoController {
 	}
 
 	private void highlightItem(int index) {
-		mainVBox.getChildren().get(index).setStyle("-fx-border-color: red;");
+		mainVBox.getChildren().get(index).setStyle("-fx-background-color: #E8F5E9;");
 	}
 
 	public void showPrompt(String str) {
