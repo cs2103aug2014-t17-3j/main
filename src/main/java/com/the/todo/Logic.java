@@ -79,7 +79,7 @@ public class Logic {
 	};
 
 	public static enum DateCategory {
-		OVERDUE, TODAY, TOMORROW, SOMEDAY
+		OVERDUE, TODAY, TOMORROW, UPCOMING, SOMEDAY
 	}
 
 	public Logic() {
@@ -268,6 +268,7 @@ public class Logic {
 		List<ToDo> todoOverdue = new ArrayList<ToDo>();
 		List<ToDo> todoToday = new ArrayList<ToDo>();
 		List<ToDo> todoTomorrow = new ArrayList<ToDo>();
+		List<ToDo> todoUpcoming = new ArrayList<ToDo>();
 		List<ToDo> todoSomeday = new ArrayList<ToDo>();
 
 		for (ToDo todo : todoList) {
@@ -288,7 +289,7 @@ public class Logic {
 					todoTomorrow.add(todo);
 				}
 			}
-			
+
 			if (todoType == Type.TIMED) {
 				if (endDate.isBefore(today)) {
 					todoOverdue.add(todo);
@@ -300,23 +301,35 @@ public class Logic {
 					todoTomorrow.add(todo);
 				}
 			}
-			
-			todoMap.put(DateCategory.OVERDUE, todoOverdue);
-			todoMap.put(DateCategory.TODAY, todoToday);
-			todoMap.put(DateCategory.TOMORROW, todoTomorrow);
-			todoMap.put(DateCategory.SOMEDAY, todoSomeday);
 
-//			if (todoMap.containsKey(date)) {
-//				todoByDate = todoMap.get(date);
-//				todoByDate.add(todo);
-//			} else {
-//				todoByDate = new ArrayList<ToDo>();
-//				todoByDate.add(todo);
-//				todoMap.put(date, todoByDate);
-//			}
+			if (displayType == DisplayType.SEARCH) {
+				if (todoType == Type.DEADLINE) {
+					if (endDate.isAfter(tomorrow)) {
+						todoUpcoming.add(todo);
+					}
+				} else if (todoType == Type.TIMED) {
+					if (startDate.isAfter(tomorrow)) {
+						todoUpcoming.add(todo);
+					}
+				}
+			}
 		}
-		
-		
+
+		if (todoOverdue.size() > 0) {
+			todoMap.put(DateCategory.OVERDUE, todoOverdue);
+		}
+		if (todoToday.size() > 0) {
+			todoMap.put(DateCategory.TODAY, todoToday);
+		}
+		if (todoTomorrow.size() > 0) {
+			todoMap.put(DateCategory.TOMORROW, todoTomorrow);
+		}
+		if (todoUpcoming.size() > 0) {
+			todoMap.put(DateCategory.UPCOMING, todoUpcoming);
+		}
+		if (todoSomeday.size() > 0) {
+			todoMap.put(DateCategory.SOMEDAY, todoSomeday);
+		}
 
 		for (Entry<DateCategory, List<ToDo>> entry : todoMap.entrySet()) {
 			Collections.sort(entry.getValue());
@@ -412,5 +425,5 @@ public class Logic {
 	public DisplayType getDisplayType() {
 		return displayType;
 	}
-	
+
 }
