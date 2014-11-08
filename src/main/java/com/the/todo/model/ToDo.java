@@ -228,22 +228,28 @@ public class ToDo implements Comparable<ToDo> {
 
 		boolean isSameDateAndTime = currentTaskDate.compareTo(inputTaskDate) == 0;
 		boolean isSameType = this.getType().compareTo(todo.getType()) == 0;
-
-		if (isSameDateAndTime) {
-			if (isSameType) {
-				return this.getTitle().compareTo(todo.getTitle());
-			} else {
-				if (this.getType() == Type.FLOATING) {
-					return -1;
-				} else if (todo.getType() == Type.FLOATING) {
-					return 1;
+		boolean isSamePriority = this.getPriority().compareTo(todo.getPriority()) == 0;
+		
+		if (isSamePriority) {
+			if (isSameDateAndTime) {
+				if (isSameType) {
+					return this.getTitle().compareTo(todo.getTitle());
 				} else {
-					return this.getType().compareTo(todo.getType());
+					if (this.getType() == Type.FLOATING) {
+						return -1;
+					} else if (todo.getType() == Type.FLOATING) {
+						return 1;
+					} else {
+						return this.getType().compareTo(todo.getType());
+					}
 				}
+			} else {
+				return currentTaskDate.compareTo(inputTaskDate);
 			}
 		} else {
-			return currentTaskDate.compareTo(inputTaskDate);
+			return this.getPriority().compareTo(todo.getPriority());
 		}
+
 	}
 
 	private LocalDateTime getDateToCompare(ToDo todo) {
