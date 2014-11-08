@@ -55,8 +55,10 @@ public class App extends Application implements HotKeyListener {
 	private static final String MAIN_STYLE = "/styles/styles2.css";
 	private static final String ICON_TRAY = "/images/ic_thetodo.jpg";
 
-	private static final int MAIN_FRAME_HEIGHT = 600;
-	private static final int MAIN_FRAME_WIDTH = 800;
+	// Scale scene based on 600*800 in a 12px default font size display
+	private static final double REM = javafx.scene.text.Font.getDefault().getSize();
+	private static final double MAIN_FRAME_HEIGHT = REM * 50;
+	private static final double MAIN_FRAME_WIDTH = REM * 66.66;
 
 	private static Provider globalShortcut = null;
 	private static String launchShortcut = "alt SPACE";
@@ -65,6 +67,7 @@ public class App extends Application implements HotKeyListener {
 	private ChangeListener<Boolean> focusListener;
 
 	public static void main(String[] args) throws Exception {
+		System.out.println(REM);
 		launch(args);
 	}
 
