@@ -40,7 +40,6 @@ public class ToDoDelete extends ToDoCommand {
 	private static final String EXECUTE_SUCCESS = "Successful";
 
 	private ToDoStore todoStorage;
-	private ToDo todo;
 
 	public ToDoDelete(ToDoStore todoStorage, ToDo todo) {
 		super();
@@ -68,5 +67,8 @@ public class ToDoDelete extends ToDoCommand {
 		return new CommandStatus(Status.SUCCESS, String.format(
 				"ToDo successfully restored: %s", todo.getTitle()));
 	}
-
+	
+	public ToDo getTodo (){
+		return todo;
+	}
 }

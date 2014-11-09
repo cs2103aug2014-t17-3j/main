@@ -31,6 +31,8 @@ package com.the.todo.command;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.the.todo.model.ToDo;
+
 public abstract class ToDoCommand {
 
 	protected static final Logger logger = LogManager
@@ -38,6 +40,7 @@ public abstract class ToDoCommand {
 
 	protected boolean successful = false;
 	protected boolean undoable = false;
+	protected ToDo todo = null;
 
 	public ToDoCommand() {
 
@@ -57,5 +60,8 @@ public abstract class ToDoCommand {
 
 	public boolean isUndoable() {
 		return undoable;
+	}
+	public ToDo getTodo (){
+		return null;
 	}
 }

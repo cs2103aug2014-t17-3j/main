@@ -53,7 +53,6 @@ public class ToDoAdd extends ToDoCommand {
 	private static final String EXECUTE_SUCCESS = "Successful";
 
 	ToDoStore todoStorage;
-	ToDo todo;
 	String input;
 
 	public ToDoAdd(ToDoStore todoStorage, String input) {
@@ -172,4 +171,8 @@ public class ToDoAdd extends ToDoCommand {
 		return Type.FLOATING;
 	}
 
+	@Override
+	public ToDo getTodo (){
+		return todo;
+	}
 }

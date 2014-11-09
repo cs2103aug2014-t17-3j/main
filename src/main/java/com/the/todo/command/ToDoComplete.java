@@ -13,7 +13,6 @@ public class ToDoComplete extends ToDoCommand {
 	private static final String EXECUTE_DONE = "Task had been completed";
 
 	private ToDoStore todoStorage;
-	private ToDo todo;
 	private ToDo newtodo;
 
 	public ToDoComplete(ToDoStore todoStorage, ToDo todo) {
@@ -72,4 +71,8 @@ public class ToDoComplete extends ToDoCommand {
 		return todo;
 	}
 
+	@Override
+	public ToDo getTodo (){
+		return newtodo;
+	}
 }

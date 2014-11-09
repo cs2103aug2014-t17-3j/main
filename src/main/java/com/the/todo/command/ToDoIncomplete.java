@@ -12,7 +12,6 @@ public class ToDoIncomplete extends ToDoCommand {
 	private static final String EXECUTE_SUCCESS = "Successful";
 
 	private ToDoStore todoStorage;
-	private ToDo todo;
 	private ToDo newtodo;
 
 	public ToDoIncomplete(ToDoStore todoStorage, ToDo todo) {
@@ -70,5 +69,10 @@ public class ToDoIncomplete extends ToDoCommand {
 	private ToDo isCompleteToDo(ToDo todo) {
 		todo.setCompleted(true);
 		return todo;
+	}
+	
+	@Override
+	public ToDo getTodo (){
+		return newtodo;
 	}
 }

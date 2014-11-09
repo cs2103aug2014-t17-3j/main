@@ -62,7 +62,6 @@ public class ToDoEdit extends ToDoCommand {
 	};
 
 	private ToDoStore todoStorage;
-	private ToDo todo;
 	private ToDo newtodo;
 	private String input;
 
@@ -271,5 +270,10 @@ public class ToDoEdit extends ToDoCommand {
 			break;
 		}
 		return todo;
+	}
+	
+	@Override
+	public ToDo getTodo (){
+		return newtodo;
 	}
 }

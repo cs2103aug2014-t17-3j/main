@@ -66,6 +66,7 @@ public class Logic {
 	private Stack<ToDoCommand> undoStack;
 	private CommandType lastCommand;
 	private DisplayType displayType;
+	private ToDo lastChangedTodo;
 
 	private static Logic logic = null;
 	private static final String FILENAME = "thetodo.json";
@@ -90,6 +91,7 @@ public class Logic {
 		undoStack = new Stack<ToDoCommand>();
 		lastCommand = null;
 		displayType = DisplayType.ALL;
+		lastChangedTodo = null;
 
 		initializeDisplayList();
 		updateDisplayItems(todoStorage.getAll());
@@ -116,6 +118,7 @@ public class Logic {
 		String command = originlCommand.toLowerCase();
 		String params = CommandUtil.getParams(originlCommand, input);
 		CommandType commandType = getCommandType(command);
+		boolean isSingleChange = false;
 
 		ToDoCommand todoCommand = null;
 		displayType = DisplayType.ALL;
@@ -125,6 +128,7 @@ public class Logic {
 		switch (commandType) {
 		case ADD:
 			todoCommand = new ToDoAdd(todoStorage, params);
+			isSingleChange = true;
 			break;
 		case VIEW:
 			todoCommand = new ToDoView(todoStorage, todoDisplay, params);
@@ -141,6 +145,7 @@ public class Logic {
 				commandStatus = new CommandStatus(Status.INVALID,
 						"Invalid command.");
 			}
+			isSingleChange = true;
 			break;
 		case SEARCH:
 			todoCommand = new ToDoSearch(todoStorage, todoDisplay, params);
@@ -148,6 +153,7 @@ public class Logic {
 			break;
 		case UNDO:
 			todoCommand = new ToDoUndo(todoStorage, undoStack);
+			isSingleChange = true;
 			break;
 		case INVALID:
 			break;
@@ -173,6 +179,12 @@ public class Logic {
 		} else {
 			commandStatus = new CommandStatus(Status.INVALID,
 					"Invalid command.");
+		}
+		
+		if (isSingleChange){
+			lastChangedTodo = todoCommand.getTodo();
+		} else {
+			lastChangedTodo = null;
 		}
 
 		System.out.println("-----------------------------");
@@ -428,6 +440,9 @@ public class Logic {
 
 	public DisplayType getDisplayType() {
 		return displayType;
+	}
+	public ToDo getLastChangedToDo () {
+		return lastChangedTodo;
 	}
 
 }

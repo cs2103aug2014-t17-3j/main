@@ -146,59 +146,98 @@ public class MainToDoController {
 
 		switch (status.getStatus()) {
 		case SUCCESS:
-			Map<DateCategory, List<ToDo>> newDisplayMap = appLogic
-					.getToDoMapDisplay();
-			switch (appLogic.getDisplayType()) {
-			case ALL:
-				List<Object> newDisplayList = mapToList(newDisplayMap);
-				int changedPosition;
-				
-				if (oldVBoxItems.size() <= newDisplayList.size()) {
-					changedPosition = indexOfFirstChangedToDo(oldVBoxItems,
-							newDisplayList);
-					updateUI(newDisplayMap);
-					if (changedPosition != -1){
-						scrollToIndex(changedPosition);
-						highlightItem(changedPosition);
-					}
-					
-				} else {
-					changedPosition = indexOfFirstChangedToDo(
-							newDisplayList, oldVBoxItems);
+			Map<DateCategory, List<ToDo>> newDisplayMap = appLogic.getToDoMapDisplay();
+			List<Object> newDisplayList = mapToList(newDisplayMap);
+			
+			switch (appLogic.getLastCommand()){
+			/*SINGLE CHANGES COMMAND*/
+			case ADD:
+			case EDIT:
+			case COMPLETE:
+			case INCOMPLETE:
+			case UNDO:
+				ToDo lastChangedToDo = appLogic.getLastChangedToDo();
+				int changedPosition = newDisplayList.indexOf(lastChangedToDo);
+				updateUI(newDisplayMap);
+				if (changedPosition != -1){
 					scrollToIndex(changedPosition);
-					Node changedItem = mainVBox.getChildren().get(
-							changedPosition);
-					FadeTransition ft = new FadeTransition(
-							Duration.millis(1000), changedItem);
-					ft.setFromValue(1.0);
-					ft.setToValue(0);
-					ft.play();
-					Timer timer = new Timer();
-					timer.schedule(new TimerTask() {
-						@Override
-						public void run() {
-							Platform.runLater(new Runnable() {
-								public void run() {
-									updateUI(newDisplayMap);
-								}
-							});
-						}
-					}, 1000);
+					highlightItem(changedPosition);
+				} else {
+					mainScrollpane.setVvalue(0);
 				}
-				oldVBoxItems.clear();
-				oldVBoxItems.addAll(newDisplayList);
 				break;
-
+				
+			case DELETE:
+				//How to implement this?
+				updateUI(newDisplayMap);
+				break;
+			
+			/*COMMAND THAT GIVES CUSTOMIZED VIEW*/
+			case VIEW:
 			case SEARCH:
 				updateUI(newDisplayMap);
 				mainScrollpane.setVvalue(0);
-				oldVBoxItems.clear();
 				break;
-
+			
+			case INVALID:
 			default:
 				break;
 			}
-			break;
+			oldVBoxItems.clear();
+			oldVBoxItems.addAll(newDisplayList);
+			
+			
+//			switch (appLogic.getDisplayType()) {
+//			case ALL:
+//				List<Object> newDisplayList = mapToList(newDisplayMap);
+//				int changedPosition;
+//				
+//				if (oldVBoxItems.size() <= newDisplayList.size()) {
+//					changedPosition = indexOfFirstChangedToDo(oldVBoxItems,
+//							newDisplayList);
+//					updateUI(newDisplayMap);
+//					if (changedPosition != -1){
+//						scrollToIndex(changedPosition);
+//						highlightItem(changedPosition);
+//					}
+//					
+//				} else {
+//					changedPosition = indexOfFirstChangedToDo(
+//							newDisplayList, oldVBoxItems);
+//					scrollToIndex(changedPosition);
+//					Node changedItem = mainVBox.getChildren().get(
+//							changedPosition);
+//					FadeTransition ft = new FadeTransition(
+//							Duration.millis(1000), changedItem);
+//					ft.setFromValue(1.0);
+//					ft.setToValue(0);
+//					ft.play();
+//					Timer timer = new Timer();
+//					timer.schedule(new TimerTask() {
+//						@Override
+//						public void run() {
+//							Platform.runLater(new Runnable() {
+//								public void run() {
+//									updateUI(newDisplayMap);
+//								}
+//							});
+//						}
+//					}, 1000);
+//				}
+//				oldVBoxItems.clear();
+//				oldVBoxItems.addAll(newDisplayList);
+//				break;
+//
+//			case SEARCH:
+//				updateUI(newDisplayMap);
+//				mainScrollpane.setVvalue(0);
+//				oldVBoxItems.clear();
+//				break;
+//
+//			default:
+//				break;
+//			}
+//			break;
 
 		case ERROR:
 			// Fallthrough
