@@ -9,6 +9,7 @@ CS2103T Software Engineering
 * Eclipse Luna w/ Maven Plugin installed.
 
 ## Credits
+* Java date and time (Joda-Time - http://www.joda.org/joda-time/) 
 * Natural Language Date Parser (Natty - https://github.com/joestelmach/natty)
 * Notifications (ControlsFX - https://bitbucket.org/controlsfx/controlsfx)
 * JavaFX Tray Icon (Gist by Jewelsea - https://gist.github.com/jewelsea/e231e89e8d36ef4e5d8a)
