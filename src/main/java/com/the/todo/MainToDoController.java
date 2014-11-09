@@ -162,8 +162,6 @@ public class MainToDoController {
 				if (changedPosition != -1){
 					scrollToIndex(changedPosition);
 					highlightItem(changedPosition);
-				} else {
-					mainScrollpane.setVvalue(0);
 				}
 				break;
 				

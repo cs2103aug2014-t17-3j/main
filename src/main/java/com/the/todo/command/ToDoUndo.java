@@ -11,7 +11,6 @@ import com.the.todo.storage.ToDoStore;
 
 public class ToDoUndo extends ToDoCommand {
 
-	private ToDo todo;
 	private ToDoStore todoStorage;
 	private Stack<ToDoCommand> undoStack;
 
@@ -25,7 +24,9 @@ public class ToDoUndo extends ToDoCommand {
 	@Override
 	protected CommandStatus performExecute() {
 		try {
-			CommandStatus status = undoStack.peek().undo();
+			ToDoCommand lastCommand = undoStack.peek();
+			todo = lastCommand.getTodo();
+			CommandStatus status = lastCommand.undo();
 			undoStack.pop();
 			return status;
 		} catch (EmptyStackException ex) {
@@ -38,4 +39,8 @@ public class ToDoUndo extends ToDoCommand {
 		return null;
 	}
 
+	@Override
+	public ToDo getTodo (){
+		return todo;
+	}
 }
