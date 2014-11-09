@@ -34,23 +34,26 @@
 
 #appTitlePane {
 	-fx-background-color: #333333;
+	-fx-padding: 5;
 }
 
 #appTitleIcon {
 	-fx-background-image: url(../images/THETODO.png);
+	-fx-background-position: center;
+	-fx-background-repeat: no-repeat;
 	-fx-background-size: contain;
 }
 
 #appTitle {
 	-fx-font-family: Helvetica, sans-serif;
-	-fx-font-size: 16;
+	-fx-font-size: 1.4em;
 	-fx-font-weight: bold;
 	-fx-text-fill: white;
 }
 
 .groupLabel {
 	-fx-background-color:  #3E506F;
-	-fx-font-size: 14;
+	-fx-font-size: 1.2em;
 	-fx-font-family: "Lucida Grande", sans-serif;
 	-fx-font-weight: bold;
 	-fx-label-padding: 10;
@@ -72,9 +75,13 @@
 }
 
 #promptLabel {
-	-fx-background-color: grey;
-	-fx-border-style: dashed;
+	-fx-background-color: #B71C1C;
+	-fx-background-radius: 0.3em;
+	-fx-wrap-text: true;
+	-fx-font-family: "Lucida Grande", sans-serif;
+	-fx-font-size: 1em;
 	-fx-text-fill: white;
+	-fx-label-padding: 2 5 2 5;
 	-fx-opacity: 0;
 }
 
@@ -109,18 +116,18 @@
 }
 
 #mainInput{
-	-fx-font-size: 12;
+	-fx-font-size: 1em;
+	-fx-padding: 8;
 }
 
 #mainInput:focused { 
  	-fx-background-color: transparent,-fx-box-border,-fx-control-inner-background;
   	-fx-background-insets: -1.4, 0, 1;
   	-fx-background-radius: 1.4, 2.5, 2.5;
-	-fx-padding: 5; 
 }
 
 #hintLabel{
-	-fx-font-size: 12; 
+	-fx-font-size: 1em; 
 	-fx-text-fill: #777777;
 	-fx-label-padding: 0 5 0 5;
 }
@@ -137,21 +144,13 @@
 	-fx-border-width:0 1 0 0 ;
 }
 
-#todoDate {
-	-fx-padding: 0 5 0 5;
-}
-
-#todoDate .DateTime {
+#todoDate, #todoMisc { 
 	-fx-font-size: 1em;
-}
-
-#todoMisc { 
-	-fx-font-size: 12;
 	-fx-padding: 0 5 0 5 ;
 } 
 
 #todoTitle {
-	-fx-font-size: 14;
+	-fx-font-size: 1.2em;
 	-fx-padding: 0 5 0 5 ;
 }
 

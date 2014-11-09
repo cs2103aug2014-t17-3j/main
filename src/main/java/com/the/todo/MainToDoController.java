@@ -40,6 +40,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -49,6 +50,8 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -75,9 +78,11 @@ public class MainToDoController {
 	@FXML
 	private Button minimizeButton;
 	@FXML
-	private SplitPane mainPane;
+	private BorderPane mainPane;
 	@FXML
 	private Label hintLabel;
+	@FXML
+	private Pane appTitleIcon;
 
 	private FadeTransition fadeOut;
 
@@ -87,10 +92,33 @@ public class MainToDoController {
 
 	private ArrayList<Object> oldVBoxItems = new ArrayList<Object>();
 
+	/************************ ALL HANDLERS ***************************/
+	private EventHandler<KeyEvent> ctrlUpHandler;
+	private EventHandler<KeyEvent> ctrlDownHandler;
+	private EventHandler<KeyEvent> ctrlZHandler;
+	private EventHandler<KeyEvent> upHandler;
+	private EventHandler<KeyEvent> downHandler;
+	private ChangeListener<Boolean> mainInputFocusListener;
+	private ChangeListener<String> textChangeListener;
+
 	@FXML
 	void initialize() {
+		mainPane.applyCss();
+		mainPane.layout();
 		mainScrollpane.setFitToWidth(true);
-		fadeOut = new FadeTransition(Duration.millis(3000), promptLabel);
+		appTitleIcon.minWidthProperty().bind(appTitleIcon.heightProperty());
+		fadeOut = new FadeTransition(Duration.millis(1500), promptLabel);
+		fadeOut.setDelay(Duration.millis(2000));
+
+		initilizeHandlers();
+		mainPane.addEventFilter(KeyEvent.KEY_PRESSED, ctrlUpHandler);
+		mainPane.addEventFilter(KeyEvent.KEY_PRESSED, ctrlDownHandler);
+		mainPane.addEventFilter(KeyEvent.KEY_PRESSED, ctrlZHandler);
+
+		mainInput.addEventFilter(KeyEvent.KEY_PRESSED, upHandler);
+		mainInput.addEventFilter(KeyEvent.KEY_PRESSED, downHandler);
+		mainInput.focusedProperty().addListener(mainInputFocusListener);
+		mainInput.textProperty().addListener(textChangeListener);
 
 		Platform.runLater(new Runnable() {
 			@Override
@@ -122,33 +150,40 @@ public class MainToDoController {
 					.getToDoMapDisplay();
 			switch (appLogic.getDisplayType()) {
 			case ALL:
-				//updateUI(newDisplayMap);
 				List<Object> newDisplayList = mapToList(newDisplayMap);
-				if (oldVBoxItems.size() <= newDisplayList.size()){
-					int changedPosition = indexOfFirstChange(oldVBoxItems,
+				int changedPosition;
+				
+				if (oldVBoxItems.size() <= newDisplayList.size()) {
+					changedPosition = indexOfFirstChangedToDo(oldVBoxItems,
 							newDisplayList);
 					updateUI(newDisplayMap);
-					scrollToIndex(changedPosition);
-					highlightItem(changedPosition);
+					if (changedPosition != -1){
+						scrollToIndex(changedPosition);
+						highlightItem(changedPosition);
+					}
+					
 				} else {
-					int changedPosition = indexOfFirstChange(newDisplayList, oldVBoxItems);
+					changedPosition = indexOfFirstChangedToDo(
+							newDisplayList, oldVBoxItems);
 					scrollToIndex(changedPosition);
-					Node changedItem = mainVBox.getChildren().get(changedPosition);
-					FadeTransition ft = new FadeTransition(Duration.millis(2000), changedItem);
+					Node changedItem = mainVBox.getChildren().get(
+							changedPosition);
+					FadeTransition ft = new FadeTransition(
+							Duration.millis(1000), changedItem);
 					ft.setFromValue(1.0);
-				    ft.setToValue(0);
-				    ft.play();
-				    Timer timer = new Timer();
-				    timer.schedule(new TimerTask(){
+					ft.setToValue(0);
+					ft.play();
+					Timer timer = new Timer();
+					timer.schedule(new TimerTask() {
 						@Override
-						public void run(){
-							Platform.runLater(new Runnable(){
-								public void run(){
+						public void run() {
+							Platform.runLater(new Runnable() {
+								public void run() {
 									updateUI(newDisplayMap);
 								}
 							});
 						}
-					}, 2000);
+					}, 1000);
 				}
 				oldVBoxItems.clear();
 				oldVBoxItems.addAll(newDisplayList);
@@ -163,8 +198,6 @@ public class MainToDoController {
 			default:
 				break;
 			}
-
-			showPrompt(status.getMessage());
 			break;
 
 		case ERROR:
@@ -180,14 +213,7 @@ public class MainToDoController {
 	}
 
 	private void highlightItem(int index) {
-		try {
-			Label item = (Label) mainVBox.getChildren().get(index);
-			mainVBox.getChildren().get(index + 1)
-					.setStyle("-fx-border-color: red;");
-		} catch (ClassCastException e) {
-			mainVBox.getChildren().get(index)
-					.setStyle("-fx-border-color: red;");
-		}
+		mainVBox.getChildren().get(index).setStyle("-fx-background-color: #E8F5E9;");
 	}
 
 	public void showPrompt(String str) {
@@ -320,68 +346,6 @@ public class MainToDoController {
 
 	}
 
-	public void processKeyEvents(KeyEvent keyevent) {
-
-		if (keyevent.getEventType() == KeyEvent.KEY_PRESSED
-				&& keyevent.isControlDown()) {
-
-			if (keyevent.getCode() == KeyCode.UP) {
-				mainScrollpane.setVvalue(mainScrollpane.getVvalue() - 0.1);
-			} else if (keyevent.getCode() == KeyCode.DOWN) {
-				mainScrollpane.setVvalue(mainScrollpane.getVvalue() + 0.1);
-			} else if (keyevent.getCode() == KeyCode.Z) {
-				processInput("undo");
-
-				System.out.println("vvalue: " + mainScrollpane.getVvalue());
-				System.out.println("vbox height:" + mainVBox.getHeight());
-				ObservableList<Node> ol = mainVBox.getChildren();
-				for (Node node : ol) {
-					System.out.println(node.toString());
-					System.out.println(node.getLayoutY());
-				}
-			}
-		}
-
-		else if (keyevent.getEventType() == KeyEvent.KEY_PRESSED) {
-			if (keyevent.getCode() == KeyCode.UP) {
-				String prevCmd = commandHistory.previous();
-				if (prevCmd != null) {
-					mainInput.setText(prevCmd);
-				}
-				mainInput.end();
-				keyevent.consume();
-			} else if (keyevent.getCode() == KeyCode.DOWN) {
-				String nextCmd = commandHistory.next();
-				if (nextCmd != null) {
-					mainInput.setText(nextCmd);
-				} else {
-					mainInput.setText("");
-				}
-				mainInput.end();
-				keyevent.consume();
-			}
-		}
-
-		// For showing hints
-		if (keyevent.getEventType() == KeyEvent.KEY_TYPED
-				&& mainInput.isFocused()) {
-			String incompleteCommand = mainInput.getText()
-					+ keyevent.getCharacter();
-			if (incompleteCommand.indexOf("\b") == incompleteCommand.length() - 1) { // backspace
-																						// char
-																						// at
-																						// end
-				if (incompleteCommand.length() > 0) {
-					incompleteCommand = incompleteCommand.substring(0,
-							incompleteCommand.length() - 1);
-				}
-			}
-			ToDoHint hint = new ToDoHint(incompleteCommand);
-			String str = hint.getHints();
-			hintLabel.setText(str);
-		}
-	}
-
 	private void generateAllReminders() {
 		LocalDateTime currentDateTime = new LocalDateTime();
 		LocalDateTime tomorrowDateTime = new LocalDateTime().plusDays(1);
@@ -402,8 +366,11 @@ public class MainToDoController {
 
 		double yValue = mainVBox.getChildren().get(index).getLayoutY();
 
-		if (mainVBox.getHeight() > mainScrollpane.getViewportBounds().getHeight()) {
-			mainScrollpane.setVvalue(yValue / (mainVBox.getHeight() - mainScrollpane.getViewportBounds().getHeight()));
+		if (mainVBox.getHeight() > mainScrollpane.getViewportBounds()
+				.getHeight()) {
+			mainScrollpane.setVvalue(yValue
+					/ (mainVBox.getHeight() - mainScrollpane
+							.getViewportBounds().getHeight()));
 		} else {
 			mainScrollpane.setVvalue(0);
 		}
@@ -421,31 +388,113 @@ public class MainToDoController {
 		return list;
 	}
 
-	private static int indexOfFirstChange(List<Object> oldList,
+	private static int indexOfFirstChangedToDo(List<Object> oldList,
 			List<Object> newList) {
-		int firstChanged = 0;
-		List<Object> oldCopy = new ArrayList<Object>(oldList);
-		List<Object> newCopy = new ArrayList<Object>(newList);
 
-		if (oldCopy.size() <= newCopy.size()) {
+		if (oldList.size() <= newList.size()) {
+			List<Object> oldCopy = new ArrayList<Object>(oldList);
+			List<Object> newCopy = new ArrayList<Object>(newList);
+
 			newCopy.removeAll(oldCopy);
-			firstChanged = newList.indexOf(newCopy.get(0));
-		} else {
-			firstChanged = -1;	// newlist size must be >= oldlist size
+
+			for (Object item : newCopy) {
+				if (item instanceof ToDo){
+					return newList.indexOf(item);
+				}
+			}
 		}
-		return firstChanged;
+		return -1;
 	}
 
-	public static int test(List<Object> oldList, List<Object> newList) {
-		return indexOfFirstChange(oldList, newList);
-	}
-	
-	private void scrollToToday (){
-		LocalDate today = new LocalDate();		
+	private void scrollToToday() {
+		LocalDate today = new LocalDate();
 		int todayIndex = oldVBoxItems.indexOf(today);
-		if (todayIndex == -1){
+		if (todayIndex == -1) {
 			todayIndex = 0;
 		}
 		scrollToIndex(todayIndex);
+	}
+
+	private void initilizeHandlers() {
+		ctrlUpHandler = new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent keyevent) {
+				if (keyevent.getCode().equals(KeyCode.UP)
+						&& keyevent.isControlDown()) {
+					mainScrollpane.setVvalue(mainScrollpane.getVvalue() - 0.1);
+				}
+			}
+		};
+
+		ctrlDownHandler = new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent keyevent) {
+				if (keyevent.getCode().equals(KeyCode.DOWN)
+						&& keyevent.isControlDown()) {
+					mainScrollpane.setVvalue(mainScrollpane.getVvalue() + 0.1);
+				}
+			}
+		};
+
+		ctrlZHandler = new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent keyevent) {
+				if (keyevent.getCode().equals(KeyCode.Z)
+						&& keyevent.isControlDown()) {
+					processInput("undo");
+				}
+			}
+		};
+
+		upHandler = new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent keyevent) {
+				if (keyevent.getCode().equals(KeyCode.UP) && !keyevent.isControlDown()) {
+					String prevCmd = commandHistory.previous();
+					if (prevCmd != null) {
+						mainInput.setText(prevCmd);
+					}
+					mainInput.end();
+					keyevent.consume();
+				}
+			}
+		};
+
+		downHandler = new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent keyevent) {
+				if (keyevent.getCode().equals(KeyCode.DOWN) && !keyevent.isControlDown()) {
+					String nextCmd = commandHistory.next();
+					if (nextCmd != null) {
+						mainInput.setText(nextCmd);
+					} else {
+						mainInput.setText("");
+					}
+					mainInput.end();
+					keyevent.consume();
+				}
+			}
+		};
+
+		mainInputFocusListener = new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable,
+					Boolean oldValue, Boolean newValue) {
+
+				if (oldValue == true && newValue == false) {
+					mainInput.requestFocus();
+				}
+			}
+		};
+
+		textChangeListener = new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> ov,
+					String oldStr, String newStr) {
+				ToDoHint hint = new ToDoHint(newStr);
+				String str = hint.getHints();
+				hintLabel.setText(str);
+			}
+		};
 	}
 }
