@@ -29,6 +29,7 @@
 package com.the.todo;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.fxml.FXML;
@@ -37,9 +38,12 @@ import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextBuilder;
 
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -56,7 +60,7 @@ public class ToDoContainer extends AnchorPane {
 	@FXML
 	private Label todoTitle;
 	@FXML
-	private Label todoDate;
+	private HBox todoDate;
 	@FXML
 	private Label todoMisc;
 	@FXML 
@@ -112,18 +116,57 @@ public class ToDoContainer extends AnchorPane {
 	}
 
 	private void setDate(ToDo todo){
-		LocalDateTime startDate,endDate; 
-		startDate = todo.getStartDate();
-		endDate = todo.getEndDate();
-
-		if (todo.isDeadlineToDo()){
-			todoDate.setText(formatDate(endDate)); 
+		Type type = todo.getType();
+		String startDate = null;
+		String startTime = null;
+		String endDate = null;
+		String endTime = null;
+		String datePattern = "dd-MM-yy";
+		String timePattern = "h:mm a";
+		ArrayList<Node> displayItems = new ArrayList<Node>();
+		
+		if (type == Type.TIMED){
+			startDate = todo.getStartDate().toString(datePattern);
+			startTime = todo.getStartDate().toString(timePattern);
+			endDate = todo.getEndDate().toString(datePattern);
+			endTime = todo.getEndDate().toString(timePattern);
+		} else if (type == Type.DEADLINE){
+			endDate = todo.getEndDate().toString(datePattern);
+			endTime = todo.getEndDate().toString(timePattern);
 		}
-		if (todo.isTimedToDo()){
-			todoDate.setText(formatDate(endDate)); 
+		
+		if (startDate != null && startTime != null){
+			ImageView calendar1 = new ImageView("/images/calendar.png");
+			ImageView clock1 = new ImageView("/images/clock.png");
+			
+			displayItems.add(calendar1);
+			displayItems.add(TextBuilder.create()
+					.text(startDate)
+					.styleClass("DateTime")
+					.build());
+			displayItems.add(clock1);
+			displayItems.add(TextBuilder.create()
+					.text(startTime)
+					.styleClass("DateTime")
+					.build());
+			displayItems.add(new Text(" to "));
 		}
-
-
+		
+		if (endDate !=null && endTime != null){
+			ImageView calendar2 = new ImageView("/images/calendar.png");
+			ImageView clock2 = new ImageView("/images/clock.png");
+			displayItems.add(calendar2);
+			displayItems.add(TextBuilder.create()
+					.text(endDate)
+					.styleClass("DateTime")
+					.build());
+			displayItems.add(clock2);
+			displayItems.add(TextBuilder.create()
+					.text(endTime)
+					.styleClass("DateTime")
+					.build());
+		}
+		todoDate.getChildren().setAll(displayItems);
 	}
 
 	private Node createTag(String text, String color){

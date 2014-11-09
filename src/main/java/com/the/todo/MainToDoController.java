@@ -57,6 +57,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 
+import com.the.todo.Logic.DateCategory;
 import com.the.todo.command.CommandStatus;
 import com.the.todo.model.ToDo;
 import com.the.todo.task.ReminderTask;
@@ -117,7 +118,7 @@ public class MainToDoController {
 
 		switch (status.getStatus()) {
 		case SUCCESS:
-			Map<LocalDate, List<ToDo>> newDisplayMap = appLogic
+			Map<DateCategory, List<ToDo>> newDisplayMap = appLogic
 					.getToDoMapDisplay();
 			switch (appLogic.getDisplayType()) {
 			case ALL:
@@ -253,7 +254,7 @@ public class MainToDoController {
 
 	}
 
-	public void updateUI(Map<LocalDate, List<ToDo>> todoItems) {
+	public void updateUI(Map<DateCategory, List<ToDo>> todoItems) {
 		clearUI();
 
 		int index = 1;
@@ -265,7 +266,7 @@ public class MainToDoController {
 		} else {
 			Label lblDate;
 
-			for (Entry<LocalDate, List<ToDo>> entry : todoItems.entrySet()) {
+			for (Entry<DateCategory, List<ToDo>> entry : todoItems.entrySet()) {
 				System.out.println(entry.getKey() + " = " + entry.getValue());
 				lblDate = createGroupLabel(entry.getKey());
 				newVBoxItems.add(lblDate);
@@ -304,17 +305,12 @@ public class MainToDoController {
 		stage.hide();
 	}
 
-	public Label createGroupLabel(LocalDate date) {
+	public Label createGroupLabel(DateCategory date) {
 
-		LocalDate currentDate = new LocalDate();
-		Label label = new Label(date.toString(DateTimeFormat
-				.forPattern("EEEE, dd MMMM yyyy")));
+		//LocalDate currentDate = new LocalDate();
+		Label label = new Label(date.toString());
 
-		if (date.equals(ToDo.INVALID_DATE.toLocalDate())) {
-			label = new Label("Someday");
-		}
-
-		if (date.isBefore(currentDate)) {
+		if (date.equals(DateCategory.OVERDUE)) {
 			label.setStyle("-fx-background-color: #FF5050;");
 		}
 
@@ -413,10 +409,10 @@ public class MainToDoController {
 		}
 	}
 
-	private List<Object> mapToList(Map<LocalDate, List<ToDo>> map) {
+	private List<Object> mapToList(Map<DateCategory, List<ToDo>> map) {
 		List<Object> list = new ArrayList<Object>();
 
-		for (Entry<LocalDate, List<ToDo>> entry : map.entrySet()) {
+		for (Entry<DateCategory, List<ToDo>> entry : map.entrySet()) {
 			list.add(entry.getKey());
 			for (ToDo todo : entry.getValue()) {
 				list.add(todo);
