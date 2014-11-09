@@ -62,6 +62,7 @@ import org.joda.time.format.DateTimeFormat;
 
 import com.the.todo.Logic.DateCategory;
 import com.the.todo.command.CommandStatus;
+import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
 import com.the.todo.task.ReminderTask;
 
@@ -169,8 +170,8 @@ public class MainToDoController {
 				break;
 				
 			case DELETE:
-				//How to implement this?
 				updateUI(newDisplayMap);
+				showPrompt("Deleted successfully", Status.SUCCESS);
 				break;
 			
 			/*COMMAND THAT GIVES CUSTOMIZED VIEW*/
@@ -249,7 +250,7 @@ public class MainToDoController {
 			// Fallthrough
 
 		default:
-			showPrompt(status.getMessage());
+			showPrompt(status.getMessage(), Status.INVALID);
 			break;
 		}
 	}
@@ -258,13 +259,23 @@ public class MainToDoController {
 		mainVBox.getChildren().get(index).setStyle("-fx-background-color: #E8F5E9;");
 	}
 
-	public void showPrompt(String str) {
+	public void showPrompt(String str, Status status) {
+		if (status.equals(Status.SUCCESS)){
+			promptLabel.setStyle("-fx-background-color: #43A047");
+		} else {
+			promptLabel.setStyle("-fx-background-color: #B71C1C");
+		}
+		
 		if (!str.isEmpty()) {
 			promptLabel.setText(str);
-			promptLabel.setOpacity(1);
-
-			fadeOut.setToValue(0.0);
-			fadeOut.playFromStart();
+			
+			Platform.runLater(new Runnable() {
+				public void run() {
+					promptLabel.setOpacity(1);
+					fadeOut.setToValue(0.0);
+					fadeOut.playFromStart();
+				}
+			});
 		}
 	}
 
