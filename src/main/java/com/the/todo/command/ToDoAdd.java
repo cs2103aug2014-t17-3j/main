@@ -42,6 +42,12 @@ import com.the.todo.parser.DateAndTimeParser;
 import com.the.todo.parser.exception.InvalidDateException;
 import com.the.todo.storage.ToDoStore;
 
+/**
+ * This Class create task that is entered by the user.
+ * 
+ * @author KaiHsiang	
+ *
+ */
 public class ToDoAdd extends ToDoCommand {
 
 	private static final String DELIM_SPACE = " ";
@@ -69,7 +75,7 @@ public class ToDoAdd extends ToDoCommand {
 		String todoTitle = input;
 		String[] todoStrings = input.split(DELIM_SPACE, 2);
 
-		if (todoStrings.length != 2) {
+		if (todoTitle.length() == 0) {
 			return new CommandStatus(Status.ERROR, EXECUTE_ILLEGAL_ARGUMENT);
 		}
 
@@ -95,6 +101,14 @@ public class ToDoAdd extends ToDoCommand {
 				"Task successfully removed: %s", todo.getTitle()));
 	}
 
+	/**
+	 * This method process for priority, category and date that is entered by
+	 * the users before passing all the variables to the creatToDoType method.
+	 * 
+	 * @param input - User input.
+	 * @return - ToDo task that is processed.
+	 * @throws InvalidDateException - invalid date.
+	 */
 	private ToDo createToDo(String input) throws InvalidDateException {
 		ToDo.Type type;
 		List<String> foundList = CategoryPriorityParser.parseAll(input);
@@ -128,6 +142,16 @@ public class ToDoAdd extends ToDoCommand {
 		return todo;
 	}
 
+	/**
+	 * 
+	 * 
+	 * @param type - type of task that the user wanted.
+	 * @param title - the subject that the user wanted.
+	 * @param dateGroup - the List of date that the user wanted.
+	 * @param category - the group where the user wanted to put the task under.
+	 * @param priority - the importance of the task that the user specified.
+	 * @return the todo task that is created.
+	 */
 	private ToDo createToDoType(Type type, String title,
 			List<DateGroup> dateGroup, String category, Priority priority) {
 		ToDo todo = null;
