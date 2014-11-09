@@ -34,7 +34,7 @@ public class ToDoComplete extends ToDoCommand {
 		}
 
 		if (newtodo.isCompleted()) {
-			return new CommandStatus(Status.ERROR);
+			return new CommandStatus(Status.ERROR, EXECUTE_DONE);
 		} else {
 			this.newtodo = isCompleteToDo(this.newtodo);
 		}
