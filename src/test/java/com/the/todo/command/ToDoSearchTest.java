@@ -11,10 +11,12 @@ import com.the.todo.model.ToDo;
 import com.the.todo.model.ToDo.Priority;
 import com.the.todo.storage.InMemoryStore;
 
-/*
+/**
  * THIS IS NOT A STRICT UNIT TEST
  * This test uses InMemoryStore as a storage stub for testing ToDoSearch
  */
+
+//@author A0119764W
 
 public class ToDoSearchTest {
 

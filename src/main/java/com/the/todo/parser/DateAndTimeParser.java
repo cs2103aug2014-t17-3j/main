@@ -43,6 +43,8 @@ import com.joestelmach.natty.DateGroup;
 import com.the.todo.parser.exception.InvalidDateException;
 import com.the.todo.util.StringUtil;
 
+//@author A0111815R
+
 public class DateAndTimeParser {
 
 	private static final DateTimeFormatter YEAR_MONTH_DAY_SLASH = DateTimeFormat
@@ -57,6 +59,14 @@ public class DateAndTimeParser {
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
 			.append(null, DATE_TIME_PARSERS).toFormatter();
 
+	/**
+	 * 
+	 * 
+	 * 
+	 * @param input - String that is entered by the user.
+	 * @return - a list of date that is entered by the user.
+	 * @throws InvalidDateException - invalid date.
+	 */
 	public static List<DateGroup> parse(String input)
 			throws InvalidDateException {
 		if (!checkValidDates(input)) {

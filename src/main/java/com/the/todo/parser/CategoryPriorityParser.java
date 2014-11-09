@@ -34,6 +34,8 @@ import java.util.StringTokenizer;
 
 import com.the.todo.model.ToDo;
 
+//@author A0111780N
+
 public class CategoryPriorityParser {
 
 	private static final String SPACE_DELIM = " ";
@@ -42,6 +44,13 @@ public class CategoryPriorityParser {
 	private static final String LOW = "LOW";
 	private static final String HIGH = "HIGH";
 
+	/**
+	 * This method look for "+" in the input entered by the user and process the data,
+	 * to either category or priority.
+	 * 
+	 * @param input - String entered by the users.
+	 * @return - list of data that is found in the user's input.
+	 */
 	public static List<String> parseAll(String input) {
 		List<String> foundList = new ArrayList<String>();
 		List<String> wantedList = new ArrayList<String>();
@@ -63,6 +72,13 @@ public class CategoryPriorityParser {
 		return wantedList;
 	}
 
+	/**
+	 * The method takes in the resultList from parseAll method and process for any
+	 * category that can be find inside the list.
+	 * 
+	 * @param searchList - result from parseAll method
+	 * @return - category that is found
+	 */
 	public static String parseCategory(List<String> searchList) {
 		String category = null;
 		for(int i = 0; i < searchList.size(); i++) {
@@ -75,6 +91,13 @@ public class CategoryPriorityParser {
 		return category;
 	}
 	
+	/**
+	 * The method takes in the resultList from parseAll method and process for any
+	 * priority that can be find inside the list.
+	 * 
+	 * @param searchList - result from parseAll method
+	 * @return - priority that is found
+	 */
 	public static String parsePriority(List<String> searchList) {
 		String priority = null;
 		for(int i = 0; i < searchList.size(); i++) {
