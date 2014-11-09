@@ -4,6 +4,8 @@ import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
 import com.the.todo.storage.ToDoStore;
 
+//@author A0112969W
+
 public class ToDoIncomplete extends ToDoCommand {
 
 	private static final String EXECUTE_DOES_NOT_EXIST = "ToDo %s does not exist.";
@@ -22,6 +24,13 @@ public class ToDoIncomplete extends ToDoCommand {
 		this.undoable = true;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.the.todo.command.ToDoCommand#performExecute()
+	 * This method will check whether the task exist. If the task does not 
+	 * exist it will send return a error message. It will also check for duplicated commands,
+	 * if the task had been uncompleted and the user entered incomplete command again the method 
+	 * will feedback an error message.
+	 */
 	@Override
 	protected CommandStatus performExecute() {
 		
@@ -43,7 +52,6 @@ public class ToDoIncomplete extends ToDoCommand {
 			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
 		}
 
-		// todoStorage.save(this.todo.getId(), this.todo);
 		return new CommandStatus(Status.SUCCESS, String.format(EXECUTE_SUCCESS,
 				""));
 	}
@@ -57,7 +65,6 @@ public class ToDoIncomplete extends ToDoCommand {
 			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
 		}
 
-		// todoStorage.save(this.todo.getId(), this.todo);
 		return new CommandStatus(Status.SUCCESS, String.format(EXECUTE_SUCCESS,
 				""));
 	}

@@ -30,6 +30,8 @@ package com.the.todo.command;
 
 import java.util.List;
 
+//@author A0111815R
+
 import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
 import com.the.todo.storage.ToDoStore;
@@ -47,6 +49,10 @@ public class ToDoView extends ToDoCommand {
 		this.undoable = false;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.the.todo.command.ToDoCommand#performExecute()
+	 * This method check which type of task that the user wanted to view
+	 */
 	@Override
 	protected CommandStatus performExecute() {
 		todoList.clear();

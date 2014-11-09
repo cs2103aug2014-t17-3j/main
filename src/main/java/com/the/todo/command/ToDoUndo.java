@@ -7,11 +7,13 @@ import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
 import com.the.todo.storage.ToDoStore;
 
+//@author A0111815R
+
 public class ToDoUndo extends ToDoCommand {
 
-	ToDo todo;
-	ToDoStore todoStorage;
-	Stack<ToDoCommand> undoStack;
+	private ToDo todo;
+	private ToDoStore todoStorage;
+	private Stack<ToDoCommand> undoStack;
 
 	private static final String EXECUTE_ERROR_EMPTY = "There is nothing to undo.";
 
@@ -33,7 +35,6 @@ public class ToDoUndo extends ToDoCommand {
 
 	@Override
 	protected CommandStatus performUndo() {
-		// TODO Auto-generatesd method stub
 		return null;
 	}
 

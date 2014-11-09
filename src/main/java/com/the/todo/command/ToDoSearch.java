@@ -11,6 +11,8 @@ import com.the.todo.model.ToDo.Priority;
 import com.the.todo.parser.CategoryPriorityParser;
 import com.the.todo.storage.ToDoStore;
 
+//@author A0119764W
+
 public class ToDoSearch extends ToDoCommand {
 	private static final String MEDIUM = "MEDIUM";
 	private static final String LOW = "LOW";
@@ -31,6 +33,9 @@ public class ToDoSearch extends ToDoCommand {
 		this.undoable = false;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.the.todo.command.ToDoCommand#performExecute()
+	 */
 	@Override
 	protected CommandStatus performExecute() {
 		if (query == null || query.equals("")) {
@@ -77,6 +82,14 @@ public class ToDoSearch extends ToDoCommand {
 		return new CommandStatus(Status.SUCCESS);
 	}
 
+	/**
+	 * 
+	 * 
+	 * 
+	 * @param todos - List of task that is taken from the storage
+	 * @param category - the group that the user is trying to find.
+	 * @return - result of the search
+	 */
 	private List<ToDo> searchByCategory(List<ToDo> todos, String category) {
 		List<ToDo> results = new ArrayList<ToDo>(todos);
 		ListIterator<ToDo> i;
@@ -96,6 +109,14 @@ public class ToDoSearch extends ToDoCommand {
 		return results;
 	}
 
+	/**
+	 * 
+	 * 
+	 * 
+	 * @param todos - List of task that is taken from the storage
+	 * @param query - keyword that is entered by the user to conduct a search.
+	 * @return - result of the search
+	 */
 	private List<ToDo> searchByKeywords(List<ToDo> todos, String query) {
 		List<ToDo> results = new ArrayList<ToDo>(todos);
 		ListIterator<ToDo> i;
@@ -115,6 +136,14 @@ public class ToDoSearch extends ToDoCommand {
 		return results;
 	}
 
+	/**
+	 * 
+	 * 
+	 * 
+	 * @param todos - List of task that is taken from the storage
+	 * @param priority - the importance level of the task that the user wanted to search
+	 * @return - result of the search
+	 */
 	private List<ToDo> searchByPriority(List<ToDo> todos, Priority priority) {
 		List<ToDo> results = new ArrayList<ToDo>(todos);
 		ListIterator<ToDo> i = results.listIterator();
@@ -132,6 +161,11 @@ public class ToDoSearch extends ToDoCommand {
 		return results;
 	}
 
+	/**
+	 * @param data
+	 * @param query
+	 * @return
+	 */
 	private boolean containsAll(String data, String query) {
 		data = data.toLowerCase();
 		query = query.toLowerCase();

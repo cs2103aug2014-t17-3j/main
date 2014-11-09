@@ -44,6 +44,8 @@ import com.the.todo.parser.exception.InvalidDateException;
 import com.the.todo.storage.ToDoStore;
 import com.the.todo.util.StringUtil;
 
+//@author A0111780N
+
 public class ToDoEdit extends ToDoCommand {
 
 	
@@ -73,19 +75,18 @@ public class ToDoEdit extends ToDoCommand {
 		this.undoable = true;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.the.todo.command.ToDoCommand#performExecute()
+	 * This method checks whether the task exist, whether the task is empty and also checks
+	 * if the task is a floating task and the user wanted to edit the start date without a
+	 * end date. It will feedback an error message.
+	 */
 	@Override
 	protected CommandStatus performExecute() {
 
 		String todoTitle = input;
-		String[] todoStrings = input.split(DELIM_SPACE, 2);
 		newtodo = new ToDo(todo);
 		todoStorage.update(newtodo.getId(), newtodo);
-
-		// if (todoStrings.length != 2) {
-		// return new CommandStatus(Status.ERROR, EXECUTE_ILLEGAL_ARGUMENT);
-		// }
-
-		// todoTitle = todoStrings[1];
 
 		if (this.newtodo == null) {
 			return new CommandStatus(Status.ERROR, String.format(
@@ -128,6 +129,15 @@ public class ToDoEdit extends ToDoCommand {
 				""));
 	}
 
+	/**
+	 * This task check for the size of the string before sending the inputs to
+	 * proccessEditData for process.
+	 * 
+	 * @param todo - Task that the user wanted to edit.
+	 * @param input - the details that the users wanted to edit
+	 * @return - the edited task
+	 * @throws Exception - miss arguments.
+	 */
 	private ToDo editToDo(ToDo todo, String input) throws Exception {
 		/* String Tokenizer */
 		List<String> tokenString = new ArrayList<String>();
@@ -163,6 +173,12 @@ public class ToDoEdit extends ToDoCommand {
 		return todo;
 	}
 
+	/**
+	 * @param todo - Task that the user wanted to edit.
+	 * @param splitSubInputArr - array that contains both field type and data that user entered.
+	 * @return - edited task.
+	 * @throws InvalidDateException - invalid date.
+	 */
 	private ToDo proccessEditData(ToDo todo, String[] splitSubInputArr)
 			throws InvalidDateException {
 		String fieldType;
@@ -173,6 +189,11 @@ public class ToDoEdit extends ToDoCommand {
 		return todo;
 	}
 
+	/**
+	 * Change the type of the tas according to the date entered in different fields.
+	 * 
+	 * @param todo - Task that the user wanted to edit.
+	 */
 	private void editTaskType(ToDo todo) {
 		LocalDateTime startDate;
 		LocalDateTime endDate;
@@ -205,6 +226,14 @@ public class ToDoEdit extends ToDoCommand {
 
 	}
 
+	/**
+	 * This method removes the start date or end date according to the command entered
+	 * by the user.
+	 * 
+	 * @param todo - Task that the user wanted to edit.
+	 * @param stringSplit - command taken out from the user's input.
+	 * @return
+	 */
 	private ToDo removeStartAndEndDate(ToDo todo, String stringSplit) {
 		stringSplit = stringSplit.toUpperCase();
 		FieldType fieldType = FieldType.valueOf(stringSplit);
@@ -226,6 +255,17 @@ public class ToDoEdit extends ToDoCommand {
 		return splitSubInputArr;
 	}
 
+	/**
+	 * 
+	 * This method set the data into respective fields according to the keyword entered by the user.
+	 * 
+	 * @param fieldType - type of task
+	 * @param remainingString - remaining input by the user after extracting the necessary information
+	 * 							for different fields
+	 * @param todo - Task that the user wanted to edit.
+	 * @return - edited task.
+	 * @throws InvalidDateException - invalid date.
+	 */
 	private ToDo processFieldType(String fieldType, String remainingString,
 			ToDo todo) throws InvalidDateException {
 		fieldType = fieldType.toUpperCase();

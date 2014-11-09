@@ -45,8 +45,6 @@ import com.the.todo.storage.ToDoStore;
 /**
  * This Class create task that is entered by the user.
  * 
- * @author KaiHsiang	
- *
  */
 public class ToDoAdd extends ToDoCommand {
 
@@ -61,6 +59,7 @@ public class ToDoAdd extends ToDoCommand {
 	private ToDoStore todoStorage;
 	private String input;
 
+	//@author A0111815R
 	public ToDoAdd(ToDoStore todoStorage, String input) {
 		super();
 		this.todoStorage = todoStorage;
@@ -68,11 +67,16 @@ public class ToDoAdd extends ToDoCommand {
 		this.undoable = true;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.the.todo.command.ToDoCommand#performExecute()
+	 * This method will check whether the user had entered the inputs for the program,
+	 * whether the user had entered valid date. It will feedback an error message
+	 * if the above errors are present. 
+	 */
 	@Override
 	protected CommandStatus performExecute() {
 
 		String todoTitle = input;
-		String[] todoStrings = input.split(DELIM_SPACE, 2);
 
 		if (todoTitle.length() == 0) {
 			return new CommandStatus(Status.ERROR, EXECUTE_ILLEGAL_ARGUMENT);
@@ -93,6 +97,7 @@ public class ToDoAdd extends ToDoCommand {
 				todo.getTitle()));
 	}
 
+	//@author A0111815R
 	@Override
 	protected CommandStatus performUndo() {
 		todoStorage.delete(todo);
@@ -100,6 +105,7 @@ public class ToDoAdd extends ToDoCommand {
 				"Task successfully removed: %s", todo.getTitle()));
 	}
 
+	//@author A0111780N
 	/**
 	 * This method process for priority, category and date that is entered by
 	 * the users before passing all the variables to the creatToDoType method.
@@ -141,8 +147,10 @@ public class ToDoAdd extends ToDoCommand {
 		return todo;
 	}
 
+	//@author A0111780N
 	/**
-	 * 
+	 * This method will set the data that is pass in by createToDo method
+	 * and set the data into their respective field
 	 * 
 	 * @param type - type of task that the user wanted.
 	 * @param title - the subject that the user wanted.
@@ -183,6 +191,14 @@ public class ToDoAdd extends ToDoCommand {
 		return todo;
 	}
 
+	//@author A0111815R
+	/**
+	 * This method will determine the different type of task
+	 * according to dates entered by the users.
+	 * 
+	 * @param dateGroup - list of date entered by the user.
+	 * @return the type of task that is entered by the user.
+	 */
 	private Type getToDoType(List<DateGroup> dateGroup) {
 		if (dateGroup.size() == 0) {
 			return Type.FLOATING;

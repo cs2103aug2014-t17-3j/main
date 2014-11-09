@@ -32,6 +32,8 @@ import com.the.todo.command.CommandStatus.Status;
 import com.the.todo.model.ToDo;
 import com.the.todo.storage.ToDoStore;
 
+//@author A0111815R
+
 public class ToDoDelete extends ToDoCommand {
 
 	private static final String EXECUTE_DOES_NOT_EXIST = "ToDo %s does not exist.";
@@ -47,7 +49,12 @@ public class ToDoDelete extends ToDoCommand {
 		this.todo = todo;
 		this.undoable = true;
 	}
-
+	
+	/* (non-Javadoc)
+	 * @see com.the.todo.command.ToDoCommand#performExecute()
+	 * This method will check whether the task exist. If the task does not exist,
+	 * the method will feedback an error message.
+	 */
 	@Override
 	protected CommandStatus performExecute() {
 
