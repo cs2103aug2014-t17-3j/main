@@ -36,9 +36,9 @@ import com.the.todo.storage.ToDoStore;
 
 public class ToDoView extends ToDoCommand {
 
-	ToDoStore todoStorage;
-	List<ToDo> todoList;
-	String input;
+	private ToDoStore todoStorage;
+	private List<ToDo> todoList;
+	private String input;
 
 	public ToDoView(ToDoStore todoStorage, List<ToDo> todoList, String input) {
 		this.todoStorage = todoStorage;

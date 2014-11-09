@@ -52,9 +52,9 @@ public class ToDoAdd extends ToDoCommand {
 	private static final String EXECUTE_ERROR = "An error occured while updating ToDo.";
 	private static final String EXECUTE_SUCCESS = "Successful";
 
-	ToDoStore todoStorage;
-	ToDo todo;
-	String input;
+	private ToDoStore todoStorage;
+	private ToDo todo;
+	private String input;
 
 	public ToDoAdd(ToDoStore todoStorage, String input) {
 		super();

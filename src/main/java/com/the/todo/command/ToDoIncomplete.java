@@ -10,6 +10,7 @@ public class ToDoIncomplete extends ToDoCommand {
 	private static final String EXECUTE_ILLEGAL_ARGUMENT = "Seems like you are missing somethings.";
 	private static final String EXECUTE_ERROR = "An error occured while updating ToDo.";
 	private static final String EXECUTE_SUCCESS = "Successful";
+	private static final String EXECUTE_NOTDONE = "Task had been uncompleted";
 
 	private ToDoStore todoStorage;
 	private ToDo todo;
@@ -34,7 +35,7 @@ public class ToDoIncomplete extends ToDoCommand {
 		}
 
 		if(!newtodo.isCompleted()) {
-			return new CommandStatus(Status.ERROR);
+			return new CommandStatus(Status.ERROR, EXECUTE_NOTDONE);
 		} else {
 			this.newtodo = isIncompleteToDo(this.newtodo);
 		}
