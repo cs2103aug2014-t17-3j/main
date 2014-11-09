@@ -41,16 +41,13 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextBuilder;
-
-import org.joda.time.LocalDateTime;
-import org.joda.time.format.DateTimeFormat;
 
 import com.the.todo.model.ToDo;
 import com.the.todo.model.ToDo.Priority;
 import com.the.todo.model.ToDo.Type;
+
 
 public class ToDoContainer extends AnchorPane {
 
@@ -65,11 +62,12 @@ public class ToDoContainer extends AnchorPane {
 	private Label todoMisc;
 	@FXML 
 	private CheckBox completeChkBox; 
-
+	@FXML 
+	private HBox hbox = new HBox();
 
 
 	private int id; 
-	HBox hbox = new HBox();
+	
 
 	public ToDoContainer() {
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(
@@ -169,25 +167,8 @@ public class ToDoContainer extends AnchorPane {
 		todoDate.getChildren().setAll(displayItems);
 	}
 
-	private Node createTag(String text, String color){
-		Label tag= new Label(text);
-
-		tag.setStyle("-fx-background-color:"+ color+ ";"
-				+ "-fx-background-radius: 1em;"
-				+"-fx-font-size: 0.95em;"
-				+ "-fx-padding: 0 5 0 5 ;"
-				);
-		return tag;
-	}
 
 
-
-
-	private String formatDate(LocalDateTime date){ 
-		//String dateStr = date.toLocalDate().toString(DateTimeFormat.forPattern("dd MMMM yyyy"));
-		String timeStr = date.toLocalTime().toString(DateTimeFormat.forPattern("hh:mm aa"));
-		return "Time: "+ timeStr;
-	}
 
 	private void setCategory(String category) {
 		if (category != null)
@@ -195,14 +176,13 @@ public class ToDoContainer extends AnchorPane {
 	}
 
 	private void setComplete(Boolean isCompleted){
-		if(isCompleted){
-			completeChkBox.setSelected(true);
-		} 
-		else{ 
-			completeChkBox.setSelected(false);
-		}
+		completeChkBox.setSelected(isCompleted);	
 	}
 
+	
+	/**
+	 * Add a label indicating the type of task behind the title.  
+	 */
 	private void setType(){
 		Type type = todo.getType();
 		Node typeTag ;
@@ -220,13 +200,13 @@ public class ToDoContainer extends AnchorPane {
 		todoTitle.setContentDisplay(ContentDisplay.RIGHT);
 		hbox.getChildren().add(typeTag);
 		todoTitle.setGraphic(hbox);
-
 	}
-	private void setPriority(){
-
-	 
-		Priority priority = todo.getPriority();
 	
+	/**
+	 * Add a label indicating the priority of task behind the title.  
+	 */
+	private void setPriority(){	 
+		Priority priority = todo.getPriority();
 
 				//tag design		
 					Node priorityTag; 
@@ -240,7 +220,26 @@ public class ToDoContainer extends AnchorPane {
 					hbox.setSpacing(5);		
 							
 	}
+	
+	/**
+	 * Creates a node object to be used to display priority and type of the todo.  
+	 * @param text
+	 * @param color
+	 * @return A label node with background color of the parameter color and relative text color
+	 *
+	 */
+	private Node createTag(String text, String color){
+		Label tag= new Label(text);
 
+		tag.setStyle("-fx-background-color:"+ color+ ";"
+				+ "-fx-background-radius: 1em;"
+				+"-fx-font-size: 0.95em;"
+				+ "-fx-padding: 0 5 0 5 ;"
+				+ "background:" + color +";"
+				+ "-fx-text-fill: ladder(background, white 49%, black 50%);"
+				);
+		return tag;
+	}
 	/**
 	 * Checks whether a given ToDo object is valid. A ToDo is valid only if its
 	 * ID and Title is not null

@@ -30,6 +30,7 @@ package com.the.todo;
 
 import com.the.todo.Logic.CommandType;
 
+//@author A0112969W
 
 public class ToDoHint {
 
@@ -52,7 +53,7 @@ public class ToDoHint {
 
 	public String getHints(){ 
 
-		CommandType command = determineCommand(string);
+		CommandType command = determineCommand(string.toLowerCase());
 
 		switch (command){
 		case ADD:
@@ -79,16 +80,21 @@ public class ToDoHint {
 		}
 	}
 
-	private CommandType determineCommand(String str){ 
-		if (str.isEmpty())
+	/**
+	 * Determines the CommandType of the string if string is part of the valid Command. 
+	 * @param string
+	 * @return CommandType according to string.
+	 */
+	private CommandType determineCommand(String string){ 
+		if (string.isEmpty())
 			return CommandType.INVALID;
 
 		for (CommandType command : CommandType.values()){ 
-			if (command.toString().toLowerCase().startsWith(str))
+			if (command.toString().toLowerCase().startsWith(string))
 				return command; 
 		}
 
-		return logic.getCommandType(str); 
+		return logic.getCommandType(string); 
 
 	}
 
