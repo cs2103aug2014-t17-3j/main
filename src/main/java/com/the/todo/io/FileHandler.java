@@ -40,15 +40,16 @@ import java.util.Scanner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+//@author A0111815R
 public class FileHandler {
 
 	private final static Charset ENCODING = StandardCharsets.UTF_8;
 	private static final Logger LOG = LogManager.getLogger(FileHandler.class);
 
 	public static String readFile(String fileName) throws IOException {
-		
+
 		LOG.info("Reading contents from file [" + fileName + "].");
-		
+
 		Path path = Paths.get(fileName);
 		StringBuilder stringBuilder = new StringBuilder();
 

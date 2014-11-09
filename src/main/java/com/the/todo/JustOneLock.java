@@ -5,6 +5,8 @@ import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 
+//@author A0111780N
+
 public class JustOneLock {
 	private String appName;
 
