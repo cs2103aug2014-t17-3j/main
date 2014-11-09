@@ -12,3 +12,4 @@ CS2103T Software Engineering
 * Natural Language Date Parser (Natty - https://github.com/joestelmach/natty)
 * Notifications (ControlsFX - https://bitbucket.org/controlsfx/controlsfx)
 * JavaFX Tray Icon (Gist by Jewelsea - https://gist.github.com/jewelsea/e231e89e8d36ef4e5d8a)
+* JKeyMaster (Tulskiy - https://github.com/tulskiy/jkeymaster)
