@@ -134,6 +134,9 @@ public class MainToDoController {
 
 	public void processInput() {
 		String userInput = mainInput.getText();
+		if (userInput == null || userInput.equals("")){
+			return;
+		}
 
 		commandHistory.add(userInput);
 
