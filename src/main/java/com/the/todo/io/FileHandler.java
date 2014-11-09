@@ -37,6 +37,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
+//@author A0111815R
+
 public class FileHandler {
 
 	final static Charset ENCODING = StandardCharsets.UTF_8;
