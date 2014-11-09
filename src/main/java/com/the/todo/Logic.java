@@ -235,7 +235,7 @@ public class Logic {
 		return commandStatus;
 	}
 
-	private CommandType getCommandType(String input) {
+	CommandType getCommandType(String input) {
 
 		if (input.trim().isEmpty()) {
 			return CommandType.INVALID;
