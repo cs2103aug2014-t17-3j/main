@@ -186,6 +186,8 @@ public class MainToDoController {
 			oldVBoxItems.clear();
 			oldVBoxItems.addAll(newDisplayList);
 			
+			break;
+			
 			
 //			switch (appLogic.getDisplayType()) {
 //			case ALL:
