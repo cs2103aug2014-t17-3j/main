@@ -407,8 +407,7 @@ public class MainToDoController {
 	}
 
 	private void scrollToToday() {
-		LocalDate today = new LocalDate();
-		int todayIndex = oldVBoxItems.indexOf(today);
+		int todayIndex = oldVBoxItems.indexOf(DateCategory.TODAY);
 		if (todayIndex == -1) {
 			todayIndex = 0;
 		}
