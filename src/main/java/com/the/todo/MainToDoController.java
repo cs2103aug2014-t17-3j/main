@@ -402,11 +402,8 @@ public class MainToDoController {
 			newCopy.removeAll(oldCopy);
 
 			for (Object item : newCopy) {
-				try {
-					ToDo firstChanged = (ToDo) item;
-					return newList.indexOf(firstChanged);
-				} catch (ClassCastException e) {
-					continue;
+				if (item instanceof ToDo){
+					return newList.indexOf(item);
 				}
 			}
 		}
@@ -462,6 +459,7 @@ public class MainToDoController {
 						mainInput.setText(prevCmd);
 					}
 					mainInput.end();
+					keyevent.consume();
 				}
 			}
 		};
@@ -477,6 +475,7 @@ public class MainToDoController {
 						mainInput.setText("");
 					}
 					mainInput.end();
+					keyevent.consume();
 				}
 			}
 		};
