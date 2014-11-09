@@ -532,7 +532,7 @@ public class MainToDoController {
 			@Override
 			public void changed(ObservableValue<? extends String> ov,
 					String oldStr, String newStr) {
-				ToDoHint hint = new ToDoHint(newStr);
+				ToDoHint hint = new ToDoHint(appLogic,newStr);
 				String str = hint.getHints();
 				hintLabel.setText(str);
 			}

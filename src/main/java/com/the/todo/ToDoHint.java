@@ -28,70 +28,69 @@
 
 package com.the.todo;
 
-import com.the.todo.util.CommandUtil;
+import com.the.todo.Logic.CommandType;
+
 
 public class ToDoHint {
 
 	final String ADD_HINT = "add [Task] from [Start Date] to/on/by [End Date] at [Time] +[Category] +[Priority]";
 	final String SEARCH_HINT = "search [Keyword]/[Category]";
 	final String DELETE_HINT = "delete [ID]";
-	final String EDIT_HINT = "edit [ID] -title [title] -category [Category] -startdate [Start Date] -enddate [End Date] -priority [Priority] ";
+	final String  EDIT_HINT= "edit [ID] -title [title] -category [Category] -startdate [Start Date] -enddate [End Date] -priority [Priority] ";
 	final String VIEW_HINT = "view all/completed/incomplete";
 	final String COMPLETE_HINT = "complete [ID]";
 	final String INCOMPLETE_HINT = "incomplete [ID]";
-	private String string;
+	final String UNDO_HINT = "undo";
+	private String string ;
+	private Logic logic;
 
-	public ToDoHint(String recentlyTypedStr) {
-		this.string = recentlyTypedStr;
+	public ToDoHint( Logic logic, String recentlyTypedStr){ 
+		this.logic = logic;
+		this.string = recentlyTypedStr;		
 
 	}
 
-	public String getHints() {
+	public String getHints(){ 
 
-		switch (determineCommand(string)) {
-		case "add":
-			return ADD_HINT;
-		case "search":
-			return SEARCH_HINT;
-		case "view":
-			return VIEW_HINT;
-		case "delete":
-			return DELETE_HINT;
-		case "edit":
-			return EDIT_HINT;
-		case "complete":
+		CommandType command = determineCommand(string);
+
+		switch (command){
+		case ADD:
+			return ADD_HINT; 
+		case COMPLETE:
 			return COMPLETE_HINT;
-		case "incomplete":
+		case DELETE:
+			return DELETE_HINT;
+		case EDIT:
+			return EDIT_HINT;
+		case INCOMPLETE:
 			return INCOMPLETE_HINT;
+		case INVALID:
+			return "";
+		case SEARCH:
+			return SEARCH_HINT;
+		case UNDO:
+			return UNDO_HINT;
+		case VIEW:
+			return VIEW_HINT;
 		default:
 			return "";
+
 		}
+	}
+
+	private CommandType determineCommand(String str){ 
+		if (str.isEmpty())
+			return CommandType.INVALID;
+
+		for (CommandType command : CommandType.values()){ 
+			if (command.toString().toLowerCase().startsWith(str))
+				return command; 
+		}
+
+		return logic.getCommandType(str); 
 
 	}
 
-	private String determineCommand(String s) {
-		String[] str = { "add", "search", "delete", "edit", "view", "complete",
-				"incomplete" };
-		if (s.isEmpty()) {
-			return "invalid";
-		}
-		if (s.contains(" ")) {// full command expected
-			s = CommandUtil.getFirstPhrase(s);
-			for (int i = 0; i < str.length; i++) {
-				if (str[i].equals(s)) {
-					return str[i];
-				}
-			}
-			return "invalid";
-
-		}
-		for (int i = 0; i < str.length; i++) {
-			if (str[i].startsWith(s)) {
-				return str[i];
-			}
-		}
-
-		return "invalid";
-	}
 
 }
