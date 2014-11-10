@@ -222,7 +222,8 @@ public class ToDoContainer extends AnchorPane {
 	}
 	
 	/**
-	 * Creates a node object to be used to display priority and type of the todo.  
+	 * Creates a node object to be used to display priority and type of the ToDo.
+	 * 
 	 * @param text
 	 * @param color
 	 * @return A label node with background color of the parameter color and relative text color
@@ -242,7 +243,7 @@ public class ToDoContainer extends AnchorPane {
 	}
 	/**
 	 * Checks whether a given ToDo object is valid. A ToDo is valid only if its
-	 * ID and Title is not null
+	 * Title is not null
 	 * 
 	 * @param todo
 	 * @return
@@ -267,6 +268,7 @@ public class ToDoContainer extends AnchorPane {
 		return this.todo;
 	}
 
+//@author A0119764W generated
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

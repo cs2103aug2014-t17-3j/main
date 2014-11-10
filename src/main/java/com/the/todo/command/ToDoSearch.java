@@ -63,6 +63,10 @@ public class ToDoSearch extends ToDoCommand {
 
 	/* (non-Javadoc)
 	 * @see com.the.todo.command.ToDoCommand#performExecute()
+	 * This method performs a search for items that matches the given query
+	 * and updates updateList with the results. query can contain keywords, 
+	 * priority and category.
+	 * 
 	 */
 	@Override
 	protected CommandStatus performExecute() {
@@ -111,8 +115,8 @@ public class ToDoSearch extends ToDoCommand {
 	}
 
 	/**
-	 * 
-	 * 
+	 * This method returns a list of ToDos with the specified category.
+	 * This method works by filtering ToDos that does not belong to a category.
 	 * 
 	 * @param todos - List of task that is taken from the storage
 	 * @param category - the group that the user is trying to find.
@@ -138,8 +142,8 @@ public class ToDoSearch extends ToDoCommand {
 	}
 
 	/**
-	 * 
-	 * 
+	 * This method returns a list of ToDos with title that contains all the keywords specified by query.
+	 * This method works by filtering ToDos with title that does not contain all the keywords in query.
 	 * 
 	 * @param todos - List of task that is taken from the storage
 	 * @param query - keyword that is entered by the user to conduct a search.
@@ -165,12 +169,12 @@ public class ToDoSearch extends ToDoCommand {
 	}
 
 	/**
+	 * This method returns a list of ToDos with the specified priority.
+	 * This method works by filtering ToDos that does not belong to the priority.
 	 * 
-	 * 
-	 * 
-	 * @param todos - List of task that is taken from the storage
-	 * @param priority - the importance level of the task that the user wanted to search
-	 * @return - result of the search
+	 * @param todos - List of task that is taken from the storage.
+	 * @param priority - The importance level of the task that the user wanted to search.
+	 * @return - List of ToDos with the specified priority.
 	 */
 	private List<ToDo> searchByPriority(List<ToDo> todos, Priority priority) {
 		List<ToDo> results = new ArrayList<ToDo>(todos);
@@ -190,9 +194,11 @@ public class ToDoSearch extends ToDoCommand {
 	}
 
 	/**
+	 * This method checks whether a data string contains all keywords specified in query.
+	 * 
 	 * @param data
 	 * @param query
-	 * @return
+	 * @return true if and only if data contains all keywords in query.
 	 */
 	private boolean containsAll(String data, String query) {
 		data = data.toLowerCase();

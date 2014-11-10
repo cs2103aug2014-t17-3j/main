@@ -18,7 +18,7 @@ import com.the.todo.storage.InMemoryStore;
 
 //@author A0119764W
 
-public class ToDoSearchTest {
+public class SearchFunctionTest {
 
 	private ToDo todo0, todo1, todo2, todo3, todo4, todo5;
 	ArrayList<ToDo> updateListStub;

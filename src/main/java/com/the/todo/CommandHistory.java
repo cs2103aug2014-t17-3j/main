@@ -30,6 +30,8 @@ package com.the.todo;
 
 import java.util.ArrayList;
 
+//@author A0119764W
+
 public class CommandHistory {
 	private ArrayList<String> commandHistory;
 	private int i;
@@ -39,11 +41,20 @@ public class CommandHistory {
 		i = -1;
 	}
 
+	/**
+	 * Adds command to the history and resets the position to the most recent command. 
+	 * A call to previous() returns the last command added and a call to next() returns null.
+	 * 
+	 * @param cmd
+	 */
 	public void add(String cmd) {
 		commandHistory.add(0, cmd);
 		i = -1;
 	}
 
+	/**
+	 * @return the next command in the history. Returns null if there are no next history.
+	 */
 	public String previous() {
 		String prev = null;
 
@@ -55,6 +66,9 @@ public class CommandHistory {
 		return prev;
 	}
 
+	/**
+	 * @return the previous command in the history. Returns null if there are no previous history.
+	 */
 	public String next() {
 		String next = null;
 
