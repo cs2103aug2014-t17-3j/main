@@ -1,0 +1,35 @@
+//@author: a0119764wgenerated
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+	 */
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ToDoContainer other = (ToDoContainer) obj;
+		if (todo == null) {
+			if (other.todo != null)
+				return false;
+		} else if (!todo.equals(other.todo))
+			return false;
+		if (todo.isCompleted() != other.todo.isCompleted())
+			return false;
+		return true;
+	}
+
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+
+
+
+
+

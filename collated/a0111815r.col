@@ -1,0 +1,1251 @@
+//@author: a0111815r
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoAdd.java
+	 */
+
+	public ToDoAdd(ToDoStore todoStorage, String input) {
+		super();
+		this.todoStorage = todoStorage;
+		this.input = input;
+		this.undoable = true;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.the.todo.command.ToDoCommand#performExecute()
+	 * This method will check whether the user had entered the inputs for the program,
+	 * whether the user had entered valid date. It will feedback an error message
+	 * if the above errors are present. 
+	 */
+	@Override
+	protected CommandStatus performExecute() {
+
+		String todoTitle = input;
+
+		if (todoTitle.length() == 0) {
+			return new CommandStatus(Status.ERROR, EXECUTE_ILLEGAL_ARGUMENT);
+		}
+
+		try {
+			todo = createToDo(input);
+		} catch (InvalidDateException e) {
+			return new CommandStatus(Status.ERROR, "Invalid date!");
+		}
+
+		if (todo == null) {
+			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
+		}
+
+		todoStorage.save(todo);
+		return new CommandStatus(Status.SUCCESS, String.format(EXECUTE_SUCCESS,
+				todo.getTitle()));
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoAdd.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoAdd.java
+	 */
+
+	@Override
+	protected CommandStatus performUndo() {
+		todoStorage.delete(todo);
+		return new CommandStatus(Status.SUCCESS, String.format(
+				"Task successfully removed: %s", todo.getTitle()));
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoAdd.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoAdd.java
+	 */
+
+	/**
+	 * This method will determine the different type of task
+	 * according to dates entered by the users.
+	 * 
+	 * @param dateGroup - list of date entered by the user.
+	 * @return the type of task that is entered by the user.
+	 */
+	private Type getToDoType(List<DateGroup> dateGroup) {
+		if (dateGroup.size() == 0) {
+			return Type.FLOATING;
+		} else if (dateGroup.get(0).getDates().size() == 1) {
+			return Type.DEADLINE;
+		} else if (dateGroup.get(0).getDates().size() == 2) {
+			return Type.TIMED;
+		}
+
+		return Type.FLOATING;
+	}
+
+	@Override
+	public ToDo getTodo (){
+		return todo;
+	}
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoAdd.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoCommand.java
+	 */
+
+
+public abstract class ToDoCommand {
+
+	protected static final Logger logger = LogManager
+			.getLogger(ToDoCommand.class.getName());
+
+	protected boolean successful = false;
+	protected boolean undoable = false;
+	protected ToDo todo = null;
+
+	public ToDoCommand() {
+
+	}
+
+	public CommandStatus execute() {
+		return performExecute();
+	}
+
+	protected abstract CommandStatus performExecute();
+
+	public CommandStatus undo() {
+		return performUndo();
+	}
+
+	protected abstract CommandStatus performUndo();
+
+	public boolean isUndoable() {
+		return undoable;
+	}
+	public ToDo getTodo (){
+		return null;
+	}
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoCommand.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoDelete.java
+	 */
+
+
+public class ToDoDelete extends ToDoCommand {
+
+	private static final String EXECUTE_DOES_NOT_EXIST = "ToDo %s does not exist.";
+	private static final String EXECUTE_ILLEGAL_ARGUMENT = "Seems like you are missing somethings.";
+	private static final String EXECUTE_ERROR = "An error occured while updating ToDo.";
+	private static final String EXECUTE_SUCCESS = "Successful";
+
+	private ToDoStore todoStorage;
+
+	public ToDoDelete(ToDoStore todoStorage, ToDo todo) {
+		super();
+		this.todoStorage = todoStorage;
+		this.todo = todo;
+		this.undoable = true;
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.the.todo.command.ToDoCommand#performExecute()
+	 * This method will check whether the task exist. If the task does not exist,
+	 * the method will feedback an error message.
+	 */
+	@Override
+	protected CommandStatus performExecute() {
+
+		if (todo == null) {
+			return new CommandStatus(Status.ERROR, String.format(
+					EXECUTE_DOES_NOT_EXIST, ""));
+		}
+
+		todoStorage.delete(todo);
+		return new CommandStatus(Status.SUCCESS, String.format(EXECUTE_SUCCESS,
+				todo.getTitle()));
+	}
+
+	@Override
+	protected CommandStatus performUndo() {
+		todoStorage.save(todo);
+		return new CommandStatus(Status.SUCCESS, String.format(
+				"ToDo successfully restored: %s", todo.getTitle()));
+	}
+	
+	public ToDo getTodo (){
+		return todo;
+	}
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoDelete.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoUndo.java
+	 */
+
+
+public class ToDoUndo extends ToDoCommand {
+
+	private ToDoStore todoStorage;
+	private Stack<ToDoCommand> undoStack;
+
+	private static final String EXECUTE_ERROR_EMPTY = "There is nothing to undo.";
+
+	public ToDoUndo(ToDoStore todoStorage, Stack<ToDoCommand> undoStack) {
+		this.todoStorage = todoStorage;
+		this.undoStack = undoStack;
+	}
+
+	@Override
+	protected CommandStatus performExecute() {
+		try {
+			ToDoCommand lastCommand = undoStack.peek();
+			todo = lastCommand.getTodo();
+			CommandStatus status = lastCommand.undo();
+			undoStack.pop();
+			return status;
+		} catch (EmptyStackException ex) {
+			return new CommandStatus(Status.ERROR, EXECUTE_ERROR_EMPTY);
+		}
+	}
+
+	@Override
+	protected CommandStatus performUndo() {
+		return null;
+	}
+
+	@Override
+	public ToDo getTodo (){
+		return todo;
+	}
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoUndo.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoView.java
+	 */
+
+
+import com.the.todo.command.CommandStatus.Status;
+import com.the.todo.model.ToDo;
+import com.the.todo.storage.ToDoStore;
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoView.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoView.java
+	 */
+
+
+public class ToDoView extends ToDoCommand {
+
+	private ToDoStore todoStorage;
+	private List<ToDo> todoList;
+	private String input;
+
+	public ToDoView(ToDoStore todoStorage, List<ToDo> todoList, String input) {
+		this.todoStorage = todoStorage;
+		this.todoList = todoList;
+		this.input = input.toLowerCase();
+		this.undoable = false;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.the.todo.command.ToDoCommand#performExecute()
+	 * This method check which type of task that the user wanted to view
+	 */
+	@Override
+	protected CommandStatus performExecute() {
+		todoList.clear();
+		
+		if (input.isEmpty() || input.equals("all")) {
+			for (ToDo todo : todoStorage.getAll()) {
+				todoList.add(new ToDo(todo));
+			}
+		} else if (input.equals("completed") || input.equals("c") || input.equals("done")) {
+			for (ToDo todo : todoStorage.getAllCompleted()) {
+				todoList.add(new ToDo(todo));
+			}
+		} else if (input.equals("incomplete")) {
+			for (ToDo todo : todoStorage.getAllUncompleted()) {
+				todoList.add(new ToDo(todo));
+			}
+		} else {
+			return new CommandStatus(Status.ERROR, "Invalid Command!");
+		}
+		
+		return new CommandStatus(Status.SUCCESS, "");
+	}
+
+	@Override
+	protected CommandStatus performUndo() {
+		return null;
+	}
+
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoView.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\io\FileHandler.java
+	 */
+
+public class FileHandler {
+
+	private final static Charset ENCODING = StandardCharsets.UTF_8;
+	private static final Logger LOG = LogManager.getLogger(FileHandler.class);
+
+	public static String readFile(String fileName) throws IOException {
+
+		LOG.info("Reading contents from file [" + fileName + "].");
+
+		Path path = Paths.get(fileName);
+		StringBuilder stringBuilder = new StringBuilder();
+
+		try (Scanner scanner = new Scanner(path, ENCODING.name())) {
+			while (scanner.hasNextLine()) {
+				stringBuilder.append(scanner.nextLine());
+			}
+		}
+
+		return stringBuilder.toString();
+	}
+
+	public static void writeFile(String fileName, String contents)
+			throws IOException {
+		Path path = Paths.get(fileName);
+		try (BufferedWriter writer = Files.newBufferedWriter(path, ENCODING)) {
+			writer.write(contents);
+		}
+	}
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\io\FileHandler.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+	 */
+
+	private void generateAllReminders() {
+		LocalDateTime currentDateTime = new LocalDateTime();
+		LocalDateTime tomorrowDateTime = new LocalDateTime().plusDays(1);
+
+		for (ToDo todo : appLogic.getTodoStorage().getAll()) {
+			if (todo.isDeadlineToDo()) {
+				if (todo.getEndDate().isBefore(tomorrowDateTime)
+						&& todo.getEndDate().isAfter(currentDateTime)) {
+					new ReminderTask(todo, currentDateTime);
+				}
+			}
+		}
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\model\ToDo.java
+	 */
+
+
+public class ToDo implements Comparable<ToDo> {
+
+	public static enum Type {
+		FLOATING, DEADLINE, TIMED
+	};
+
+	public static enum Priority {
+		HIGH, MEDIUM, LOW
+	};
+
+	public static final LocalDateTime INVALID_DATE = new LocalDateTime(
+			"292278993-12-31T23:59:59.999");
+
+	private UUID id;
+	private Type type;
+	private String title;
+	private String description;
+	private String category;
+	private LocalDateTime startDate = INVALID_DATE;
+	private LocalDateTime endDate = INVALID_DATE;
+	private Priority priority;
+	private boolean completed = false;
+	private boolean deleted = false;
+
+	public ToDo() {
+		this("");
+	}
+
+	public ToDo(String title) {
+		this.type = Type.FLOATING;
+		this.id = UUID.randomUUID();
+		this.title = title;
+		this.priority = Priority.LOW;
+	}
+
+	public ToDo(String title, LocalDateTime endDate) {
+		this(title);
+		this.type = Type.DEADLINE;
+		this.endDate = endDate;
+		this.priority = Priority.LOW;
+	}
+
+	public ToDo(String title, LocalDateTime startDate, LocalDateTime endDate) {
+		this(title);
+		this.type = Type.TIMED;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.priority = Priority.LOW;
+	}
+
+	public ToDo(ToDo oldToDo) {
+		this.id = oldToDo.getId();
+		this.type = oldToDo.getType();
+		this.title = oldToDo.getTitle();
+		this.category = oldToDo.getCategory();
+		this.startDate = oldToDo.getStartDate();
+		this.endDate = oldToDo.getEndDate();
+		this.priority = oldToDo.getPriority();
+		this.completed = oldToDo.isCompleted();
+		this.deleted = oldToDo.isDeleted();
+	}
+
+	public UUID getId() {
+		return id;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public void setFloatingToDo() {
+		this.type = Type.FLOATING;
+	}
+
+	public void setDeadlineToDo() {
+		this.type = Type.DEADLINE;
+	}
+
+	public void setTimedToDo() {
+		this.type = Type.TIMED;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	public LocalDateTime getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(LocalDateTime startDate) {
+		this.startDate = startDate;
+	}
+
+	public void removeStartDate() {
+		this.startDate = INVALID_DATE;
+	}
+
+	public LocalDateTime getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(LocalDateTime endDate) {
+		this.endDate = endDate;
+	}
+
+	public void removeEndDate() {
+		this.endDate = INVALID_DATE;
+	}
+
+	public Priority getPriority() {
+		return priority;
+	}
+
+	public void setPriority(Priority prioritySetByUser) {
+		priority = prioritySetByUser;
+	}
+
+	public boolean isCompleted() {
+		return completed;
+	}
+
+	public void setCompleted(boolean completed) {
+		this.completed = completed;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public boolean isFloatingToDo() {
+		if (this.type.equals(Type.FLOATING)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public boolean isTimedToDo() {
+		if (this.type.equals(Type.TIMED)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public boolean isDeadlineToDo() {
+		if (this.type.equals(Type.DEADLINE)) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		return "ToDo [title=" + title + ", category=" + category
+				+ ", startDate=" + startDate + ", endDate=" + endDate
+				+ ", completed=" + completed + ", deleted=" + deleted + "]";
+	}
+
+	@Override
+	public int compareTo(ToDo todo) {
+
+		if (todo == null) {
+			throw new IllegalArgumentException();
+		}
+
+		LocalDateTime currentTaskDate = getDateToCompare(this);
+		LocalDateTime inputTaskDate = getDateToCompare(todo);
+
+		boolean isSameDateAndTime = currentTaskDate.compareTo(inputTaskDate) == 0;
+		boolean isSameType = this.getType().compareTo(todo.getType()) == 0;
+		boolean isSamePriority = this.getPriority().compareTo(todo.getPriority()) == 0;
+		
+		if (isSamePriority) {
+			if (isSameDateAndTime) {
+				if (isSameType) {
+					return this.getTitle().compareToIgnoreCase(todo.getTitle());
+				} else {
+					if (this.getType() == Type.FLOATING) {
+						return -1;
+					} else if (todo.getType() == Type.FLOATING) {
+						return 1;
+					} else {
+						return this.getType().compareTo(todo.getType());
+					}
+				}
+			} else {
+				return currentTaskDate.compareTo(inputTaskDate);
+			}
+		} else {
+			return this.getPriority().compareTo(todo.getPriority());
+		}
+
+	}
+
+	private LocalDateTime getDateToCompare(ToDo todo) {
+		if (todo.isFloatingToDo()) {
+			return ToDo.INVALID_DATE;
+		}
+
+		if (todo.isDeadlineToDo()) {
+			return todo.getEndDate();
+		} else {
+			return todo.getStartDate();
+		}
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ToDo other = (ToDo) obj;
+		if (category == null) {
+			if (other.category != null)
+				return false;
+		} else if (!category.equals(other.category))
+			return false;
+		if (completed != other.completed)
+			return false;
+		if (deleted != other.deleted)
+			return false;
+		if (endDate == null) {
+			if (other.endDate != null)
+				return false;
+		} else if (!endDate.equals(other.endDate))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (priority != other.priority)
+			return false;
+		if (startDate == null) {
+			if (other.startDate != null)
+				return false;
+		} else if (!startDate.equals(other.startDate))
+			return false;
+		if (title == null) {
+			if (other.title != null)
+				return false;
+		} else if (!title.equals(other.title))
+			return false;
+		if (type != other.type)
+			return false;
+		return true;
+	}
+
+}
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\model\ToDo.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\parser\DateAndTimeParser.java
+	 */
+
+
+public class DateAndTimeParser {
+
+	private static final DateTimeFormatter YEAR_MONTH_DAY_SLASH = DateTimeFormat
+			.forPattern("yyyy/MM/dd");
+	private static final DateTimeFormatter DAY_MONTH_YEAR_SLASH = DateTimeFormat
+			.forPattern("dd/MM/yyyy");
+	private static final DateTimeFormatter DAY_MONTH_YEAR_DASH = DateTimeFormat
+			.forPattern("dd-MM-yyyy");
+
+	private static final DateTimeParser[] DATE_TIME_PARSERS = {
+			DAY_MONTH_YEAR_SLASH.getParser(), DAY_MONTH_YEAR_DASH.getParser() };
+	private static final DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
+			.append(null, DATE_TIME_PARSERS).toFormatter();
+
+	/**
+	 * 
+	 * 
+	 * 
+	 * @param input - String that is entered by the user.
+	 * @return - a list of date that is entered by the user.
+	 * @throws InvalidDateException - invalid date.
+	 */
+	public static List<DateGroup> parse(String input)
+			throws InvalidDateException {
+		if (!checkValidDates(input)) {
+			throw new InvalidDateException();
+		}
+
+		String formattedInput = changeDateStringsFormat(input);
+		formattedInput = removeAllIntegers(formattedInput);
+		formattedInput = formattedInput.replaceAll("([A-Za-z]+\\d+)", "");
+
+		NattyParserWrapper prettyTime = NattyParserWrapper.getInstance();
+
+		List<DateGroup> groups = prettyTime.parseDateOnly(formattedInput);
+		List<DateGroup> newGroups = new ArrayList<DateGroup>();
+		for (DateGroup group : groups) {
+			String matchingValue = group.getText();
+			String regex = ".*\\b" + matchingValue + "\\b.*"; // TODO: Not sure this is useful (KIV).
+
+			if (formattedInput.matches(regex)) {
+				newGroups.add(group);
+			}
+		}
+
+		return newGroups;
+	}
+
+	private static String removeAllIntegers(String input) {
+		String output = input;
+		String[] tokens = StringUtil.splitString(input, " ");
+
+		for (String token : tokens) {
+			try {
+				Integer.parseInt(token);
+				output = output.replaceFirst(token, "");
+			} catch (NumberFormatException ex) {
+			}
+		}
+
+		return output;
+	}
+
+	public static boolean checkValidDates(String input) {
+		boolean isValid = true;
+		Pattern pattern = Pattern
+				.compile("(?:\\d*)?\\d+[/-](?:\\d*)?\\d+[/-](?:\\d*)?\\d+");
+		Matcher matcher = pattern.matcher(input);
+
+		while (matcher.find()) {
+			String matchedDate = matcher.group();
+			try {
+				LocalDate.parse(matchedDate, DATE_TIME_FORMATTER);
+			} catch (Exception e) {
+				isValid = false;
+				break;
+			}
+		}
+
+		return isValid;
+	}
+
+	public static String changeDateStringsFormat(String input) {
+		String formattedInput = input;
+		Pattern pattern = Pattern
+				.compile("(?:(?:31(\\/|-|\\.)(?:0?[13578]|1[02]))\\1|(?:(?:29|30)(\\/|-|\\.)(?:0?[1,3-9]|1[0-2])\\2))(?:(?:1[6-9]|[2-9]\\d)?\\d{2})|\\b(?:29(\\/|-|\\.)0?2\\3(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))|\\b(?:0?[1-9]|1\\d|2[0-8])(\\/|-|\\.)(?:(?:0?[1-9])|(?:1[0-2]))\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})");
+		Matcher matcher = pattern.matcher(input);
+
+		while (matcher.find()) {
+			String matchedDate = matcher.group();
+			LocalDate date = LocalDate.parse(matchedDate, DAY_MONTH_YEAR_SLASH);
+			formattedInput = formattedInput.replace(matchedDate,
+					date.toString(YEAR_MONTH_DAY_SLASH));
+			System.out.println(formattedInput);
+		}
+
+		return formattedInput;
+	}
+
+}
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\parser\DateAndTimeParser.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\parser\exception\InvalidDateException.java
+	 */
+
+
+public class InvalidDateException extends Exception {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1366859418269617412L;
+
+	public InvalidDateException() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public InvalidDateException(String message) {
+		super(message);
+		// TODO Auto-generated constructor stub
+	}
+
+	public InvalidDateException(Throwable cause) {
+		super(cause);
+		// TODO Auto-generated constructor stub
+	}
+
+	public InvalidDateException(String message, Throwable cause) {
+		super(message, cause);
+		// TODO Auto-generated constructor stub
+	}
+
+	public InvalidDateException(String message, Throwable cause,
+			boolean enableSuppression, boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
+		// TODO Auto-generated constructor stub
+	}
+
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\parser\exception\InvalidDateException.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\parser\NattyParserWrapper.java
+	 */
+
+
+public class NattyParserWrapper {
+
+	private static final String INITIALIZE_MESSAGE = "Initialize PrettyTime Parser";
+
+	private static NattyParserWrapper nattyParserWrapper = null;
+	private static Parser nattyParser = null;
+
+	private NattyParserWrapper() {
+		nattyParser = new Parser(TimeZone.getDefault());
+	}
+
+	public static NattyParserWrapper getInstance() {
+		if (nattyParserWrapper == null) {
+			nattyParserWrapper = new NattyParserWrapper();
+			nattyParser.parse(INITIALIZE_MESSAGE);
+		}
+
+		return nattyParserWrapper;
+	}
+
+	public List<DateGroup> parseDateOnly(String date) {
+		CalendarSource.setBaseDate(new LocalDateTime().withTime(23, 59, 00, 00)
+				.toDate());
+		return nattyParser.parse(date);
+	}
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\parser\NattyParserWrapper.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\storage\InMemoryStore.java
+	 */
+
+
+public class InMemoryStore implements ToDoStore {
+
+	private List<ToDo> store;
+
+	public InMemoryStore() {
+		this.store = new ArrayList<ToDo>();
+	}
+
+	@Override
+	public List<ToDo> getAll() {
+		return store;
+	}
+
+	@Override
+	public List<ToDo> getAllCompleted() {
+		List<ToDo> completeToDo = new ArrayList<ToDo>();
+
+		for (int i = 0; i < store.size(); i++) {
+			if (store.get(i).isCompleted()) {
+				completeToDo.add(store.get(i));
+			}
+		}
+		return completeToDo;
+	}
+
+	@Override
+	public List<ToDo> getAllUncompleted() {
+		List<ToDo> inCompleteToDo = new ArrayList<ToDo>();
+
+		for (int i = 0; i < store.size(); i++) {
+			if (!store.get(i).isCompleted()) {
+				inCompleteToDo.add(store.get(i));
+			}
+		}
+		return inCompleteToDo;
+	}
+
+	@Override
+	public ToDo get(ToDo todo) {
+		int index = store.indexOf(todo);
+		return store.get(index);
+	}
+
+	@Override
+	public ToDo save(ToDo todo) {
+		store.add(todo);
+		return todo;
+	}
+
+	@Override
+	public ToDo update(UUID id, ToDo todo) {
+		int index = Integer.MAX_VALUE;
+
+		for (int i = 0; i < store.size(); i++) {
+			if (store.get(i).getId().equals(id)) {
+				index = i;
+				break;
+			}
+		}
+
+		if (index != Integer.MAX_VALUE) {
+			store.remove(index);
+			store.add(todo);
+			return todo;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public void delete(ToDo todo) {
+		store.remove(todo);
+	}
+
+	@Override
+	public int count() {
+		return store.size();
+	}
+
+	@Override
+	public void saveToFile() {
+	}
+
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\storage\InMemoryStore.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\storage\JsonFileStore.java
+	 */
+
+
+public class JsonFileStore implements ToDoStore {
+
+	private Gson gson;
+	private List<ToDo> store;
+	private final String fileName;
+
+	public JsonFileStore() {
+		this.store = new ArrayList<ToDo>();
+		this.fileName = null;
+	}
+
+	public JsonFileStore(String fileName) {
+		this.fileName = fileName;
+		this.gson = Converters.registerLocalDateTime(new GsonBuilder())
+				.serializeNulls().setPrettyPrinting().create();
+		this.store = readFromFile();
+	}
+
+	@Override
+	public List<ToDo> getAll() {
+		return store;
+	}
+
+	@Override
+	public List<ToDo> getAllCompleted() {
+		List<ToDo> completeToDo = new ArrayList<ToDo>();
+
+		for (int i = 0; i < store.size(); i++) {
+			if (store.get(i).isCompleted()) {
+				completeToDo.add(store.get(i));
+			}
+		}
+		return completeToDo;
+	}
+
+	@Override
+	public List<ToDo> getAllUncompleted() {
+		List<ToDo> inCompleteToDo = new ArrayList<ToDo>();
+
+		for (int i = 0; i < store.size(); i++) {
+			if (!store.get(i).isCompleted()) {
+				inCompleteToDo.add(store.get(i));
+			}
+		}
+		return inCompleteToDo;
+	}
+
+	@Override
+	public ToDo get(ToDo todo) {
+		int index = store.indexOf(todo);
+		return store.get(index);
+	}
+
+	@Override
+	public ToDo save(ToDo todo) {
+		store.add(todo);
+		return todo;
+	}
+
+	@Override
+	public ToDo update(UUID id, ToDo todo) {
+		int index = Integer.MAX_VALUE;
+
+		for (int i = 0; i < store.size(); i++) {
+			if (store.get(i).getId().equals(id)) {
+				index = i;
+				break;
+			}
+		}
+
+		if (index != Integer.MAX_VALUE) {
+			store.remove(index);
+			store.add(todo);
+			return todo;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public void delete(ToDo todo) {
+		store.remove(todo);
+	}
+
+	@Override
+	public int count() {
+		return store.size();
+	}
+
+	private List<ToDo> readFromFile() {
+		String contents = null;
+		try {
+			contents = FileHandler.readFile(this.fileName);
+		} catch (IOException ex) {
+			System.out.println(ex.getMessage());
+		}
+
+		if (contents.isEmpty()) {
+			return new ArrayList<ToDo>();
+		}
+
+		Type collectionType = new TypeToken<List<ToDo>>() {
+		}.getType();
+		List<ToDo> todos = gson.fromJson(contents, collectionType);
+
+		return todos;
+	}
+
+	@Override
+	public void saveToFile() {
+		try {
+			FileHandler.writeFile(this.fileName, gson.toJson(this.store));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\storage\JsonFileStore.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\storage\ToDoStore.java
+	 */
+
+
+public interface ToDoStore {
+
+	public List<ToDo> getAll();
+	
+	public List<ToDo> getAllCompleted();
+	
+	public List<ToDo> getAllUncompleted();
+
+	public ToDo get(ToDo todo);
+
+	public ToDo save(ToDo todo);
+	
+	public ToDo update(UUID id, ToDo todo);
+
+	public void delete(ToDo todo);
+
+	public int count();
+	
+	public void saveToFile();
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\storage\ToDoStore.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\test\java\com\the\todo\model\ToDoTest.java
+	 */
+
+
+public class ToDoTest {
+	
+	private ToDo todo;
+
+	@Test
+	public void testFloatingTask() {
+		todo = new ToDo("Test Floating Task!");
+		
+		assertTrue(todo.isFloatingToDo());
+		assertEquals("Test Floating Task!", todo.getTitle());
+	}
+	
+	@Test
+	public void testDeadlineTask() {
+		todo = new ToDo("Test Deadline Task!", new LocalDateTime());
+		
+		assertTrue(todo.isDeadlineToDo());
+		assertEquals("Test Deadline Task!", todo.getTitle());
+	}
+	
+	@Test
+	public void testTimedTask() {
+		todo = new ToDo("Test Timed Task!", new LocalDateTime(), new LocalDateTime().plusDays(3));
+		
+		assertTrue(todo.isTimedToDo());
+		assertEquals("Test Timed Task!", todo.getTitle());
+	}
+
+
+}
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\test\java\com\the\todo\model\ToDoTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\test\java\com\the\todo\storage\InMemoryStoreTest.java
+	 */
+
+
+public class InMemoryStoreTest {
+
+	ToDo todo1;
+	ToDo todo2;
+	private ToDoStore emptyStore;
+	private ToDoStore populatedStore;
+
+	@Before
+	public void setUp() throws Exception {
+		todo1 = new ToDo("remember the milk");
+		todo2 = new ToDo("do IVLE quiz!");
+		todo2.setCompleted(true);
+		emptyStore = new InMemoryStore();
+		populatedStore = new InMemoryStore();
+		todo1 = populatedStore.save(todo1);
+		todo2 = populatedStore.save(todo2);
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		emptyStore = null;
+		populatedStore = null;
+	}
+
+	@Test
+	public void testGetAll() {
+		assertTrue(emptyStore.getAll().isEmpty());
+		Collection<ToDo> todos = populatedStore.getAll();
+		assertTrue(todos.contains(todo1));
+		assertTrue(todos.contains(todo2));
+	}
+
+	@Test
+	public void testGet() {
+		assertEquals(todo1, populatedStore.get(todo1));
+		assertEquals(todo2, populatedStore.get(todo2));
+	}
+
+	@Test
+	public void testSave() {
+		ToDo todo = new ToDo("Simple test");
+		todo = emptyStore.save(todo);
+		assertEquals(todo, emptyStore.get(todo));
+	}
+
+	// @Test
+	// public void testUpdate() {
+	// ToDo todo;
+	// todo = populatedStore.get(todo1);
+	// todo.setCompleted(true);
+	// populatedStore.update(todo, todo);
+	// todo = populatedStore.get(todo);
+	// assertEquals("remember the milk", todo.getTitle());
+	// assertTrue(todo.isCompleted());
+	// }
+
+	@Test
+	public void testDelete() {
+		populatedStore.delete(todo1);
+		assertEquals(1, populatedStore.count());
+	}
+
+	@Test
+	public void testCount() {
+		assertEquals(0, emptyStore.count());
+		assertEquals(2, populatedStore.count());
+	}
+
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\test\java\com\the\todo\storage\InMemoryStoreTest.java
+
+
+
+
+

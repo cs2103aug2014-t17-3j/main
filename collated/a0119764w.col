@@ -1,0 +1,891 @@
+//@author: a0119764w
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\MainToDo.java
+	 */
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" styleClass="unDecorated" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.the.todo.MainToDoController">
+   <top>
+      <AnchorPane id="appTitlePane" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER_LEFT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <Pane id="appTitleIcon" fx:id="appTitleIcon" />
+                  <Label id="appTitle" text="THETODO" />
+               </children>
+            </HBox>
+            <Button id="minimizeButton" fx:id="minimizeButton" mnemonicParsing="false" onAction="#minimizeWindow" text="Button" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+         </children>
+      </AnchorPane>
+   </top>
+   <bottom>
+      <VBox BorderPane.alignment="CENTER">
+         <children>
+            <TextField id="mainInput" fx:id="mainInput" onAction="#processInput" promptText="Enter your command here" />
+            <Label id="hintLabel" fx:id="hintLabel" />
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </VBox>
+   </bottom>
+   <center>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="unDecorated" BorderPane.alignment="CENTER">
+         <children>
+            <ScrollPane id="mainScrollpane" fx:id="mainScrollpane" pannable="true" styleClass="unDecorated" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <content>
+                  <VBox fx:id="mainVBox" />
+               </content>
+            </ScrollPane>
+            <FlowPane alignment="CENTER" columnHalignment="CENTER" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+               <children>
+                  <Label id="promptLabel" fx:id="promptLabel" />
+               </children>
+            </FlowPane>
+         </children>
+      </AnchorPane>
+   </center>
+</BorderPane>
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\MainToDo.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoSearch.java
+	 */
+
+
+public class ToDoSearch extends ToDoCommand {
+	private static final String MEDIUM = "MEDIUM";
+	private static final String LOW = "LOW";
+	private static final String HIGH = "HIGH";
+
+	private static final String EXECUTE_ILLEGAL_ARGUMENT = "Please enter a valid input.";
+
+	private ToDoStore todoStorage;
+	private String query;
+	private List<ToDo> updateList;
+
+	public ToDoSearch(ToDoStore todoStorage, List<ToDo> updateList, String query) {
+		super();
+		this.todoStorage = todoStorage;
+		this.updateList = updateList;
+		this.query = query;
+
+		this.undoable = false;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.the.todo.command.ToDoCommand#performExecute()
+	 * This method performs a search for items that matches the given query
+	 * and updates updateList with the results. query can contain keywords, 
+	 * priority and category.
+	 * 
+	 */
+	@Override
+	protected CommandStatus performExecute() {
+		if (query == null || query.equals("")) {
+			return new CommandStatus(Status.ERROR, EXECUTE_ILLEGAL_ARGUMENT);
+		}
+
+		ArrayList<ToDo> allToDos = (ArrayList<ToDo>) todoStorage.getAll();
+		List<ToDo> interimResults, finalResults;
+		List<String> foundList = CategoryPriorityParser.parseAll(query);
+		String keywords = null;
+		String categoryFound = null;
+		String priorityFound = null;
+		String originalPriorityInString = null;
+		Priority priority = null;
+
+		for (int i = 0; i < foundList.size(); i++) {
+			if (foundList.get(i).toUpperCase().equals(HIGH)
+					|| foundList.get(i).toUpperCase().equals(LOW)
+					|| foundList.get(i).toUpperCase().equals(MEDIUM)) {
+				originalPriorityInString = foundList.get(i);
+				priorityFound = originalPriorityInString.toUpperCase();
+				priority = ToDo.Priority.valueOf(priorityFound);
+				originalPriorityInString = "+" + originalPriorityInString;
+			} else {
+				categoryFound = "+" + foundList.get(i);
+			}
+		}
+
+		keywords = CategoryPriorityParser.removeStringFromTitle(query,
+				categoryFound);
+		keywords = CategoryPriorityParser.removeStringFromTitle(keywords,
+				originalPriorityInString);
+		keywords = keywords.trim();
+
+		interimResults = searchByCategory(allToDos, categoryFound);
+		interimResults = searchByPriority(interimResults, priority);
+		finalResults = searchByKeywords(interimResults, keywords);
+
+		updateList.clear();
+		for (ToDo todo : finalResults) {
+			updateList.add(todo);
+		}
+
+		return new CommandStatus(Status.SUCCESS);
+	}
+
+	/**
+	 * This method returns a list of ToDos with the specified category.
+	 * This method works by filtering ToDos that does not belong to a category.
+	 * 
+	 * @param todos - List of task that is taken from the storage
+	 * @param category - the group that the user is trying to find.
+	 * @return - result of the search
+	 */
+	private List<ToDo> searchByCategory(List<ToDo> todos, String category) {
+		List<ToDo> results = new ArrayList<ToDo>(todos);
+		ListIterator<ToDo> i;
+
+		if (category != null) {
+			i = results.listIterator();
+			while (i.hasNext()) {
+				ToDo next = i.next();
+				String nextCategory = next.getCategory();
+				if (nextCategory == null
+						|| !nextCategory.equalsIgnoreCase(category)) {
+					i.remove();
+				}
+			}
+		}
+		
+		return results;
+	}
+
+	/**
+	 * This method returns a list of ToDos with title that contains all the keywords specified by query.
+	 * This method works by filtering ToDos with title that does not contain all the keywords in query.
+	 * 
+	 * @param todos - List of task that is taken from the storage
+	 * @param query - keyword that is entered by the user to conduct a search.
+	 * @return - result of the search
+	 */
+	private List<ToDo> searchByKeywords(List<ToDo> todos, String query) {
+		List<ToDo> results = new ArrayList<ToDo>(todos);
+		ListIterator<ToDo> i;
+
+		if (query == null || query.equals("")) {
+			return results;
+		}
+
+		i = results.listIterator();
+		while (i.hasNext()) {
+			ToDo nextToDo = i.next();
+			if (!containsAll(nextToDo.getTitle(), query)) {
+				i.remove();
+			}
+		}
+
+		return results;
+	}
+
+	/**
+	 * This method returns a list of ToDos with the specified priority.
+	 * This method works by filtering ToDos that does not belong to the priority.
+	 * 
+	 * @param todos - List of task that is taken from the storage.
+	 * @param priority - The importance level of the task that the user wanted to search.
+	 * @return - List of ToDos with the specified priority.
+	 */
+	private List<ToDo> searchByPriority(List<ToDo> todos, Priority priority) {
+		List<ToDo> results = new ArrayList<ToDo>(todos);
+		ListIterator<ToDo> i = results.listIterator();
+
+		if (priority != null) {
+			while (i.hasNext()) {
+				ToDo next = i.next();
+				Priority nextPriority = next.getPriority();
+				if (nextPriority == null || !nextPriority.equals(priority)) {
+					i.remove();
+				}
+			}
+		}
+
+		return results;
+	}
+
+	/**
+	 * This method checks whether a data string contains all keywords specified in query.
+	 * 
+	 * @param data
+	 * @param query
+	 * @return true if and only if data contains all keywords in query.
+	 */
+	private boolean containsAll(String data, String query) {
+		data = data.toLowerCase();
+		query = query.toLowerCase();
+		
+		String[] tokenizedData = data.split("\\s+");
+		String[] tokenizedQuery = query.split("\\s+");
+		List<String> tokenizedQueryList = new ArrayList<String>(
+				Arrays.asList(tokenizedQuery));
+
+		tokenizedQueryList.removeAll(Arrays.asList(tokenizedData));
+		if (tokenizedQueryList.size() == 0) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	protected CommandStatus performUndo() {
+		return null;
+	}
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoSearch.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\CommandHistory.java
+	 */
+
+
+public class CommandHistory {
+	private ArrayList<String> commandHistory;
+	private int i;
+
+	public CommandHistory() {
+		commandHistory = new ArrayList<String>();
+		i = -1;
+	}
+
+	/**
+	 * Adds command to the history and resets the position to the most recent command. 
+	 * A call to previous() returns the last command added and a call to next() returns null.
+	 * 
+	 * @param cmd
+	 */
+	public void add(String cmd) {
+		commandHistory.add(0, cmd);
+		i = -1;
+	}
+
+	/**
+	 * @return the next command in the history. Returns null if there are no next history.
+	 */
+	public String previous() {
+		String prev = null;
+
+		if (i < commandHistory.size() - 1) {
+			i++;
+			prev = commandHistory.get(i);
+		}
+
+		return prev;
+	}
+
+	/**
+	 * @return the previous command in the history. Returns null if there are no previous history.
+	 */
+	public String next() {
+		String next = null;
+
+		if (i > 0) {
+			i--;
+			next = commandHistory.get(i);
+		} else {
+			i = -1;
+		}
+
+		return next;
+	}
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\CommandHistory.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+	 */
+
+	@FXML
+	void initialize() {
+		mainPane.applyCss();
+		mainPane.layout();
+
+		mainScrollpane.setFitToWidth(true);
+		appTitleIcon.minWidthProperty().bind(appTitleIcon.heightProperty());
+
+		fadeOut = new FadeTransition(Duration.millis(1500), promptLabel);
+		fadeOut.setDelay(Duration.millis(2000));
+
+		initilizeHandlers();
+		mainPane.addEventFilter(KeyEvent.KEY_PRESSED, ctrlUpHandler);
+		mainPane.addEventFilter(KeyEvent.KEY_PRESSED, ctrlDownHandler);
+		mainPane.addEventFilter(KeyEvent.KEY_PRESSED, ctrlZHandler);
+
+		mainInput.addEventFilter(KeyEvent.KEY_PRESSED, upHandler);
+		mainInput.addEventFilter(KeyEvent.KEY_PRESSED, downHandler);
+		mainInput.focusedProperty().addListener(mainInputFocusListener);
+		mainInput.textProperty().addListener(inputChangeListener);
+
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				mainInput.requestFocus();
+				updateUI(appLogic.getToDoMapDisplay());
+				oldItems.addAll(mapToList(appLogic.getToDoMapDisplay()));
+				scrollToToday();
+				generateAllReminders();
+			}
+		});
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+	 */
+
+	private void updateOldItems(List<Object> newDisplayList) {
+		oldItems.clear();
+		oldItems.addAll(newDisplayList);
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+	 */
+
+	private void highlightItem(int index) {
+		mainVBox.getChildren().get(index)
+				.setStyle("-fx-background-color: #E8F5E9;");
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+	 */
+
+	public void clearUI() {
+		mainInput.clear();
+		mainVBox.getChildren().clear();
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+	 */
+
+	public void minimizeWindow() {
+		Stage stage = (Stage) minimizeButton.getScene().getWindow();
+		stage.hide();
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+	 */
+
+	public Label createGroupLabel(DateCategory date) {
+		Label label = new Label(date.toString());
+
+		if (date.equals(DateCategory.OVERDUE)) {
+			label.setStyle("-fx-background-color: #FF5050;");
+		}
+
+		label.getStyleClass().add("groupLabel");
+		label.setMaxWidth(Double.MAX_VALUE);
+
+		return label;
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+	 */
+
+	private void scrollToIndex(int index) {
+		mainScrollpane.applyCss();
+		mainScrollpane.layout();
+
+		double vBoxHeight = mainVBox.getHeight();
+		double scrollPaneHeight = mainScrollpane.getViewportBounds()
+				.getHeight();
+
+		double yValue = mainVBox.getChildren().get(index).getLayoutY();
+		double vValue = 0;
+
+		if (vBoxHeight > scrollPaneHeight) {
+			vValue = yValue / (vBoxHeight - scrollPaneHeight);
+		}
+
+		mainScrollpane.setVvalue(vValue);
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+	 */
+
+	/**
+	 * Converts a map into a list.
+	 * 
+	 * @param map
+	 * @return a list of items in the map.
+	 */
+	private List<Object> mapToList(Map<DateCategory, List<ToDo>> map) {
+		List<Object> list = new ArrayList<Object>();
+
+		for (Entry<DateCategory, List<ToDo>> entry : map.entrySet()) {
+			list.add(entry.getKey());
+			for (ToDo todo : entry.getValue()) {
+				list.add(todo);
+			}
+		}
+		return list;
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+	 */
+
+	private void scrollToToday() {
+		int todayIndex = oldItems.indexOf(DateCategory.TODAY);
+		if (todayIndex == -1) {
+			todayIndex = 0;
+		}
+		scrollToIndex(todayIndex);
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+	 */
+
+	private void setDate(ToDo todo) {
+		Type type = todo.getType();
+		String startDate = null;
+		String startTime = null;
+		String endDate = null;
+		String endTime = null;
+		ArrayList<Node> displayItems = new ArrayList<Node>();
+
+		if (type == Type.TIMED) {
+			startDate = todo.getStartDate().toString(DATE_PATTERN);
+			startTime = todo.getStartDate().toString(TIME_PATTERN);
+			endDate = todo.getEndDate().toString(DATE_PATTERN);
+			endTime = todo.getEndDate().toString(TIME_PATTERN);
+		} else if (type == Type.DEADLINE) {
+			endDate = todo.getEndDate().toString(DATE_PATTERN);
+			endTime = todo.getEndDate().toString(TIME_PATTERN);
+		}
+
+		if (startDate != null && startTime != null) {
+			ImageView calendar1 = new ImageView("/images/calendar.png");
+			ImageView clock1 = new ImageView("/images/clock.png");
+
+			displayItems.add(calendar1);
+			displayItems.add(createDateText(startDate));
+			displayItems.add(clock1);
+			displayItems.add(createDateText(startTime));
+			displayItems.add(new Text(" to "));
+		}
+
+		if (endDate != null && endTime != null) {
+			ImageView calendar2 = new ImageView("/images/calendar.png");
+			ImageView clock2 = new ImageView("/images/clock.png");
+			displayItems.add(calendar2);
+			displayItems.add(createDateText(endDate));
+			displayItems.add(clock2);
+			displayItems.add(createDateText(endTime));
+		}
+		todoDate.getChildren().setAll(displayItems);
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+	 */
+
+	/**
+	 * Add a label indicating the priority of task behind the title.
+	 */
+	private void setPriority() {
+		Priority priority = todo.getPriority();
+
+		// tag design
+		Node priorityTag;
+		if (priority == Priority.HIGH) {
+			priorityTag = createTag("HIGH", "red");
+		} else if (priority == Priority.MEDIUM) {
+			priorityTag = createTag("MEDIUM", "blue");
+		} else {
+			priorityTag = createTag("LOW", "pink");
+		}
+		hbox.getChildren().add(priorityTag);
+		hbox.setSpacing(5);
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+	 */
+
+	/**
+	 * Checks whether a given ToDo object is valid. A ToDo is valid only if its
+	 * Title is not null
+	 * 
+	 * @param todo
+	 * @return
+	 */
+	private boolean isValidTodo(ToDo todo) {
+		if (todo.getTitle() == null) {
+			return false;
+		}
+
+		return true;
+	}
+
+	private Text createDateText(String startDate) {
+		return TextBuilder.create().text(startDate).styleClass("DateTime")
+				.build();
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+	 */
+
+	public ToDo getToDo() {
+		return this.todo;
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\test\java\com\the\todo\command\SearchFunctionTest.java
+	 */
+
+
+public class SearchFunctionTest {
+
+	private ToDo todo0, todo1, todo2, todo3, todo4, todo5;
+	ArrayList<ToDo> updateListStub;
+	InMemoryStore storeStub;
+
+	@Before
+	public void setUp() {
+		todo0 = new ToDo("Lorem");
+		
+		todo1 = new ToDo("Lorem");
+		todo1.setCategory("+search");
+		
+		todo2 = new ToDo("ipsum dolor sit");
+		todo2.setPriority(Priority.MEDIUM);
+		
+		todo3 = new ToDo("ipsum dolor sit");
+		todo3.setCategory("+add");
+		todo3.setPriority(Priority.LOW);
+		
+		todo4 = new ToDo("dolor sit amet");
+		todo4.setCategory("+test");
+		todo4.setPriority(Priority.MEDIUM);
+		
+		todo5 = new ToDo("amet consectetur adipiscing elit.");
+		todo5.setCategory("+test");
+		todo5.setPriority(Priority.HIGH);
+
+		storeStub = new InMemoryStore();
+		storeStub.save(todo0);
+		storeStub.save(todo1);
+		storeStub.save(todo2);
+		storeStub.save(todo3);
+		storeStub.save(todo4);
+		storeStub.save(todo5);
+
+		updateListStub = new ArrayList<ToDo>();
+	}
+
+	@Test
+	public void test() {
+		/*This is a boundary case for empty/null input.*/
+		searchTest("");
+		searchTest(null);
+		
+		/*Search that returns no results*/
+		searchTest("or");
+		searchTest("+");
+		searchTest("Or +search");
+		
+		/*Search for values at the start/end*/
+		searchTest(" lorem   ", todo0, todo1);
+		searchTest("amet", todo4, todo5);
+		searchTest("elit.", todo5);
+		
+		/*Search using multiple keywords*/
+		searchTest("  doLor  sit", todo2, todo3, todo4);
+
+		/*Search with only category specified*/
+		searchTest("+SeaRch", todo1);
+		searchTest("+test", todo4, todo5);
+		
+		/*Search with only priority specified*/
+		searchTest("+meDiUm", todo2, todo4);
+		
+		/*Search with both keywords and category specified*/
+		searchTest("dolor  sit   +add", todo3);
+		searchTest("amet +test", todo4, todo5);
+		
+		/*Search with keywords and priority specified*/
+		searchTest("dolor sit +low", todo3);
+		
+		/*Search with category and priority specified*/
+		searchTest("+high +test", todo5);
+		
+		/*This is another boundary case for empty/null input.*/
+		/*Updatelist should not be changed (i.e. should be same as previous test)*/
+		searchTest("", todo5);
+		searchTest(null, todo5);
+	}
+
+	public void searchTest(String query, ToDo... expected) {
+		ToDoSearch test = new ToDoSearch(storeStub, updateListStub, query);
+		test.execute();
+
+		assertArrayEquals(expected, updateListStub.toArray());
+	}
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\test\java\com\the\todo\command\SearchFunctionTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\styles.java
+	 */
+
+.unDecorated {
+	-fx-padding: 0;
+	-fx-background: white;
+	-fx-background-color: white;
+}
+
+#appTitlePane {
+	-fx-background-color: #333333;
+	-fx-padding: 5;
+}
+
+#appTitleIcon {
+	-fx-background-image: url(../images/THETODO.png);
+	-fx-background-position: center;
+	-fx-background-repeat: no-repeat;
+	-fx-background-size: contain;
+}
+
+#appTitle {
+	-fx-font-family: Helvetica, sans-serif;
+	-fx-font-size: 1.4em;
+	-fx-font-weight: bold;
+	-fx-text-fill: white;
+}
+
+.groupLabel {
+	-fx-background-color:  #3E506F;
+	-fx-font-size: 1.2em;
+	-fx-font-family: "Lucida Grande", sans-serif;
+	-fx-font-weight: bold;
+	-fx-label-padding: 10;
+	-fx-text-fill: white;
+	-fx-alignment: center-left;
+}
+
+#minimizeButton {
+	-fx-background-color: transparent;
+	-fx-graphic: url(../images/x_button.png);
+	-fx-content-display: graphic-only;
+	-fx-alignment: center;
+	-fx-opacity: 0.6;
+	-fx-padding: 0;
+}
+
+#minimizeButton:hover {
+	-fx-opacity: 1;
+}
+
+#promptLabel {
+	-fx-background-radius: 0.3em;
+	-fx-wrap-text: true;
+	-fx-font-family: "Lucida Grande", sans-serif;
+	-fx-font-size: 1em;
+	-fx-text-fill: white;
+	-fx-label-padding: 2 5 2 5;
+	-fx-opacity: 0;
+}
+
+#mainScrollpane:focused {
+	-fx-background-color: transparent;
+	-fx-background-insets: 0;
+}
+
+#mainScrollpane .scroll-bar:vertical {
+ 	-fx-background-color: #EDEDED;
+ 	-fx-padding: 0;
+}
+
+#mainScrollpane .scroll-bar:vertical .track{
+  	-fx-background-color: transparent;
+}
+
+#mainScrollpane .scroll-bar:vertical .thumb{
+  	-fx-background-color: #A3A3A3;
+  	-fx-background-radius: 0;
+  	-fx-background-insets: 0;
+}
+
+#mainScrollpane .scroll-bar:vertical .increment-button, 
+#mainScrollpane .scroll-bar:vertical .decrement-button {
+	-fx-padding: 0 6;
+}
+
+#mainScrollpane .scroll-bar:vertical .increment-arrow, 
+#mainScrollpane .scroll-bar:vertical .decrement-arrow {
+	-fx-padding: 0;
+}
+
+#mainInput{
+	-fx-font-size: 1em;
+	-fx-padding: 8;
+}
+
+#mainInput:focused { 
+ 	-fx-background-color: transparent,-fx-box-border,-fx-control-inner-background;
+  	-fx-background-insets: -1.4, 0, 1;
+  	-fx-background-radius: 1.4, 2.5, 2.5;
+}
+
+#hintLabel{
+	-fx-font-size: 1em; 
+	-fx-text-fill: #777777;
+	-fx-label-padding: 0 5 0 5;
+}
+
+/* ToDoContainer styles */
+#root {
+	-fx-padding: 5;
+}
+
+#todoID {	
+	-fx-alignment: center;
+	-fx-border-style: none solid none none;
+	-fx-border-color: transparent darkred transparent transparent; 
+	-fx-border-width:0 1 0 0 ;
+}
+
+#todoDate, #todoMisc { 
+	-fx-font-size: 1em;
+	-fx-padding: 0 5 0 5 ;
+} 
+
+#todoTitle {
+	-fx-font-size: 1.2em;
+	-fx-padding: 0 5 0 5 ;
+}
+
+.check-box .box {
+	-fx-padding: 8;
+    -fx-background-color: #84C085;
+}
+
+.check-box:selected .mark {
+    -fx-background-color: white;
+}
+
+.check-box:disabled {
+	-fx-opacity: 1;
+}
+	// End of segment: C:\Users\KaiHsiang\Documents\main\styles.java
+
+
+
+
+

@@ -1,0 +1,1443 @@
+//@author: a0111780n
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoAdd.java
+	 */
+
+	/**
+	 * This method process for priority, category and date that is entered by
+	 * the users before passing all the variables to the creatToDoType method.
+	 * 
+	 * @param input - User input.
+	 * @return - ToDo task that is processed.
+	 * @throws InvalidDateException - invalid date.
+	 */
+	private ToDo createToDo(String input) throws InvalidDateException {
+		ToDo.Type type;
+		List<String> foundList = CategoryPriorityParser.parseAll(input);
+		String categoryFound = null;
+		String priorityFound = null;
+		String originalPriorityInString = null;
+		String title = null;
+		ToDo.Priority priority = null;
+
+		for (int i = 0; i < foundList.size(); i++) {
+			if (foundList.get(i).toUpperCase().equals(HIGH)
+					|| foundList.get(i).toUpperCase().equals(LOW)
+					|| foundList.get(i).toUpperCase().equals(MEDIUM)) {
+				originalPriorityInString = foundList.get(i);
+				priorityFound = originalPriorityInString.toUpperCase();
+				priority = ToDo.Priority.valueOf(priorityFound);
+				originalPriorityInString = "+" + originalPriorityInString;
+			} else {
+				categoryFound = "+" + foundList.get(i);
+			}
+		}
+		title = CategoryPriorityParser.removeStringFromTitle(input,
+				categoryFound).trim();
+		title = CategoryPriorityParser.removeStringFromTitle(title,
+				originalPriorityInString).trim();
+		List<DateGroup> dateGroup = DateAndTimeParser.parse(title);
+
+		type = getToDoType(dateGroup);
+		todo = createToDoType(type, title, dateGroup, categoryFound, priority);
+
+		return todo;
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoAdd.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoAdd.java
+	 */
+
+	/**
+	 * This method will set the data that is pass in by createToDo method
+	 * and set the data into their respective field
+	 * 
+	 * @param type - type of task that the user wanted.
+	 * @param title - the subject that the user wanted.
+	 * @param dateGroup - the List of date that the user wanted.
+	 * @param category - the group where the user wanted to put the task under.
+	 * @param priority - the importance of the task that the user specified.
+	 * @return the todo task that is created.
+	 */
+	private ToDo createToDoType(Type type, String title,
+			List<DateGroup> dateGroup, String category, Priority priority) {
+		ToDo todo = null;
+
+		switch (type) {
+		case FLOATING:
+			todo = new ToDo(title);
+			break;
+		case DEADLINE:
+			LocalDateTime dueDateTime = new LocalDateTime(dateGroup.get(0)
+					.getDates().get(0));
+			todo = new ToDo(title, dueDateTime);
+			break;
+		case TIMED:
+			LocalDateTime startDateTime = new LocalDateTime(dateGroup.get(0)
+					.getDates().get(0));
+			LocalDateTime endDateTime = new LocalDateTime(dateGroup.get(0)
+					.getDates().get(1));
+			todo = new ToDo(title, startDateTime, endDateTime);
+			break;
+		}
+
+		if (category != null) {
+			todo.setCategory(category);
+		}
+		if (priority != null) {
+			todo.setPriority(priority);
+		}
+
+		return todo;
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoAdd.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoComplete.java
+	 */
+
+
+public class ToDoComplete extends ToDoCommand {
+
+	private static final String EXECUTE_DOES_NOT_EXIST = "ToDo %s does not exist.";
+	private static final String EXECUTE_ILLEGAL_ARGUMENT = "Seems like you are missing somethings.";
+	private static final String EXECUTE_ERROR = "An error occured while updating ToDo.";
+	private static final String EXECUTE_SUCCESS = "Successful";
+	private static final String EXECUTE_DONE = "Task had been completed";
+
+	private ToDoStore todoStorage;
+	private ToDo newtodo;
+
+	public ToDoComplete(ToDoStore todoStorage, ToDo todo) {
+		super();
+		this.todoStorage = todoStorage;
+		this.todo = todo;
+		this.undoable = true;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.the.todo.command.ToDoCommand#performExecute()
+	 * This method will check whether the task exist. If the task does not 
+	 * exist it will send return a error message. It will also check for duplicated commands,
+	 * if the task had been completed and the user entered complete command again the method 
+	 * will feedback an error message.
+	 */
+	@Override
+	protected CommandStatus performExecute() {
+
+		newtodo = new ToDo(todo);
+		todoStorage.update(newtodo.getId(), newtodo);
+
+		if (this.newtodo == null) {
+			return new CommandStatus(Status.ERROR, String.format(
+					EXECUTE_DOES_NOT_EXIST, ""));
+		}
+
+		if (newtodo.isCompleted()) {
+			return new CommandStatus(Status.ERROR, EXECUTE_DONE);
+		} else {
+			this.newtodo = isCompleteToDo(this.newtodo);
+		}
+
+		if (this.newtodo == null) {
+			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
+		}
+
+		return new CommandStatus(Status.SUCCESS, String.format(EXECUTE_SUCCESS,
+				""));
+	}
+
+	@Override
+	protected CommandStatus performUndo() {
+		todoStorage.update(newtodo.getId(), newtodo);
+		this.newtodo = undoCompleteToDo(this.newtodo);
+
+		if (this.newtodo == null) {
+			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
+		}
+
+		return new CommandStatus(Status.SUCCESS, String.format(EXECUTE_SUCCESS,
+				""));
+	}
+
+	private ToDo isCompleteToDo(ToDo todo) {
+		todo.setCompleted(true);
+		return todo;
+	}
+
+	private ToDo undoCompleteToDo(ToDo todo) {
+		todo.setCompleted(false);
+		return todo;
+	}
+
+	@Override
+	public ToDo getTodo (){
+		return newtodo;
+	}
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoComplete.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoEdit.java
+	 */
+
+
+public class ToDoEdit extends ToDoCommand {
+
+	
+	private static final String DELIM_SPACE = " ";
+	private static final String DELIM_PLUS = "+";
+	private static final String DELIM = "-";
+	private static final String EXECUTE_DOES_NOT_EXIST = "ToDo %s does not exist.";
+	private static final String EXECUTE_ILLEGAL_ARGUMENT = "Seems like you are missing somethings.";
+	private static final String EXECUTE_ILLEGAL_FLOATINGWITHOUTENDDATE = "Seems like you forget your end-date.";
+	private static final String EXECUTE_ERROR = "An error occured while updating ToDo.";
+	private static final String EXECUTE_SUCCESS = "Successful";
+	private static final String EXECUTE_INVALID_DATE = "Invalid date!";
+
+	private static enum FieldType {
+		T, TITLE, C, CATEGORY, S, STARTDATE, E, ENDDATE, P, PRIORITY, RS, REMOVESTART, RE, REMOVEEND, INVALID
+	};
+
+	private ToDoStore todoStorage;
+	private ToDo newtodo;
+	private String input;
+
+	public ToDoEdit(ToDoStore todoStorage, ToDo todo, String input) {
+		super();
+		this.todoStorage = todoStorage;
+		this.todo = todo;
+		this.input = input;
+		this.undoable = true;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.the.todo.command.ToDoCommand#performExecute()
+	 * This method checks whether the task exist, whether the task is empty and also checks
+	 * if the task is a floating task and the user wanted to edit the start date without a
+	 * end date. It will feedback an error message.
+	 */
+	@Override
+	protected CommandStatus performExecute() {
+
+		String todoTitle = input;
+		newtodo = new ToDo(todo);
+		todoStorage.update(newtodo.getId(), newtodo);
+
+		if (this.newtodo == null) {
+			return new CommandStatus(Status.ERROR, String.format(
+					EXECUTE_DOES_NOT_EXIST, ""));
+		}
+
+		try {
+			if (todoTitle.isEmpty()) {
+				return new CommandStatus(Status.ERROR, EXECUTE_ILLEGAL_ARGUMENT);
+			}
+			if (newtodo.getType() == Type.FLOATING) {
+				if ((input.contains("-s")) && !input.contains("-e")) {
+					return new CommandStatus(Status.ERROR,
+							EXECUTE_ILLEGAL_FLOATINGWITHOUTENDDATE);
+				}
+			}
+			this.newtodo = editToDo(this.newtodo, todoTitle);
+		} catch (InvalidDateException e) {
+			return new CommandStatus(Status.ERROR, EXECUTE_INVALID_DATE);
+		} catch (Exception e) {
+			return new CommandStatus(Status.ERROR, EXECUTE_ILLEGAL_ARGUMENT);
+		}
+
+		if (this.newtodo == null) {
+			return new CommandStatus(Status.ERROR, EXECUTE_DOES_NOT_EXIST);
+		}
+
+		return new CommandStatus(Status.SUCCESS, String.format(EXECUTE_SUCCESS,
+				""));
+	}
+
+	@Override
+	protected CommandStatus performUndo() {
+		todoStorage.update(todo.getId(), todo);
+		if (this.newtodo == null) {
+			return new CommandStatus(Status.ERROR, EXECUTE_DOES_NOT_EXIST);
+		}
+
+		return new CommandStatus(Status.SUCCESS, String.format(EXECUTE_SUCCESS,
+				""));
+	}
+
+	/**
+	 * This task check for the size of the string before sending the inputs to
+	 * proccessEditData for process.
+	 * 
+	 * @param todo - Task that the user wanted to edit.
+	 * @param input - the details that the users wanted to edit
+	 * @return - the edited task
+	 * @throws Exception - miss arguments.
+	 */
+	private ToDo editToDo(ToDo todo, String input) throws Exception {
+		/* String Tokenizer */
+		List<String> tokenString = new ArrayList<String>();
+		StringTokenizer tokens = new StringTokenizer(input, DELIM);
+
+		/* String */
+		String[] splitSubInputArr;
+
+		while (tokens.hasMoreTokens()) {
+			tokenString.add(tokens.nextToken());
+		}
+		for (int i = 0; i < tokenString.size(); i++) {
+			splitSubInputArr = stringSplit(tokenString.get(i), 2);
+			if (splitSubInputArr.length == 2) {
+				todo = proccessEditData(todo, splitSubInputArr);
+			} else if (splitSubInputArr.length == 1) {
+				String commands = splitSubInputArr[0].toUpperCase();
+				FieldType typeOfField = FieldType.valueOf(commands);
+				if (typeOfField.equals(FieldType.RS)
+						|| typeOfField.equals(FieldType.RE)
+						|| typeOfField.equals(FieldType.REMOVESTART)
+						|| typeOfField.equals(FieldType.REMOVEEND)) {
+					todo = removeStartAndEndDate(todo, splitSubInputArr[0]);
+				} else {
+					throw new Exception("Missing Args");
+				}
+			} else {
+				break;
+			}
+		}
+		editTaskType(todo);
+
+		return todo;
+	}
+
+	/**
+	 * @param todo - Task that the user wanted to edit.
+	 * @param splitSubInputArr - array that contains both field type and data that user entered.
+	 * @return - edited task.
+	 * @throws InvalidDateException - invalid date.
+	 */
+	private ToDo proccessEditData(ToDo todo, String[] splitSubInputArr)
+			throws InvalidDateException {
+		String fieldType;
+		String remainingString;
+		fieldType = splitSubInputArr[0];
+		remainingString = splitSubInputArr[1];
+		todo = processFieldType(fieldType, remainingString, todo);
+		return todo;
+	}
+
+	/**
+	 * Change the type of the tas according to the date entered in different fields.
+	 * 
+	 * @param todo - Task that the user wanted to edit.
+	 */
+	private void editTaskType(ToDo todo) {
+		LocalDateTime startDate;
+		LocalDateTime endDate;
+		Type typeOfTaskBefore = todo.getType();
+		startDate = todo.getStartDate();
+		endDate = todo.getEndDate();
+		Type typeOfTaskAfter = checkChangeTaskType(startDate, endDate);
+		if (typeOfTaskBefore != typeOfTaskAfter) {
+			if (typeOfTaskAfter == Type.FLOATING) {
+				todo.setFloatingToDo();
+			} else if (typeOfTaskAfter == Type.TIMED) {
+				todo.setTimedToDo();
+			} else {
+				todo.setDeadlineToDo();
+			}
+		}
+	}
+
+	private Type checkChangeTaskType(LocalDateTime startDate,
+			LocalDateTime endDate) {
+
+		if ((startDate.equals(ToDo.INVALID_DATE))
+				&& (endDate.equals(ToDo.INVALID_DATE))) {
+			return Type.FLOATING;
+		} else if ((startDate.equals(ToDo.INVALID_DATE)) && (endDate != null)) {
+			return Type.DEADLINE;
+		} else {
+			return Type.TIMED;
+		}
+
+	}
+
+	/**
+	 * This method removes the start date or end date according to the command entered
+	 * by the user.
+	 * 
+	 * @param todo - Task that the user wanted to edit.
+	 * @param stringSplit - command taken out from the user's input.
+	 * @return
+	 */
+	private ToDo removeStartAndEndDate(ToDo todo, String stringSplit) {
+		stringSplit = stringSplit.toUpperCase();
+		FieldType fieldType = FieldType.valueOf(stringSplit);
+		if (fieldType.equals(FieldType.REMOVESTART)
+				|| fieldType.equals(FieldType.RS)) {
+			todo.removeStartDate();
+		} else if (fieldType.equals(FieldType.REMOVEEND)
+				|| fieldType.equals(FieldType.RE)) {
+			todo.removeEndDate();
+		}
+		return todo;
+
+	}
+
+	private String[] stringSplit(String subStringInput, int numberOfParts) {
+		String[] splitSubInputArr;
+		splitSubInputArr = StringUtil.splitString(subStringInput, DELIM_SPACE,
+				numberOfParts);
+		return splitSubInputArr;
+	}
+
+	/**
+	 * 
+	 * This method set the data into respective fields according to the keyword entered by the user.
+	 * 
+	 * @param fieldType - type of task
+	 * @param remainingString - remaining input by the user after extracting the necessary information
+	 * 							for different fields
+	 * @param todo - Task that the user wanted to edit.
+	 * @return - edited task.
+	 * @throws InvalidDateException - invalid date.
+	 */
+	private ToDo processFieldType(String fieldType, String remainingString,
+			ToDo todo) throws InvalidDateException {
+		fieldType = fieldType.toUpperCase();
+		FieldType typeOfField = FieldType.valueOf(fieldType);
+		List<DateGroup> groups;
+		LocalDateTime date;
+
+		switch (typeOfField) {
+		case T:
+		case TITLE:
+			todo.setTitle(remainingString);
+			break;
+		case C:
+		case CATEGORY:
+			if(remainingString.contains("+")){
+				todo.setCategory(remainingString);
+			} else {
+				todo.setCategory("+" + remainingString);
+			}
+			break;
+		case S:
+		case STARTDATE:
+			groups = DateAndTimeParser.parse(remainingString);
+			date = new LocalDateTime(groups.get(0).getDates().get(0));
+			todo.setStartDate(date);
+			break;
+		case E:
+		case ENDDATE:
+			groups = DateAndTimeParser.parse(remainingString);
+			date = new LocalDateTime(groups.get(0).getDates().get(0));
+			todo.setEndDate(date);
+			break;
+		case P:
+		case PRIORITY:
+			Priority priorityChosen = Priority.valueOf(remainingString
+					.toUpperCase().replace(DELIM_PLUS, DELIM_SPACE).trim());
+			todo.setPriority(priorityChosen);
+			break;
+		case INVALID:
+			break;
+		default:
+			break;
+		}
+		return todo;
+	}
+	
+	@Override
+	public ToDo getTodo (){
+		return newtodo;
+	}
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoEdit.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\JustOneLock.java
+	 */
+
+
+public class JustOneLock {
+	private String appName;
+
+	FileLock lock;
+
+	FileChannel channel;
+
+	public JustOneLock(String appName) {
+		this.appName = appName;
+	}
+
+	public boolean isAppActive() throws Exception {
+		File file = new File(System.getProperty("user.home"), appName + ".tmp");
+		channel = new RandomAccessFile(file, "rw").getChannel();
+
+		lock = channel.tryLock();
+		if (lock == null) {
+			channel.close();
+			return true;
+		}
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			public void run() {
+				try {
+					lock.release();
+					channel.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		return false;
+	}
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\JustOneLock.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\parser\CategoryPriorityParser.java
+	 */
+
+
+public class CategoryPriorityParser {
+
+	private static final String SPACE_DELIM = " ";
+	private static final String PLUS_DELIM = "+";
+	private static final String MEDIUM = "MEDIUM";
+	private static final String LOW = "LOW";
+	private static final String HIGH = "HIGH";
+
+	/**
+	 * This method look for "+" in the input entered by the user and process the data,
+	 * to either category or priority.
+	 * 
+	 * @param input - String entered by the users.
+	 * @return - list of data that is found in the user's input.
+	 */
+	public static List<String> parseAll(String input) {
+		List<String> foundList = new ArrayList<String>();
+		List<String> wantedList = new ArrayList<String>();
+		StringTokenizer tokens = new StringTokenizer(input, SPACE_DELIM);
+
+		while (tokens.hasMoreTokens()) {
+			foundList.add(tokens.nextToken());
+		}
+		for (int i = 0; i < foundList.size(); i++) {
+			if (foundList.get(i).contains("+")) {
+				StringTokenizer tokenCheck = new StringTokenizer(
+						foundList.get(i), PLUS_DELIM);
+				while (tokenCheck.hasMoreTokens()) {
+					wantedList.add(tokenCheck.nextToken());
+				}
+			}
+		}
+
+		return wantedList;
+	}
+
+	/**
+	 * The method takes in the resultList from parseAll method and process for any
+	 * category that can be find inside the list.
+	 * 
+	 * @param searchList - result from parseAll method
+	 * @return - category that is found
+	 */
+	public static String parseCategory(List<String> searchList) {
+		String category = null;
+		for(int i = 0; i < searchList.size(); i++) {
+			if (!searchList.get(i).toUpperCase().equals(HIGH)
+					|| !searchList.get(i).toUpperCase().equals(LOW)
+					|| !searchList.get(i).toUpperCase().equals(MEDIUM)) {
+				category = searchList.get(i);
+			}
+		}
+		return category;
+	}
+	
+	/**
+	 * The method takes in the resultList from parseAll method and process for any
+	 * priority that can be find inside the list.
+	 * 
+	 * @param searchList - result from parseAll method
+	 * @return - priority that is found
+	 */
+	public static String parsePriority(List<String> searchList) {
+		String priority = null;
+		for(int i = 0; i < searchList.size(); i++) {
+			if (searchList.get(i).toUpperCase().equals(HIGH)
+					|| searchList.get(i).toUpperCase().equals(LOW)
+					|| searchList.get(i).toUpperCase().equals(MEDIUM)) {
+				priority = searchList.get(i);
+			}
+		}
+		return priority;
+	}
+
+	public static String removeStringFromTitle(String input, String removeString) {
+		if (removeString != null) {
+			return input.replace(removeString, "").replaceAll("( )+", " ").trim();
+		} else {
+			return input;
+		}
+	}
+
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\parser\CategoryPriorityParser.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\test\java\com\the\todo\command\AddFunctionTest.java
+	 */
+
+
+public class AddFunctionTest {
+
+	private Logic appLogic;
+	private ToDoStore todoStorage;
+
+	@Before
+	public void setUp() throws Exception {
+		FileHandler.writeFile("thetodo.json", "");
+		appLogic = new Logic();
+		appLogic.processCommand("add CS2013 IVLE quiz");
+		todoStorage = appLogic.getTodoStorage();
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		appLogic = null;
+		todoStorage = null;
+		FileHandler.writeFile("thetodo.json", "");
+	}
+
+	/***************************************** Section 1 ***********************************************/
+	// Add 1 task without start and end date.
+	// Type will be floating task
+	@Test
+	public void testAddOneItem() {
+
+		appLogic.processCommand("add remember to get milk");
+		todoStorage = appLogic.getTodoStorage();
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get milk", todoStorage.getAll().get(1)
+				.getTitle());
+	}
+
+	/***************************************** Section 2 ***********************************************/
+	// Add 1 task with end date.
+	// Type will be deadline task
+	@Test
+	public void testAddNumberFormatDate() {
+		LocalDateTime expectedDate = new LocalDateTime(2014, 11, 11, 23, 59);
+		appLogic.processCommand("add remember to get milk on 11/11/2014");
+		todoStorage = appLogic.getTodoStorage();
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get milk on 11/11/2014", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+	}
+
+	@Test
+	public void testAddRelativeFormatDate() {
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
+		appLogic.processCommand("add remember to get milk on Friday");
+		todoStorage = appLogic.getTodoStorage();
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get milk on Friday", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+	}
+	
+	// Add 1 task with start date and end date.
+	// Type will be Timed task
+	@Test
+	public void testAddNumberFormatDateStartAndEnd() {
+		LocalDateTime expectedDate = new LocalDateTime(2014, 11, 11, 23, 59);
+		LocalDateTime expectedEndDate = new LocalDateTime(2014, 11, 24, 23, 59);
+		appLogic.processCommand("add remember to get milk from 11/11/2014 to 24/11/2014");
+		todoStorage = appLogic.getTodoStorage();
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get milk from 11/11/2014 to 24/11/2014", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedEndDate, todoStorage.getAll().get(1).getEndDate());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getStartDate());
+	}
+
+	/***************************************** Section 3 ***********************************************/
+	@Test
+	public void testAddCategoryRandomPlace1WithTitle() {
+		appLogic.processCommand("add remember to get present +Birthday");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present", todoStorage.getAll().get(1)
+				.getTitle());
+		assertEquals("+Birthday", todoStorage.getAll().get(1).getCategory());
+	}
+
+	@Test
+	public void testAddCategoryRandomPlace2WithTitle() {
+		appLogic.processCommand("add +Birthday remember to get present ");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present", todoStorage.getAll().get(1)
+				.getTitle());
+		assertEquals("+Birthday", todoStorage.getAll().get(1).getCategory());
+	}
+
+	/***************************************** Section 4 ***********************************************/
+	@Test
+	public void testAddCategoryRandomPlaceWithDate() {
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
+		appLogic.processCommand("add +Birthday remember to get present on Friday");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+		assertEquals("+Birthday", todoStorage.getAll().get(1).getCategory());
+	}
+
+	@Test
+	public void testAddCategoryRandomPlace1() {
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
+		appLogic.processCommand("add remember to get present on Friday +Birthday");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+		assertEquals("+Birthday", todoStorage.getAll().get(1).getCategory());
+	}
+
+	@Test
+	public void testAddCategoryRandomPlace2() {
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
+		appLogic.processCommand("add remember to get present +Birthday on Friday");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+		assertEquals("+Birthday", todoStorage.getAll().get(1).getCategory());
+	}
+
+	@Test
+	public void testAddCategoryRandomPlace3() {
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
+		appLogic.processCommand("add +Birthday remember to get present on Friday");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+		assertEquals("+Birthday", todoStorage.getAll().get(1).getCategory());
+	}
+
+	/***************************************** Section 5 ***********************************************/
+	@Test
+	public void testAddPriorityRandomPlace1() {
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
+		appLogic.processCommand("add remember to get present on Friday +high");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(1).getPriority());
+	}
+
+	@Test
+	public void testAddPriorityRandomPlace2() {
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
+		appLogic.processCommand("add remember to get present +medium on Friday");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+		assertEquals(ToDo.Priority.MEDIUM, todoStorage.getAll().get(1).getPriority());
+	}
+
+	@Test
+	public void testAddPriorityRandomPlace3() {
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
+		appLogic.processCommand("add +high remember to get present on Friday");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(1).getPriority());
+	}
+	
+	@Test
+	public void testAddPriorityRandomPlace4() {
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
+		appLogic.processCommand("add remember to get present on Friday +HigH");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(1).getPriority());
+	}
+
+	@Test
+	public void testAddPriorityRandomPlace5() {
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
+		appLogic.processCommand("add remember to get present +meDiUm on Friday");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+		assertEquals(ToDo.Priority.MEDIUM, todoStorage.getAll().get(1).getPriority());
+	}
+
+	@Test
+	public void testAddPriorityRandomPlace6() {
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
+		appLogic.processCommand("add +hIGh remember to get present on Friday");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(1).getPriority());
+	}
+
+	/***************************************** Section 6 ***********************************************/
+	@Test
+	public void testAddPriorityCategoryRandomPlace1() {
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
+		appLogic.processCommand("add remember to get present on Friday +Gift +high");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+		assertEquals("+Gift", todoStorage.getAll().get(1).getCategory());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(1).getPriority());
+	}
+
+	@Test
+	public void testAddPriorityCategoryRandomPlace2() {
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
+		appLogic.processCommand("add remember to get present +Gift +medium on Friday");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+		assertEquals("+Gift", todoStorage.getAll().get(1).getCategory());
+		assertEquals(ToDo.Priority.MEDIUM, todoStorage.getAll().get(1).getPriority());
+	}
+
+	@Test
+	public void testAddPriorityCategoryRandomPlace3() {
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
+		appLogic.processCommand("add +Gift +high remember to get present on Friday");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+		assertEquals("+Gift", todoStorage.getAll().get(1).getCategory());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(1).getPriority());
+	}
+
+	/***************************************** Section 7 ***********************************************/
+	@Test
+	public void testAddPriorityCategoryRandomPlace4() {
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
+		appLogic.processCommand("add remember to get present +Gift on Friday +high");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+		assertEquals("+Gift", todoStorage.getAll().get(1).getCategory());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(1).getPriority());
+	}
+
+	@Test
+	public void testAddPriorityCategoryRandomPlace5() {
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
+		appLogic.processCommand("add remember to get present +medium on Friday +Gift");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+		assertEquals("+Gift", todoStorage.getAll().get(1).getCategory());
+		assertEquals(ToDo.Priority.MEDIUM, todoStorage.getAll().get(1).getPriority());
+	}
+
+	@Test
+	public void testAddPriorityCategoryRandomPlace6() {
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
+		appLogic.processCommand("add +Gift remember to get present on Friday +high");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+		assertEquals("+Gift", todoStorage.getAll().get(1).getCategory());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(1).getPriority());
+	}
+	
+	/***************************************** Section 8 ***********************************************/
+	@Test
+	public void testAddPriorityCategoryRandomPlace7() {
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
+		appLogic.processCommand("add remember to get present on Friday +Gift+high");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+		assertEquals("+Gift", todoStorage.getAll().get(1).getCategory());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(1).getPriority());
+	}
+
+	@Test
+	public void testAddPriorityCategoryRandomPlace8() {
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
+		appLogic.processCommand("add remember to get present +medium+Gift on Friday");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+		assertEquals("+Gift", todoStorage.getAll().get(1).getCategory());
+		assertEquals(ToDo.Priority.MEDIUM, todoStorage.getAll().get(1).getPriority());
+	}
+
+	@Test
+	public void testAddPriorityCategoryRandomPlace9() {
+		LocalDateTime expectedDate = calcNextFriday(new LocalDateTime());
+		appLogic.processCommand("add +Gift+high remember to get present on Friday");
+
+		assertEquals(2, todoStorage.count());
+		assertEquals("remember to get present on Friday", todoStorage.getAll()
+				.get(1).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(1).getEndDate());
+		assertEquals("+Gift", todoStorage.getAll().get(1).getCategory());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(1).getPriority());
+	}
+	/****************************************************** End *******************************************************/
+	private LocalDateTime calcNextFriday(LocalDateTime d) {
+		if (d.getDayOfWeek() >= DateTimeConstants.FRIDAY) {
+			d = d.plusWeeks(1);
+		}
+		return d.withDayOfWeek(DateTimeConstants.FRIDAY).withHourOfDay(23)
+				.withMinuteOfHour(59).withSecondOfMinute(0)
+				.withMillisOfSecond(0);
+	}
+
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\test\java\com\the\todo\command\AddFunctionTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\test\java\com\the\todo\command\EditFunctionTest.java
+	 */
+
+
+public class EditFunctionTest {
+
+	private Logic appLogic;
+	private ToDoStore todoStorage;
+
+	@Before
+	public void setUp() throws Exception {
+		FileHandler.writeFile("thetodo.json", "");
+		appLogic = new Logic();
+		appLogic.processCommand("add CS2013 IVLE quiz");
+		todoStorage = appLogic.getTodoStorage();
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		appLogic = null;
+		todoStorage = null;
+		FileHandler.writeFile("thetodo.json", "");
+	}
+
+	/***************************************** Section 1 ***********************************************/
+	@Test
+	public void testUpdateTitle() {
+		appLogic.processCommand("edit 1 -title CS2101 developer guide");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("CS2101 developer guide", todoStorage.getAll().get(0)
+				.getTitle());
+	}
+
+	@Test
+	public void testUpdateCategory() {
+		appLogic.processCommand("edit 1 -category +test");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("+test", todoStorage.getAll().get(0).getCategory());
+	}
+	
+	@Test
+	public void testUpdatePriority() {
+		appLogic.processCommand("edit 1 -priority +high");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(0).getPriority());
+	}
+
+	@Test
+	public void testRemoveStartDateNumberFormat() throws Exception {
+		LocalDateTime expectedDate = ToDo.INVALID_DATE;
+		LocalDateTime expectedEndDate = new LocalDateTime(DateAndTimeParser
+				.parse("30/10/2014").get(0).getDates().get(0));
+		appLogic.processCommand("edit 1 -startdate 29/09/2014 -enddate 30/10/2014");
+		appLogic.processCommand("edit 1 -removestart");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals(expectedDate, todoStorage.getAll().get(0).getStartDate());
+		assertEquals(expectedEndDate, todoStorage.getAll().get(0).getEndDate());
+	}
+	
+	@Test
+	public void testRemoveEndDateNumberFormat() throws Exception {
+		LocalDateTime expectedDate = ToDo.INVALID_DATE;
+		appLogic.processCommand("edit 1 -enddate 29/09/2014");
+		appLogic.processCommand("edit 1 -removeend");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
+	}
+
+	@Test
+	public void testRemoveEndDateRelativeDateFormat() throws Exception {
+		LocalDateTime expectedDate = ToDo.INVALID_DATE;
+		appLogic.processCommand("edit 1 -enddate monday");//today can, friday cannot
+		appLogic.processCommand("edit 1 -removeend");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
+	}
+
+	/***************************************** Section 2 ***********************************************/
+	@Test
+	public void testUpdateT() {
+		appLogic.processCommand("edit 1 -t Test short form");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("Test short form", todoStorage.getAll().get(0).getTitle());
+	}
+
+	@Test
+	public void testUpdateC() {
+		appLogic.processCommand("edit 1 -c +ShortForm");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("+ShortForm", todoStorage.getAll().get(0).getCategory());
+	}
+	
+	@Test
+	public void testUpdateP() {
+		appLogic.processCommand("edit 1 -p +Medium");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals(ToDo.Priority.MEDIUM, todoStorage.getAll().get(0).getPriority());
+	}
+
+	@Test
+	public void testRemoveSDateNumberFormat() throws Exception {
+		LocalDateTime expectedDate = ToDo.INVALID_DATE;
+		LocalDateTime expectedEndDate = new LocalDateTime(DateAndTimeParser
+				.parse("30/10/2014").get(0).getDates().get(0));
+		appLogic.processCommand("edit 1 -s 29/09/2014 -e 30/10/2014");
+		appLogic.processCommand("edit 1 -rs");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals(expectedDate, todoStorage.getAll().get(0).getStartDate());
+		assertEquals(expectedEndDate, todoStorage.getAll().get(0).getEndDate());
+	}
+
+	@Test
+	public void testRemoveEDateNumberFormat() throws Exception {
+		LocalDateTime expectedDate = ToDo.INVALID_DATE;
+		appLogic.processCommand("edit 1 -e 29/09/2014");
+		appLogic.processCommand("edit 1 -re");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
+	}
+
+	@Test
+	public void testRemoveEDateRelativeDateFormat() throws Exception {
+		LocalDateTime expectedDate = ToDo.INVALID_DATE;
+		appLogic.processCommand("edit 1 -e friday");
+		appLogic.processCommand("edit 1 -re");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
+	}
+
+	/***************************************** Section 3 ***********************************************/
+	@Test
+	public void testUpdateTitleWithCategory() {
+		appLogic.processCommand("edit 1 -title CS2101 developer guide -category +test");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("CS2101 developer guide", todoStorage.getAll().get(0)
+				.getTitle());
+		assertEquals("+test", todoStorage.getAll().get(0).getCategory());
+	}
+	
+	@Test
+	public void testUpdateTitleWithPriority() {
+		appLogic.processCommand("edit 1 -title CS2101 developer guide -priority +High");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("CS2101 developer guide", todoStorage.getAll().get(0)
+				.getTitle());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(0).getPriority());
+	}
+
+	@Test
+	public void testUpdateTitleWithEndDateNumberFormat() throws Exception {
+		LocalDateTime expectedDate = new LocalDateTime(DateAndTimeParser
+				.parse("25/05/2014").get(0).getDates().get(0));
+		appLogic.processCommand("edit 1 -title End Date Test -enddate 25/05/2014");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("End Date Test", todoStorage.getAll().get(0).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
+	}
+
+	@Test
+	public void testUpdateTitleWithEndDateRelativeFormat() throws Exception {
+		LocalDateTime expectedDate = new LocalDateTime(DateAndTimeParser
+				.parse("friday").get(0).getDates().get(0));
+		appLogic.processCommand("edit 1 -title End Date Test(Relative Date) -enddate friday");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("End Date Test(Relative Date)", todoStorage.getAll()
+				.get(0).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
+	}
+
+	@Test
+	public void testUpdateTitleWithStartAndEndDateRelativeFormat()
+			throws Exception {
+		LocalDateTime expectedDate1 = new LocalDateTime(DateAndTimeParser
+				.parse("friday").get(0).getDates().get(0));
+		LocalDateTime expectedDate2 = new LocalDateTime(DateAndTimeParser
+				.parse("tuesday").get(0).getDates().get(0));
+
+		assertEquals(1, todoStorage.count());
+
+		appLogic.processCommand("edit 1 -startdate tuesday -enddate friday");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals(expectedDate2, todoStorage.getAll().get(0).getStartDate());
+		assertEquals(expectedDate1, todoStorage.getAll().get(0).getEndDate());
+	}
+
+	@Test
+	public void testUpdateTitleWithStartAndEndDateNumberFormat()
+			throws Exception {
+		LocalDateTime expectedDate1 = new LocalDateTime(DateAndTimeParser
+				.parse("25/05/2014").get(0).getDates().get(0));
+		LocalDateTime expectedDate2 = new LocalDateTime(DateAndTimeParser
+				.parse("1/04/2014").get(0).getDates().get(0));
+		appLogic.processCommand("edit 1 -startdate 1/04/2014 -enddate 25/05/2014");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals(expectedDate2, todoStorage.getAll().get(0).getStartDate());
+		assertEquals(expectedDate1, todoStorage.getAll().get(0).getEndDate());
+	}
+
+	/***************************************** Section 4 ***********************************************/
+	@Test
+	public void testUpdateTWithC() {
+		appLogic.processCommand("edit 1 -t CS2101 developer guide -c +test");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("CS2101 developer guide", todoStorage.getAll().get(0)
+				.getTitle());
+		assertEquals("+test", todoStorage.getAll().get(0).getCategory());
+	}
+	
+	@Test
+	public void testUpdateTWithP() {
+		appLogic.processCommand("edit 1 -t CS2101 developer guide -p +Low");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("CS2101 developer guide", todoStorage.getAll().get(0)
+				.getTitle());
+		assertEquals(ToDo.Priority.LOW, todoStorage.getAll().get(0).getPriority());
+	}
+
+//	@Test
+//	public void testUpdateTWithSDateNumberFormat() throws Exception {
+//		LocalDateTime expectedDate = new LocalDateTime(DateAndTimeParser
+//				.parse("30/03/2015").get(0).getDates().get(0));
+//		appLogic.processCommand("edit 1 -s 01/01/2015 -e 05/05/2015");
+//		appLogic.processCommand("edit 1 -t Start Date Test -s 30/03/2015");
+//
+//		assertEquals(1, todoStorage.count());
+//		assertEquals("Start Date Test", todoStorage.getAll().get(0).getTitle());
+//		assertEquals(expectedDate, todoStorage.getAll().get(0).getStartDate());
+//	}
+
+	@Test
+	public void testUpdateTWithEDateNumberFormat() throws Exception {
+		LocalDateTime expectedDate = new LocalDateTime(DateAndTimeParser
+				.parse("25/05/2014").get(0).getDates().get(0));
+		appLogic.processCommand("edit 1 -t End Date Test -e 25/05/2014");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("End Date Test", todoStorage.getAll().get(0).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
+	}
+
+	@Test
+	public void testUpdateTWithEDateRelativeFormat() throws Exception {
+		LocalDateTime expectedDate = new LocalDateTime(DateAndTimeParser
+				.parse("friday").get(0).getDates().get(0));
+		appLogic.processCommand("edit 1 -t End Date Test(Relative Date) -e friday");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("End Date Test(Relative Date)", todoStorage.getAll()
+				.get(0).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
+	}
+
+	@Test
+	public void testUpdateTitleWithSAndEDateRelativeFormat() throws Exception {
+		LocalDateTime expectedDate1 = new LocalDateTime(DateAndTimeParser
+				.parse("friday").get(0).getDates().get(0));
+		LocalDateTime expectedDate2 = new LocalDateTime(DateAndTimeParser
+				.parse("tuesday").get(0).getDates().get(0));
+
+		assertEquals(1, todoStorage.count());
+
+		appLogic.processCommand("edit 1 -s tuesday -e friday");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals(expectedDate2, todoStorage.getAll().get(0).getStartDate());
+		assertEquals(expectedDate1, todoStorage.getAll().get(0).getEndDate());
+	}
+
+	@Test
+	public void testUpdateTitleWithSAndEDateNumberFormat() throws Exception {
+		LocalDateTime expectedDate1 = new LocalDateTime(DateAndTimeParser
+				.parse("25/05/2014").get(0).getDates().get(0));
+		LocalDateTime expectedDate2 = new LocalDateTime(DateAndTimeParser
+				.parse("1/04/2014").get(0).getDates().get(0));
+		appLogic.processCommand("edit 1 -s 1/04/2014 -e 25/05/2014");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals(expectedDate2, todoStorage.getAll().get(0).getStartDate());
+		assertEquals(expectedDate1, todoStorage.getAll().get(0).getEndDate());
+	}
+
+	/***************************************** Section 5 ***********************************************/
+	@Test
+	public void testUpdateTitleWithPriorityAndCategory()
+			throws Exception {
+		appLogic.processCommand("edit 1 -title test 3 items -priority +High -category +test");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("test 3 items", todoStorage.getAll().get(0).getTitle());
+		assertEquals("+test", todoStorage.getAll().get(0).getCategory());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(0).getPriority());
+	}
+	
+	@Test
+	public void testUpdateTitleWithCategoryAndStartDateNumberFormat()
+			throws Exception {
+		LocalDateTime expectedDate = new LocalDateTime(DateAndTimeParser
+				.parse("25/05/2014").get(0).getDates().get(0));
+		appLogic.processCommand("edit 1 -title test 3 items -category +test -enddate 25/05/2014");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("test 3 items", todoStorage.getAll().get(0).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
+		assertEquals("+test", todoStorage.getAll().get(0).getCategory());
+	}
+
+	@Test
+	public void testUpdateTitleWithCategoryAndStartDateRelativeFormat()
+			throws Exception {
+		LocalDateTime expectedDate = new LocalDateTime(DateAndTimeParser
+				.parse("friday").get(0).getDates().get(0));
+		appLogic.processCommand("edit 1 -title test 3 items -category +test -enddate friday");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("test 3 items", todoStorage.getAll().get(0).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
+		assertEquals("+test", todoStorage.getAll().get(0).getCategory());
+	}
+	
+	@Test
+	public void testUpdateTitleWithPriorityAndStartDateNumberFormat()
+			throws Exception {
+		LocalDateTime expectedDate = new LocalDateTime(DateAndTimeParser
+				.parse("25/05/2014").get(0).getDates().get(0));
+		appLogic.processCommand("edit 1 -title test 3 items -priority +High -enddate 25/05/2014");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("test 3 items", todoStorage.getAll().get(0).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(0).getPriority());
+	}
+
+	@Test
+	public void testUpdateTitleWithPriorityAndStartDateRelativeFormat()
+			throws Exception {
+		LocalDateTime expectedDate = new LocalDateTime(DateAndTimeParser
+				.parse("friday").get(0).getDates().get(0));
+		appLogic.processCommand("edit 1 -title test 3 items -priority +High -enddate friday");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("test 3 items", todoStorage.getAll().get(0).getTitle());
+		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(0).getPriority());
+	}
+
+	/***************************************** Section 6 ***********************************************/
+	@Test
+	public void testUpdateTitleWithCategoryAndStartAndEndDateRelativeFormat()
+			throws Exception {
+		LocalDateTime expectedDate1 = new LocalDateTime(DateAndTimeParser
+				.parse("25/05/2014").get(0).getDates().get(0));
+		LocalDateTime expectedDate2 = new LocalDateTime(DateAndTimeParser
+				.parse("1/06/2014").get(0).getDates().get(0));
+		appLogic.processCommand("edit 1 -title test 3 items -category +test -startdate 25/05/2014 -enddate 1/06/2014");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("test 3 items", todoStorage.getAll().get(0).getTitle());
+		assertEquals(expectedDate1, todoStorage.getAll().get(0).getStartDate());
+		assertEquals(expectedDate2, todoStorage.getAll().get(0).getEndDate());
+		assertEquals("+test", todoStorage.getAll().get(0).getCategory());
+	}
+	
+	@Test
+	public void testUpdateTitleWithPriorityAndStartAndEndDateRelativeFormat()
+			throws Exception {
+		LocalDateTime expectedDate1 = new LocalDateTime(DateAndTimeParser
+				.parse("25/05/2014").get(0).getDates().get(0));
+		LocalDateTime expectedDate2 = new LocalDateTime(DateAndTimeParser
+				.parse("1/06/2014").get(0).getDates().get(0));
+		appLogic.processCommand("edit 1 -title test 3 items -priority +High -startdate 25/05/2014 -enddate 1/06/2014");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("test 3 items", todoStorage.getAll().get(0).getTitle());
+		assertEquals(expectedDate1, todoStorage.getAll().get(0).getStartDate());
+		assertEquals(expectedDate2, todoStorage.getAll().get(0).getEndDate());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(0).getPriority());
+	}
+	
+	@Test
+	public void testUpdateTitleWithCategoryAndPriorityAndEndDateRelativeFormat()
+			throws Exception {
+		LocalDateTime expectedDate2 = new LocalDateTime(DateAndTimeParser
+				.parse("1/06/2014").get(0).getDates().get(0));
+		appLogic.processCommand("edit 1 -title test 3 items -category +test -priority +High -enddate 1/06/2014");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("test 3 items", todoStorage.getAll().get(0).getTitle());
+		assertEquals(expectedDate2, todoStorage.getAll().get(0).getEndDate());
+		assertEquals("+test", todoStorage.getAll().get(0).getCategory());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(0).getPriority());
+	}
+	
+	/***************************************** Section 7 ***********************************************/
+	@Test
+	public void testUpdateTitleWithCategoryAndPriorityAndStartAndEndDateRelativeFormat()
+			throws Exception {
+		LocalDateTime expectedDate1 = new LocalDateTime(DateAndTimeParser
+				.parse("25/05/2014").get(0).getDates().get(0));
+		LocalDateTime expectedDate2 = new LocalDateTime(DateAndTimeParser
+				.parse("1/06/2014").get(0).getDates().get(0));
+		appLogic.processCommand("edit 1 -title test 3 items -category +test -priority +High -startdate 25/05/2014 -enddate 1/06/2014");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("test 3 items", todoStorage.getAll().get(0).getTitle());
+		assertEquals(expectedDate1, todoStorage.getAll().get(0).getStartDate());
+		assertEquals(expectedDate2, todoStorage.getAll().get(0).getEndDate());
+		assertEquals("+test", todoStorage.getAll().get(0).getCategory());
+		assertEquals(ToDo.Priority.HIGH, todoStorage.getAll().get(0).getPriority());
+	}
+	
+
+	/***************************************** Section 8 ***********************************************/
+	@Test
+	public void testUndo() {
+		appLogic.processCommand("edit 1 -t Test short form");
+		appLogic.processCommand("undo");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals("CS2013 IVLE quiz", todoStorage.getAll().get(0).getTitle());
+	}
+
+	@Test
+	public void testUndoEndDate() {
+		LocalDateTime expectedDate = ToDo.INVALID_DATE;
+		appLogic.processCommand("edit 1 -e 29/09/2014");
+		appLogic.processCommand("undo");
+
+		assertEquals(1, todoStorage.count());
+		assertEquals(expectedDate, todoStorage.getAll().get(0).getEndDate());
+	}
+
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\test\java\com\the\todo\command\EditFunctionTest.java
+
+
+
+
+

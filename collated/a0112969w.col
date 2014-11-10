@@ -1,0 +1,982 @@
+//@author: a0112969w
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoIncomplete.java
+	 */
+
+
+public class ToDoIncomplete extends ToDoCommand {
+
+	private static final String EXECUTE_DOES_NOT_EXIST = "ToDo %s does not exist.";
+	private static final String EXECUTE_ILLEGAL_ARGUMENT = "Seems like you are missing somethings.";
+	private static final String EXECUTE_ERROR = "An error occured while updating ToDo.";
+	private static final String EXECUTE_SUCCESS = "Successful";
+	private static final String EXECUTE_NOTDONE = "Task had been uncompleted";
+
+	private ToDoStore todoStorage;
+	private ToDo newtodo;
+
+	public ToDoIncomplete(ToDoStore todoStorage, ToDo todo) {
+		super();
+		this.todoStorage = todoStorage;
+		this.todo = todo;
+		this.undoable = true;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.the.todo.command.ToDoCommand#performExecute()
+	 * This method will check whether the task exist. If the task does not 
+	 * exist it will send return a error message. It will also check for duplicated commands,
+	 * if the task had been uncompleted and the user entered incomplete command again the method 
+	 * will feedback an error message.
+	 */
+	@Override
+	protected CommandStatus performExecute() {
+		
+		newtodo = new ToDo(todo);
+		todoStorage.update(newtodo.getId(), newtodo);
+
+		if (this.newtodo == null) {
+			return new CommandStatus(Status.ERROR, String.format(
+					EXECUTE_DOES_NOT_EXIST, ""));
+		}
+
+		if(!newtodo.isCompleted()) {
+			return new CommandStatus(Status.ERROR, EXECUTE_NOTDONE);
+		} else {
+			this.newtodo = isIncompleteToDo(this.newtodo);
+		}
+	
+		if (this.newtodo == null) {
+			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
+		}
+
+		return new CommandStatus(Status.SUCCESS, String.format(EXECUTE_SUCCESS,
+				""));
+	}
+
+	@Override
+	protected CommandStatus performUndo() {
+		todoStorage.update(newtodo.getId(), newtodo);
+		this.newtodo = isCompleteToDo(this.newtodo);
+
+		if (this.newtodo == null) {
+			return new CommandStatus(Status.ERROR, EXECUTE_ERROR);
+		}
+
+		return new CommandStatus(Status.SUCCESS, String.format(EXECUTE_SUCCESS,
+				""));
+	}
+
+	private ToDo isIncompleteToDo(ToDo todo) {
+		todo.setCompleted(false);
+		return todo;
+	}
+
+	private ToDo isCompleteToDo(ToDo todo) {
+		todo.setCompleted(true);
+		return todo;
+	}
+	
+	@Override
+	public ToDo getTodo (){
+		return newtodo;
+	}
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\command\ToDoIncomplete.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+	 */
+
+	/**
+	 * Processes user input upon enter pressed.
+	 */
+	public void processInput() {
+		String userInput = mainInput.getText();
+		if (userInput == null || userInput.equals("")) {
+			return;
+		}
+
+		commandHistory.add(userInput);
+
+		processInput(userInput);
+	}
+
+	public void processInput(String userInput) {
+		CommandStatus status = appLogic.processCommand(userInput);
+
+		switch (status.getStatus()) {
+		case SUCCESS:
+			Map<DateCategory, List<ToDo>> newDisplayMap = appLogic
+					.getToDoMapDisplay();
+			List<Object> newDisplayList = mapToList(newDisplayMap);
+
+			switch (appLogic.getLastCommand()) {
+			/* SINGLE CHANGES COMMAND */
+			case ADD:
+			case EDIT:
+			case COMPLETE:
+			case INCOMPLETE:
+			case UNDO:
+				ToDo lastChangedToDo = appLogic.getLastChangedToDo();
+				int changedPosition = newDisplayList.indexOf(lastChangedToDo);
+
+				updateUI(newDisplayMap);
+				if (changedPosition != -1) {
+					scrollToIndex(changedPosition);
+					highlightItem(changedPosition);
+				}
+
+				break;
+
+			case DELETE:
+				updateUI(newDisplayMap);
+				showPrompt("Deleted successfully", Status.SUCCESS);
+				break;
+
+			/* COMMAND THAT GIVES CUSTOMIZED VIEW */
+			case VIEW:
+			case SEARCH:
+				updateUI(newDisplayMap);
+				scrollToIndex(0);
+				break;
+
+			case INVALID:
+			default:
+				break;
+			}
+
+			updateOldItems(newDisplayList);
+
+			break;
+
+		case ERROR:
+			// Fallthrough
+
+		case INVALID:
+			// Fallthrough
+
+		default:
+			showPrompt(status.getMessage(), Status.INVALID);
+			break;
+		}
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+	 */
+
+	public void showPrompt(String str, Status status) {
+		if (status.equals(Status.SUCCESS)) {
+			promptLabel.setStyle("-fx-background-color: #43A047");
+		} else {
+			promptLabel.setStyle("-fx-background-color: #B71C1C");
+		}
+
+		if (!str.isEmpty()) {
+			promptLabel.setText(str);
+
+			Platform.runLater(new Runnable() {
+				public void run() {
+					promptLabel.setOpacity(1);
+					fadeOut.setToValue(0.0);
+					fadeOut.playFromStart();
+				}
+			});
+		}
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+	 */
+
+	public void updateUI(Map<DateCategory, List<ToDo>> todoItems) {
+		clearUI();
+
+		int index = 1;
+		ObservableList<Node> newVBoxItems = mainVBox.getChildren();
+
+		if (todoItems == null || todoItems.isEmpty()) {
+			Label temp = new Label("No items to show.");
+			newVBoxItems.add(temp);
+		} else {
+			Label lblDate;
+
+			for (Entry<DateCategory, List<ToDo>> entry : todoItems.entrySet()) {
+				System.out.println(entry.getKey() + " = " + entry.getValue());
+				lblDate = createGroupLabel(entry.getKey());
+				newVBoxItems.add(lblDate);
+
+				for (ToDo todo : entry.getValue()) {
+					try {
+						ToDoContainer item = new ToDoContainer(index, todo);
+						detectCheckBoxChanges(item);
+						newVBoxItems.add(item);
+						index++;
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+	 */
+
+	/**
+	 * Listens the change in CheckedProperty of the check box of each task and
+	 * passes it as a command.
+	 * 
+	 * @param ToDoContainer
+	 *            which is a collection of fxml components of each task
+	 */
+	private void detectCheckBoxChanges(ToDoContainer container) {
+		container.getCheckedProperty().addListener(
+				new ChangeListener<Boolean>() {
+					@Override
+					public void changed(ObservableValue<? extends Boolean> ov,
+							Boolean old_val, Boolean new_val) {
+
+						if (new_val) {
+							processInput("complete " + container.getID());
+						} else {
+							processInput("incomplete " + container.getID());
+						}
+
+					}
+				});
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+	 */
+
+	private void initilizeHandlers() {
+		ctrlUpHandler = new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent keyevent) {
+				if (keyevent.getCode().equals(KeyCode.UP)
+						&& keyevent.isControlDown()) {
+					mainScrollpane.setVvalue(mainScrollpane.getVvalue() - 0.1);
+				}
+			}
+		};
+
+		ctrlDownHandler = new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent keyevent) {
+				if (keyevent.getCode().equals(KeyCode.DOWN)
+						&& keyevent.isControlDown()) {
+					mainScrollpane.setVvalue(mainScrollpane.getVvalue() + 0.1);
+				}
+			}
+		};
+
+		ctrlZHandler = new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent keyevent) {
+				if (keyevent.getCode().equals(KeyCode.Z)
+						&& keyevent.isControlDown()) {
+					processInput("undo");
+				}
+			}
+		};
+
+		upHandler = new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent keyevent) {
+				if (keyevent.getCode().equals(KeyCode.UP)
+						&& !keyevent.isControlDown()) {
+					String prevCmd = commandHistory.previous();
+					if (prevCmd != null) {
+						mainInput.setText(prevCmd);
+					}
+					mainInput.end();
+					keyevent.consume();
+				}
+			}
+		};
+
+		downHandler = new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent keyevent) {
+				if (keyevent.getCode().equals(KeyCode.DOWN)
+						&& !keyevent.isControlDown()) {
+					String nextCmd = commandHistory.next();
+					if (nextCmd != null) {
+						mainInput.setText(nextCmd);
+					} else {
+						mainInput.setText("");
+					}
+					mainInput.end();
+					keyevent.consume();
+				}
+			}
+		};
+
+		mainInputFocusListener = new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable,
+					Boolean oldValue, Boolean newValue) {
+
+				if (oldValue == true && newValue == false) {
+					mainInput.requestFocus();
+				}
+			}
+		};
+
+		inputChangeListener = new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> ov,
+					String oldStr, String newStr) {
+				ToDoHint hint = new ToDoHint(appLogic, newStr);
+				String str = hint.getHints();
+				hintLabel.setText(str);
+			}
+		};
+	}
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\MainToDoController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+	 */
+
+	public ToDoContainer() {
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(
+				"/fxml/todoContainer.fxml"));
+		fxmlLoader.setRoot(this);
+		fxmlLoader.setController(this);
+
+		try {
+			fxmlLoader.load();
+
+		} catch (IOException exception) {
+			throw new RuntimeException(exception);
+		}
+	}
+
+	public ToDoContainer(int id, ToDo todo) throws Exception {
+		this();
+		this.todo = todo;
+		this.id = id;
+		if (!isValidTodo(todo)) {
+			throw new Exception("Invalid todo");
+		} else {
+			setID(id);
+			setTitle(todo);
+			setDate(todo);
+			setCategory(todo.getCategory());
+			setComplete(todo.isCompleted());
+			setType();
+			setPriority();
+		}
+
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+	 */
+
+	private void setID(int id) {
+		todoID.setText(String.valueOf(id));
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+	 */
+
+	private void setTitle(ToDo todo) {
+		todoTitle.setText(todo.getTitle());
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+	 */
+
+	private void setCategory(String category) {
+		if (category != null)
+			todoMisc.setText(category);
+	}
+
+	private void setComplete(Boolean isCompleted) {
+		completeChkBox.setSelected(isCompleted);
+		if (todo.isTimedToDo())
+			completeChkBox.setDisable(true);
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+	 */
+
+	/**
+	 * Add a label indicating the type of task behind the title.
+	 */
+	private void setType() {
+		Type type = todo.getType();
+		Node typeTag;
+
+		if (type.equals(Type.DEADLINE)) {
+			typeTag = createTag("Deadline", "lightgreen");
+		} else if (type.equals(Type.FLOATING)) {
+			typeTag = createTag("Floating", "yellow");
+		} else {
+			typeTag = createTag("Timed", "lightblue");
+		}
+
+		todoTitle.setContentDisplay(ContentDisplay.RIGHT);
+		hbox.getChildren().add(typeTag);
+		todoTitle.setGraphic(hbox);
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+	 */
+
+	/**
+	 * Creates a node object to be used to display priority and type of the
+	 * ToDo.
+	 * 
+	 * @param text
+	 * @param color
+	 * @return A label node with background color of the parameter color and
+	 *         relative text color
+	 *
+	 */
+	private Node createTag(String text, String color) {
+		Label tag = new Label(text);
+
+		tag.setStyle("-fx-background-color:" + color + ";"
+				+ "-fx-background-radius: 1em;" + "-fx-font-size: 0.95em;"
+				+ "-fx-padding: 0 5 0 5 ;" + "background:" + color + ";"
+				+ "-fx-text-fill: ladder(background, white 49%, black 50%);");
+		return tag;
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+	 */
+
+	public BooleanProperty getCheckedProperty() {
+		return completeChkBox.selectedProperty();
+
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+	 */
+
+	public int getID() {
+		return id;
+	}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoContainer.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoHint.java
+	 */
+
+
+public class ToDoHint {
+
+	final String ADD_HINT = "add [Task] from [Start Date] to/on/by [End Date] at [Time] +[Category] +[Priority]";
+	final String SEARCH_HINT = "search [Keyword]/[Category]";
+	final String DELETE_HINT = "delete [ID]";
+	final String  EDIT_HINT= "edit [ID] -title [title] -category [Category] -startdate [Start Date] -enddate [End Date] -priority [Priority] ";
+	final String VIEW_HINT = "view all/completed/incomplete";
+	final String COMPLETE_HINT = "complete [ID]";
+	final String INCOMPLETE_HINT = "incomplete [ID]";
+	final String UNDO_HINT = "undo";
+	private String string ;
+	private Logic logic;
+
+	public ToDoHint( Logic logic, String recentlyTypedStr){ 
+		this.logic = logic;
+		this.string = recentlyTypedStr;		
+
+	}
+
+	public String getHints(){ 
+
+		CommandType command = determineCommand(string.toLowerCase());
+
+		switch (command){
+		case ADD:
+			return ADD_HINT; 
+		case COMPLETE:
+			return COMPLETE_HINT;
+		case DELETE:
+			return DELETE_HINT;
+		case EDIT:
+			return EDIT_HINT;
+		case INCOMPLETE:
+			return INCOMPLETE_HINT;
+		case INVALID:
+			return "";
+		case SEARCH:
+			return SEARCH_HINT;
+		case UNDO:
+			return UNDO_HINT;
+		case VIEW:
+			return VIEW_HINT;
+		default:
+			return "";
+
+		}
+	}
+
+	/**
+	 * Determines the CommandType of the string if string is part of the valid Command. 
+	 * @param string
+	 * @return CommandType according to string.
+	 */
+	private CommandType determineCommand(String string){ 
+		if (string.isEmpty())
+			return CommandType.INVALID;
+
+		for (CommandType command : CommandType.values()){ 
+			if (command.toString().toLowerCase().startsWith(string))
+				return command; 
+		}
+
+		return logic.getCommandType(string); 
+
+	}
+
+
+}
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\main\java\com\the\todo\ToDoHint.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\test\java\com\the\todo\parser\CommandParserTest.java
+	 */
+
+
+public class CommandParserTest {
+
+	private Logic appLogic;
+	private ToDoStore todoStorage;
+
+	@Before
+	public void setUp() throws Exception {
+		FileHandler.writeFile("thetodo.json", "");
+		appLogic = new Logic();
+		appLogic.processCommand("add CS2013 IVLE quiz");
+		todoStorage = appLogic.getTodoStorage();
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		appLogic = null;
+		todoStorage = null;
+		FileHandler.writeFile("thetodo.json", "");
+	}
+
+	@Test
+	public void testRead() {
+		assertEquals(1, todoStorage.count());
+	}
+
+	@Test
+	public void testDelete() {
+		appLogic.processCommand("delete 1");
+
+		assertEquals(0, todoStorage.count());
+	}
+	
+	@Test
+	public void testDeleteUpperCase() {
+		appLogic.processCommand("DELETE 1");
+
+		assertEquals(0, todoStorage.count());
+	}
+	
+	@Test
+	public void testRM() {
+		appLogic.processCommand("rm 1");
+
+		assertEquals(0, todoStorage.count());
+	}
+	
+	@Test
+	public void testRMUpperCase() {
+		appLogic.processCommand("RM 1");
+
+		assertEquals(0, todoStorage.count());
+	}
+	
+	@Test
+	public void testShortFormDelete() {
+		appLogic.processCommand("d 1");
+
+		assertEquals(0, todoStorage.count());
+	}
+	
+	@Test
+	public void testShortFormDeleteUpperCase() {
+		appLogic.processCommand("D 1");
+
+		assertEquals(0, todoStorage.count());
+	}
+	
+	@Test
+	public void testDel() {
+		appLogic.processCommand("del 1");
+
+		assertEquals(0, todoStorage.count());
+	}
+	
+	@Test
+	public void testDelUpperCase() {
+		appLogic.processCommand("DEL 1");
+
+		assertEquals(0, todoStorage.count());
+	}
+	
+	@Test
+	public void testComplete() {
+		appLogic.processCommand("complete 1");
+
+		assertEquals(1, todoStorage.count());
+		assertTrue(todoStorage.getAll().get(0).isCompleted());
+	}
+	
+	@Test
+	public void testC() {
+		appLogic.processCommand("c 1");
+
+		assertEquals(1, todoStorage.count());
+		assertTrue(todoStorage.getAll().get(0).isCompleted());
+	}
+	
+	@Test
+	public void testDone() {
+		appLogic.processCommand("done 1");
+
+		assertEquals(1, todoStorage.count());
+		assertTrue(todoStorage.getAll().get(0).isCompleted());
+	}
+	
+	@Test
+	public void testCompleteUpperCase() {
+		appLogic.processCommand("COMPLETE 1");
+
+		assertEquals(1, todoStorage.count());
+		assertTrue(todoStorage.getAll().get(0).isCompleted());
+	}
+	
+	@Test
+	public void testCUpperCase() {
+		appLogic.processCommand("C 1");
+
+		assertEquals(1, todoStorage.count());
+		assertTrue(todoStorage.getAll().get(0).isCompleted());
+	}
+	
+	@Test
+	public void testDoneUpperCase() {
+		appLogic.processCommand("DONE 1");
+
+		assertEquals(1, todoStorage.count());
+		assertTrue(todoStorage.getAll().get(0).isCompleted());
+	}
+	
+	
+	@Test
+	public void testUndoComplete() {
+		appLogic.processCommand("complete 1");
+		appLogic.processCommand("undo");
+
+		assertEquals(1, todoStorage.count());
+		assertFalse(todoStorage.getAll().get(0).isCompleted());
+	}
+	
+	@Test
+	public void testUndoCompleteUpperCase() {
+		appLogic.processCommand("COMPLETE 1");
+		appLogic.processCommand("UNDO");
+
+		assertEquals(1, todoStorage.count());
+		assertFalse(todoStorage.getAll().get(0).isCompleted());
+	}
+	
+	@Test
+	public void testInComplete() {
+		appLogic.processCommand("incomplete 1");
+
+		assertEquals(1, todoStorage.count());
+		assertFalse(todoStorage.getAll().get(0).isCompleted());
+	}
+	
+	@Test
+	public void testUndoInComplete() {
+		appLogic.processCommand("complete 1");
+		appLogic.processCommand("incomplete 1");
+		appLogic.processCommand("undo");
+
+		assertEquals(1, todoStorage.count());
+		assertTrue(todoStorage.getAll().get(0).isCompleted());
+	}
+	
+	
+	@Test
+	public void testUndoInCompleteUpperCase() {
+		appLogic.processCommand("COMPLETE 1");
+		appLogic.processCommand("INCOMPLETE 1");
+		appLogic.processCommand("UNDO");
+
+		assertEquals(1, todoStorage.count());
+		assertTrue(todoStorage.getAll().get(0).isCompleted());
+	}
+	
+}
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\test\java\com\the\todo\parser\CommandParserTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\src\test\java\com\the\todo\parser\DateParserTest.java
+	 */
+
+
+public class DateParserTest {
+
+	List<DateGroup> groups = null;
+	
+	@Test
+	public void parseTest1() throws Exception {
+		String input = "study for exams";
+		List<DateGroup> groups = DateAndTimeParser.parse(input);
+		for (DateGroup group : groups) {
+			System.out.println(group.getDates());
+		}
+		assertEquals(0, groups.size());
+	}
+
+	@Test
+	public void parseTest2() throws Exception {
+		String input = "study for exams on 25/02/14";
+
+		List<DateGroup> groups = DateAndTimeParser.parse(input);
+		for (DateGroup group : groups) {
+			System.out.println(group.getDates());
+		}
+		assertEquals(1, groups.get(0).getDates().size());
+	}
+	
+	@Test
+	public void parseTest3() throws Exception {
+		String input = "study for exams on Friday 2pm";
+
+		List<DateGroup> groups = DateAndTimeParser.parse(input);
+		for (DateGroup group : groups) {
+			System.out.println(group.getDates());
+		}
+		assertEquals(1, groups.get(0).getDates().size());
+	}
+	
+	@Test
+	public void parseTest4() throws Exception {
+		String input = "study for exams on today 2pm to tomorrow 6pm";
+
+		List<DateGroup> groups = DateAndTimeParser.parse(input);
+		for (DateGroup group : groups) {
+			System.out.println(group.getDates());
+		}
+		assertEquals(2, groups.get(0).getDates().size());
+	}
+	
+	@Test
+	public void parseTest5() throws Exception {
+		String input = "do 3 PC1432 pyp on today 2pm to tomorrow 6pm";
+		
+		List<DateGroup> groups = DateAndTimeParser.parse(input);
+		for (DateGroup group : groups) {
+			System.out.println(group.getDates());
+		}
+		assertEquals(2, groups.get(0).getDates().size());
+	}
+
+	@Test
+	public void checkValidDatesTest1() {
+		String input = "study for exams on 29/02/2016";
+		assertTrue(DateAndTimeParser.checkValidDates(input));
+	}
+
+	@Test
+	public void checkValidDatesTest2() {
+		String input = "study for exams on 29/02/2014";
+		assertFalse(DateAndTimeParser.checkValidDates(input));
+	}
+
+	@Test
+	public void checkValidDatesTest3() {
+		String input = "study for exams on 29-01-14";
+		assertTrue(DateAndTimeParser.checkValidDates(input));
+	}
+
+	@Test
+	public void changeDateStringsFormatTest1() {
+		String expected = "study for exams from 2014/08/04 to 2014/08/30";
+		String actual = DateAndTimeParser
+				.changeDateStringsFormat("study for exams from 04/08/2014 to 30/08/2014");
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void changeDateStringsFormatTest2() {
+		String expected = "study for exams from 2014/08/04 to 2014/02/28";
+		String actual = DateAndTimeParser
+				.changeDateStringsFormat("study for exams from 2014/08/04 to 28/2/2014");
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void changeDateStringsFormatTest3() {
+		String expected = "study for exams from 29/02/14 to 2015/02/28";
+		String actual = DateAndTimeParser
+				.changeDateStringsFormat("study for exams from 29/02/14 to 28/2/2015");
+
+		assertEquals(expected, actual);
+	}
+
+}
+	// End of segment: C:\Users\KaiHsiang\Documents\main\src\test\java\com\the\todo\parser\DateParserTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\KaiHsiang\Documents\main\todoContainer.java
+	 */
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<fx:root id="root" type="javafx.scene.layout.AnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label id="todoID" fx:id="todoID" layoutX="35.0" layoutY="156.0" prefWidth="50.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <VBox fillWidth="false" layoutX="226.0" layoutY="89.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label id="todoTitle" fx:id="todoTitle" maxWidth="650.0" wrapText="true">
+            </Label>
+            <HBox fx:id="todoDate" alignment="CENTER_LEFT" spacing="5.0" />
+            <Label fx:id="todoMisc" wrapText="true" />
+         </children>
+         <padding>
+            <Insets left="5.0" />
+         </padding>
+      </VBox>
+      <CheckBox fx:id="completeChkBox" layoutX="31.0" layoutY="18.0" mnemonicParsing="false" AnchorPane.rightAnchor="0.0" />
+   </children>
+   <padding>
+      <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+   </padding>
+</fx:root>
+
+	// End of segment: C:\Users\KaiHsiang\Documents\main\todoContainer.java
+
+
+
+
+
