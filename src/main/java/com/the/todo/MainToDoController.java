@@ -85,12 +85,9 @@ public class MainToDoController {
 	@FXML
 	private Pane appTitleIcon;
 
-	private FadeTransition fadeOut;
-
 	private Logic appLogic = Logic.getInstance();
-
 	private CommandHistory commandHistory = new CommandHistory();
-
+	private FadeTransition fadeOut;
 	private ArrayList<Object> oldVBoxItems = new ArrayList<Object>();
 
 	/************************ ALL HANDLERS ***************************/
@@ -135,7 +132,7 @@ public class MainToDoController {
 
 	public void processInput() {
 		String userInput = mainInput.getText();
-		if (userInput == null || userInput.equals("")){
+		if (userInput == null || userInput.equals("")) {
 			return;
 		}
 
@@ -150,11 +147,12 @@ public class MainToDoController {
 
 		switch (status.getStatus()) {
 		case SUCCESS:
-			Map<DateCategory, List<ToDo>> newDisplayMap = appLogic.getToDoMapDisplay();
+			Map<DateCategory, List<ToDo>> newDisplayMap = appLogic
+					.getToDoMapDisplay();
 			List<Object> newDisplayList = mapToList(newDisplayMap);
-			
-			switch (appLogic.getLastCommand()){
-			/*SINGLE CHANGES COMMAND*/
+
+			switch (appLogic.getLastCommand()) {
+			/* SINGLE CHANGES COMMAND */
 			case ADD:
 			case EDIT:
 			case COMPLETE:
@@ -163,85 +161,33 @@ public class MainToDoController {
 				ToDo lastChangedToDo = appLogic.getLastChangedToDo();
 				int changedPosition = newDisplayList.indexOf(lastChangedToDo);
 				updateUI(newDisplayMap);
-				if (changedPosition != -1){
+				if (changedPosition != -1) {
 					scrollToIndex(changedPosition);
 					highlightItem(changedPosition);
 				}
 				break;
-				
+
 			case DELETE:
 				updateUI(newDisplayMap);
 				showPrompt("Deleted successfully", Status.SUCCESS);
 				break;
-			
-			/*COMMAND THAT GIVES CUSTOMIZED VIEW*/
+
+			/* COMMAND THAT GIVES CUSTOMIZED VIEW */
 			case VIEW:
 			case SEARCH:
 				updateUI(newDisplayMap);
 				mainScrollpane.setVvalue(0);
 				break;
-			
+
 			case INVALID:
 			default:
 				break;
 			}
+
 			oldVBoxItems.clear();
 			oldVBoxItems.addAll(newDisplayList);
-			
+
 			break;
-			
-			
-//			switch (appLogic.getDisplayType()) {
-//			case ALL:
-//				List<Object> newDisplayList = mapToList(newDisplayMap);
-//				int changedPosition;
-//				
-//				if (oldVBoxItems.size() <= newDisplayList.size()) {
-//					changedPosition = indexOfFirstChangedToDo(oldVBoxItems,
-//							newDisplayList);
-//					updateUI(newDisplayMap);
-//					if (changedPosition != -1){
-//						scrollToIndex(changedPosition);
-//						highlightItem(changedPosition);
-//					}
-//					
-//				} else {
-//					changedPosition = indexOfFirstChangedToDo(
-//							newDisplayList, oldVBoxItems);
-//					scrollToIndex(changedPosition);
-//					Node changedItem = mainVBox.getChildren().get(
-//							changedPosition);
-//					FadeTransition ft = new FadeTransition(
-//							Duration.millis(1000), changedItem);
-//					ft.setFromValue(1.0);
-//					ft.setToValue(0);
-//					ft.play();
-//					Timer timer = new Timer();
-//					timer.schedule(new TimerTask() {
-//						@Override
-//						public void run() {
-//							Platform.runLater(new Runnable() {
-//								public void run() {
-//									updateUI(newDisplayMap);
-//								}
-//							});
-//						}
-//					}, 1000);
-//				}
-//				oldVBoxItems.clear();
-//				oldVBoxItems.addAll(newDisplayList);
-//				break;
-//
-//			case SEARCH:
-//				updateUI(newDisplayMap);
-//				mainScrollpane.setVvalue(0);
-//				oldVBoxItems.clear();
-//				break;
-//
-//			default:
-//				break;
-//			}
-//			break;
 
 		case ERROR:
 			// Fallthrough
@@ -256,19 +202,20 @@ public class MainToDoController {
 	}
 
 	private void highlightItem(int index) {
-		mainVBox.getChildren().get(index).setStyle("-fx-background-color: #E8F5E9;");
+		mainVBox.getChildren().get(index)
+				.setStyle("-fx-background-color: #E8F5E9;");
 	}
 
 	public void showPrompt(String str, Status status) {
-		if (status.equals(Status.SUCCESS)){
+		if (status.equals(Status.SUCCESS)) {
 			promptLabel.setStyle("-fx-background-color: #43A047");
 		} else {
 			promptLabel.setStyle("-fx-background-color: #B71C1C");
 		}
-		
+
 		if (!str.isEmpty()) {
 			promptLabel.setText(str);
-			
+
 			Platform.runLater(new Runnable() {
 				public void run() {
 					promptLabel.setOpacity(1);
@@ -282,55 +229,6 @@ public class MainToDoController {
 	public void clearUI() {
 		mainInput.clear();
 		mainVBox.getChildren().clear();
-	}
-
-	/**
-	 * @param label
-	 *            Text to be displayed by mainLabel
-	 * @param todoItems
-	 *            List of ToDo to be displayed in mainVbox
-	 */
-	public void updateUI(List<ToDo> todoItems) {
-		clearUI();
-		int index = 1;
-
-		ArrayList<Node> contentsToDisplay = new ArrayList<Node>();
-
-		if (todoItems.isEmpty()) {
-			Label temp = new Label("No items to show.");
-			contentsToDisplay.add(temp);
-		} else {
-			// Implement main label here (Date-ToDo, search, view)
-
-			for (ToDo todo : todoItems) {
-				try {
-					ToDoContainer temp = new ToDoContainer(index, todo);
-					contentsToDisplay.add(temp);
-					temp.getCheckedProperty().addListener(
-							new ChangeListener<Boolean>() {
-								@Override
-								public void changed(
-										ObservableValue<? extends Boolean> ov,
-										Boolean old_val, Boolean new_val) {
-									if (new_val) {
-										processInput("complete " + temp.getID());
-									} else {
-										processInput("incomplete "
-												+ temp.getID());
-									}
-								}
-							});
-
-					index++;
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-			}
-		}
-		mainVBox.getChildren().setAll(contentsToDisplay);
-
 	}
 
 	public void updateUI(Map<DateCategory, List<ToDo>> todoItems) {
@@ -385,8 +283,6 @@ public class MainToDoController {
 	}
 
 	public Label createGroupLabel(DateCategory date) {
-
-		//LocalDate currentDate = new LocalDate();
 		Label label = new Label(date.toString());
 
 		if (date.equals(DateCategory.OVERDUE)) {
@@ -395,8 +291,8 @@ public class MainToDoController {
 
 		label.getStyleClass().add("groupLabel");
 		label.setMaxWidth(Double.MAX_VALUE);
-		return label;
 
+		return label;
 	}
 
 	private void generateAllReminders() {
@@ -417,16 +313,18 @@ public class MainToDoController {
 		mainScrollpane.applyCss();
 		mainScrollpane.layout();
 
-		double yValue = mainVBox.getChildren().get(index).getLayoutY();
+		double vBoxHeight = mainVBox.getHeight();
+		double scrollPaneHeight = mainScrollpane.getViewportBounds()
+				.getHeight();
 
-		if (mainVBox.getHeight() > mainScrollpane.getViewportBounds()
-				.getHeight()) {
-			mainScrollpane.setVvalue(yValue
-					/ (mainVBox.getHeight() - mainScrollpane
-							.getViewportBounds().getHeight()));
-		} else {
-			mainScrollpane.setVvalue(0);
+		double yValue = mainVBox.getChildren().get(index).getLayoutY();
+		double vValue = 0;
+
+		if (vBoxHeight > scrollPaneHeight) {
+			vValue = yValue / (vBoxHeight - scrollPaneHeight);
 		}
+
+		mainScrollpane.setVvalue(vValue);
 	}
 
 	private List<Object> mapToList(Map<DateCategory, List<ToDo>> map) {
@@ -439,24 +337,6 @@ public class MainToDoController {
 			}
 		}
 		return list;
-	}
-
-	private static int indexOfFirstChangedToDo(List<Object> oldList,
-			List<Object> newList) {
-
-		if (oldList.size() <= newList.size()) {
-			List<Object> oldCopy = new ArrayList<Object>(oldList);
-			List<Object> newCopy = new ArrayList<Object>(newList);
-
-			newCopy.removeAll(oldCopy);
-
-			for (Object item : newCopy) {
-				if (item instanceof ToDo){
-					return newList.indexOf(item);
-				}
-			}
-		}
-		return -1;
 	}
 
 	private void scrollToToday() {
@@ -501,7 +381,8 @@ public class MainToDoController {
 		upHandler = new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent keyevent) {
-				if (keyevent.getCode().equals(KeyCode.UP) && !keyevent.isControlDown()) {
+				if (keyevent.getCode().equals(KeyCode.UP)
+						&& !keyevent.isControlDown()) {
 					String prevCmd = commandHistory.previous();
 					if (prevCmd != null) {
 						mainInput.setText(prevCmd);
@@ -515,7 +396,8 @@ public class MainToDoController {
 		downHandler = new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent keyevent) {
-				if (keyevent.getCode().equals(KeyCode.DOWN) && !keyevent.isControlDown()) {
+				if (keyevent.getCode().equals(KeyCode.DOWN)
+						&& !keyevent.isControlDown()) {
 					String nextCmd = commandHistory.next();
 					if (nextCmd != null) {
 						mainInput.setText(nextCmd);
@@ -543,7 +425,7 @@ public class MainToDoController {
 			@Override
 			public void changed(ObservableValue<? extends String> ov,
 					String oldStr, String newStr) {
-				ToDoHint hint = new ToDoHint(appLogic,newStr);
+				ToDoHint hint = new ToDoHint(appLogic, newStr);
 				String str = hint.getHints();
 				hintLabel.setText(str);
 			}
