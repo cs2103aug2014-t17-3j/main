@@ -48,8 +48,9 @@ import com.the.todo.model.ToDo;
 import com.the.todo.model.ToDo.Priority;
 import com.the.todo.model.ToDo.Type;
 
-
 public class ToDoContainer extends AnchorPane {
+	private static final String DATE_PATTERN = "dd-MM-yy";
+	private static final String TIME_PATTERN = "h:mm a";
 
 	private ToDo todo;
 	@FXML
@@ -60,15 +61,14 @@ public class ToDoContainer extends AnchorPane {
 	private HBox todoDate;
 	@FXML
 	private Label todoMisc;
-	@FXML 
-	private CheckBox completeChkBox; 
-	@FXML 
+	@FXML
+	private CheckBox completeChkBox;
+	@FXML
 	private HBox hbox = new HBox();
 
+	private int id;
 
-	private int id; 
-	
-
+	// @author A0112969W
 	public ToDoContainer() {
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(
 				"/fxml/todoContainer.fxml"));
@@ -78,7 +78,6 @@ public class ToDoContainer extends AnchorPane {
 		try {
 			fxmlLoader.load();
 
-
 		} catch (IOException exception) {
 			throw new RuntimeException(exception);
 		}
@@ -87,162 +86,147 @@ public class ToDoContainer extends AnchorPane {
 	public ToDoContainer(int id, ToDo todo) throws Exception {
 		this();
 		this.todo = todo;
-		this.id = id; 
+		this.id = id;
 		if (!isValidTodo(todo)) {
 			throw new Exception("Invalid todo");
 		} else {
 			setID(id);
 			setTitle(todo);
 			setDate(todo);
-			setCategory(todo.getCategory()); 
+			setCategory(todo.getCategory());
 			setComplete(todo.isCompleted());
 			setType();
-			setPriority(); 
+			setPriority();
 		}
 
 	}
 
+	// @author A0112969W
 	private void setID(int id) {
 		todoID.setText(String.valueOf(id));
 	}
 
+	// @author A0112969W
 	private void setTitle(ToDo todo) {
-
-		todoTitle.setText(todo.getTitle());		
-
-
+		todoTitle.setText(todo.getTitle());
 	}
 
-	private void setDate(ToDo todo){
+	// @author A0119764W
+	private void setDate(ToDo todo) {
 		Type type = todo.getType();
 		String startDate = null;
 		String startTime = null;
 		String endDate = null;
 		String endTime = null;
-		String datePattern = "dd-MM-yy";
-		String timePattern = "h:mm a";
 		ArrayList<Node> displayItems = new ArrayList<Node>();
-		
-		if (type == Type.TIMED){
-			startDate = todo.getStartDate().toString(datePattern);
-			startTime = todo.getStartDate().toString(timePattern);
-			endDate = todo.getEndDate().toString(datePattern);
-			endTime = todo.getEndDate().toString(timePattern);
-		} else if (type == Type.DEADLINE){
-			endDate = todo.getEndDate().toString(datePattern);
-			endTime = todo.getEndDate().toString(timePattern);
+
+		if (type == Type.TIMED) {
+			startDate = todo.getStartDate().toString(DATE_PATTERN);
+			startTime = todo.getStartDate().toString(TIME_PATTERN);
+			endDate = todo.getEndDate().toString(DATE_PATTERN);
+			endTime = todo.getEndDate().toString(TIME_PATTERN);
+		} else if (type == Type.DEADLINE) {
+			endDate = todo.getEndDate().toString(DATE_PATTERN);
+			endTime = todo.getEndDate().toString(TIME_PATTERN);
 		}
-		
-		if (startDate != null && startTime != null){
+
+		if (startDate != null && startTime != null) {
 			ImageView calendar1 = new ImageView("/images/calendar.png");
 			ImageView clock1 = new ImageView("/images/clock.png");
-			
+
 			displayItems.add(calendar1);
-			displayItems.add(TextBuilder.create()
-					.text(startDate)
-					.styleClass("DateTime")
-					.build());
+			displayItems.add(createDateText(startDate));
 			displayItems.add(clock1);
-			displayItems.add(TextBuilder.create()
-					.text(startTime)
-					.styleClass("DateTime")
-					.build());
+			displayItems.add(createDateText(startTime));
 			displayItems.add(new Text(" to "));
 		}
-		
-		if (endDate !=null && endTime != null){
+
+		if (endDate != null && endTime != null) {
 			ImageView calendar2 = new ImageView("/images/calendar.png");
 			ImageView clock2 = new ImageView("/images/clock.png");
 			displayItems.add(calendar2);
-			displayItems.add(TextBuilder.create()
-					.text(endDate)
-					.styleClass("DateTime")
-					.build());
+			displayItems.add(createDateText(endDate));
 			displayItems.add(clock2);
-			displayItems.add(TextBuilder.create()
-					.text(endTime)
-					.styleClass("DateTime")
-					.build());
+			displayItems.add(createDateText(endTime));
 		}
 		todoDate.getChildren().setAll(displayItems);
 	}
 
-
-
-
+	// @author A0112969W
 	private void setCategory(String category) {
 		if (category != null)
 			todoMisc.setText(category);
 	}
 
-	private void setComplete(Boolean isCompleted){
+	private void setComplete(Boolean isCompleted) {
 		completeChkBox.setSelected(isCompleted);
 		if (todo.isTimedToDo())
 			completeChkBox.setDisable(true);
 	}
 
-	
+	// @author A0112969W
 	/**
-	 * Add a label indicating the type of task behind the title.  
+	 * Add a label indicating the type of task behind the title.
 	 */
-	private void setType(){
+	private void setType() {
 		Type type = todo.getType();
-		Node typeTag ;
+		Node typeTag;
 
-		if (type.equals(Type.DEADLINE)){ 
-			typeTag=createTag("Deadline","lightgreen");
-		}
-		else if (type.equals(Type.FLOATING)){ 
-			typeTag= createTag("Floating","yellow");			
-		}
-		else {
-			typeTag=createTag("Timed","lightblue");
+		if (type.equals(Type.DEADLINE)) {
+			typeTag = createTag("Deadline", "lightgreen");
+		} else if (type.equals(Type.FLOATING)) {
+			typeTag = createTag("Floating", "yellow");
+		} else {
+			typeTag = createTag("Timed", "lightblue");
 		}
 
 		todoTitle.setContentDisplay(ContentDisplay.RIGHT);
 		hbox.getChildren().add(typeTag);
 		todoTitle.setGraphic(hbox);
 	}
-	
+
+	// @author A0119764W
 	/**
-	 * Add a label indicating the priority of task behind the title.  
+	 * Add a label indicating the priority of task behind the title.
 	 */
-	private void setPriority(){	 
+	private void setPriority() {
 		Priority priority = todo.getPriority();
 
-				//tag design		
-					Node priorityTag; 
-					if (priority == Priority.HIGH)
-						priorityTag= createTag("HIGH","red");				
-					else if (priority == Priority.MEDIUM)			
-						priorityTag=createTag("MEDIUM","blue");
-					else 
-						priorityTag=createTag("LOW","pink");			
-					hbox.getChildren().add(priorityTag);
-					hbox.setSpacing(5);		
-							
+		// tag design
+		Node priorityTag;
+		if (priority == Priority.HIGH) {
+			priorityTag = createTag("HIGH", "red");
+		} else if (priority == Priority.MEDIUM) {
+			priorityTag = createTag("MEDIUM", "blue");
+		} else {
+			priorityTag = createTag("LOW", "pink");
+		}
+		hbox.getChildren().add(priorityTag);
+		hbox.setSpacing(5);
 	}
-	
+
+	// @author A0112969W
 	/**
-	 * Creates a node object to be used to display priority and type of the ToDo.
+	 * Creates a node object to be used to display priority and type of the
+	 * ToDo.
 	 * 
 	 * @param text
 	 * @param color
-	 * @return A label node with background color of the parameter color and relative text color
+	 * @return A label node with background color of the parameter color and
+	 *         relative text color
 	 *
 	 */
-	private Node createTag(String text, String color){
-		Label tag= new Label(text);
+	private Node createTag(String text, String color) {
+		Label tag = new Label(text);
 
-		tag.setStyle("-fx-background-color:"+ color+ ";"
-				+ "-fx-background-radius: 1em;"
-				+"-fx-font-size: 0.95em;"
-				+ "-fx-padding: 0 5 0 5 ;"
-				+ "background:" + color +";"
-				+ "-fx-text-fill: ladder(background, white 49%, black 50%);"
-				);
+		tag.setStyle("-fx-background-color:" + color + ";"
+				+ "-fx-background-radius: 1em;" + "-fx-font-size: 0.95em;"
+				+ "-fx-padding: 0 5 0 5 ;" + "background:" + color + ";"
+				+ "-fx-text-fill: ladder(background, white 49%, black 50%);");
 		return tag;
 	}
+
+	// @author A0119764W
 	/**
 	 * Checks whether a given ToDo object is valid. A ToDo is valid only if its
 	 * Title is not null
@@ -258,19 +242,28 @@ public class ToDoContainer extends AnchorPane {
 		return true;
 	}
 
-	public BooleanProperty getCheckedProperty(){
-		return completeChkBox.selectedProperty(); 
-
-	}
-	public int getID(){ 
-		return id; 
+	private Text createDateText(String startDate) {
+		return TextBuilder.create().text(startDate).styleClass("DateTime")
+				.build();
 	}
 
-	public ToDo getToDo (){
+	// @author A0112969W
+	public BooleanProperty getCheckedProperty() {
+		return completeChkBox.selectedProperty();
+
+	}
+
+	// @author A0112969W
+	public int getID() {
+		return id;
+	}
+
+	// @author A0119764W
+	public ToDo getToDo() {
 		return this.todo;
 	}
 
-//@author A0119764W generated
+	// @author A0119764W generated
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -285,8 +278,8 @@ public class ToDoContainer extends AnchorPane {
 				return false;
 		} else if (!todo.equals(other.todo))
 			return false;
-		if (todo.isCompleted()!= other.todo.isCompleted())
-			return false ; 
+		if (todo.isCompleted() != other.todo.isCompleted())
+			return false;
 		return true;
 	}
 

@@ -62,7 +62,7 @@ import com.the.todo.model.ToDo;
 import com.the.todo.task.ReminderTask;
 
 public class MainToDoController {
-	
+
 	@FXML
 	private BorderPane mainPane;
 	@FXML
@@ -80,7 +80,6 @@ public class MainToDoController {
 	@FXML
 	private Label hintLabel;
 
-
 	private Logic appLogic = Logic.getInstance();
 	private CommandHistory commandHistory = new CommandHistory();
 	private FadeTransition fadeOut;
@@ -95,14 +94,15 @@ public class MainToDoController {
 	private ChangeListener<Boolean> mainInputFocusListener;
 	private ChangeListener<String> inputChangeListener;
 
+	// @author A0119764W
 	@FXML
 	void initialize() {
 		mainPane.applyCss();
 		mainPane.layout();
-		
+
 		mainScrollpane.setFitToWidth(true);
 		appTitleIcon.minWidthProperty().bind(appTitleIcon.heightProperty());
-		
+
 		fadeOut = new FadeTransition(Duration.millis(1500), promptLabel);
 		fadeOut.setDelay(Duration.millis(2000));
 
@@ -128,8 +128,9 @@ public class MainToDoController {
 		});
 	}
 
+	// @author A0112969W
 	/**
-	 * Process user input upon enter pressed
+	 * Processes user input upon enter pressed.
 	 */
 	public void processInput() {
 		String userInput = mainInput.getText();
@@ -148,7 +149,7 @@ public class MainToDoController {
 		switch (status.getStatus()) {
 		case SUCCESS:
 			Map<DateCategory, List<ToDo>> newDisplayMap = appLogic
-			.getToDoMapDisplay();
+					.getToDoMapDisplay();
 			List<Object> newDisplayList = mapToList(newDisplayMap);
 
 			switch (appLogic.getLastCommand()) {
@@ -160,13 +161,13 @@ public class MainToDoController {
 			case UNDO:
 				ToDo lastChangedToDo = appLogic.getLastChangedToDo();
 				int changedPosition = newDisplayList.indexOf(lastChangedToDo);
-				
+
 				updateUI(newDisplayMap);
 				if (changedPosition != -1) {
 					scrollToIndex(changedPosition);
 					highlightItem(changedPosition);
 				}
-				
+
 				break;
 
 			case DELETE:
@@ -174,7 +175,7 @@ public class MainToDoController {
 				showPrompt("Deleted successfully", Status.SUCCESS);
 				break;
 
-				/* COMMAND THAT GIVES CUSTOMIZED VIEW */
+			/* COMMAND THAT GIVES CUSTOMIZED VIEW */
 			case VIEW:
 			case SEARCH:
 				updateUI(newDisplayMap);
@@ -202,16 +203,19 @@ public class MainToDoController {
 		}
 	}
 
+	// @author A0119764W
 	private void updateOldItems(List<Object> newDisplayList) {
 		oldItems.clear();
 		oldItems.addAll(newDisplayList);
 	}
 
+	// @author A0119764W
 	private void highlightItem(int index) {
 		mainVBox.getChildren().get(index)
-		.setStyle("-fx-background-color: #E8F5E9;");
+				.setStyle("-fx-background-color: #E8F5E9;");
 	}
 
+	// @author A0112969W
 	public void showPrompt(String str, Status status) {
 		if (status.equals(Status.SUCCESS)) {
 			promptLabel.setStyle("-fx-background-color: #43A047");
@@ -232,11 +236,13 @@ public class MainToDoController {
 		}
 	}
 
+	// @author A0119764W
 	public void clearUI() {
 		mainInput.clear();
 		mainVBox.getChildren().clear();
 	}
 
+	// @author A0112969W
 	public void updateUI(Map<DateCategory, List<ToDo>> todoItems) {
 		clearUI();
 
@@ -267,10 +273,14 @@ public class MainToDoController {
 			}
 		}
 	}
-	
+
+	// @author A0112969W
 	/**
-	 * Listens the change in CheckedProperty of the check box of each task and passes it as a command.
-	 * @param ToDoContainer which is a collection of fxml components of each task  
+	 * Listens the change in CheckedProperty of the check box of each task and
+	 * passes it as a command.
+	 * 
+	 * @param ToDoContainer
+	 *            which is a collection of fxml components of each task
 	 */
 	private void detectCheckBoxChanges(ToDoContainer container) {
 		container.getCheckedProperty().addListener(
@@ -278,23 +288,24 @@ public class MainToDoController {
 					@Override
 					public void changed(ObservableValue<? extends Boolean> ov,
 							Boolean old_val, Boolean new_val) {
-						
-						
+
 						if (new_val) {
 							processInput("complete " + container.getID());
 						} else {
 							processInput("incomplete " + container.getID());
 						}
-						
+
 					}
 				});
 	}
 
+	// @author A0119764W
 	public void minimizeWindow() {
 		Stage stage = (Stage) minimizeButton.getScene().getWindow();
 		stage.hide();
 	}
 
+	// @author A0119764W
 	public Label createGroupLabel(DateCategory date) {
 		Label label = new Label(date.toString());
 
@@ -308,6 +319,7 @@ public class MainToDoController {
 		return label;
 	}
 
+	// @author A0111815R
 	private void generateAllReminders() {
 		LocalDateTime currentDateTime = new LocalDateTime();
 		LocalDateTime tomorrowDateTime = new LocalDateTime().plusDays(1);
@@ -322,6 +334,7 @@ public class MainToDoController {
 		}
 	}
 
+	// @author A0119764W
 	private void scrollToIndex(int index) {
 		mainScrollpane.applyCss();
 		mainScrollpane.layout();
@@ -340,6 +353,13 @@ public class MainToDoController {
 		mainScrollpane.setVvalue(vValue);
 	}
 
+	// @author A0119764W
+	/**
+	 * Converts a map into a list.
+	 * 
+	 * @param map
+	 * @return a list of items in the map.
+	 */
 	private List<Object> mapToList(Map<DateCategory, List<ToDo>> map) {
 		List<Object> list = new ArrayList<Object>();
 
@@ -352,6 +372,7 @@ public class MainToDoController {
 		return list;
 	}
 
+	// @author A0119764W
 	private void scrollToToday() {
 		int todayIndex = oldItems.indexOf(DateCategory.TODAY);
 		if (todayIndex == -1) {
@@ -360,6 +381,7 @@ public class MainToDoController {
 		scrollToIndex(todayIndex);
 	}
 
+	// @author A0112969W
 	private void initilizeHandlers() {
 		ctrlUpHandler = new EventHandler<KeyEvent>() {
 			@Override
