@@ -182,17 +182,19 @@ public class Logic {
 			}
 
 			lastCommand = commandType;
+			
+			if (isSingleChange){
+				lastChangedTodo = todoCommand.getTodo();
+			} else {
+				lastChangedTodo = null;
+			}
+
 		} else {
 			commandStatus = new CommandStatus(Status.INVALID,
 					"Invalid command.");
 		}
 		
-		if (isSingleChange){
-			lastChangedTodo = todoCommand.getTodo();
-		} else {
-			lastChangedTodo = null;
-		}
-
+		
 		System.out.println("-----------------------------");
 		for (ToDo todo : todoStorage.getAll()) {
 			System.out.println("ID: " + todo.getId());
