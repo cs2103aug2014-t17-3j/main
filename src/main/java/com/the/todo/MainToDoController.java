@@ -128,6 +128,9 @@ public class MainToDoController {
 		});
 	}
 
+	/**
+	 * Process user input upon enter pressed
+	 */
 	public void processInput() {
 		String userInput = mainInput.getText();
 		if (userInput == null || userInput.equals("")) {
@@ -139,14 +142,13 @@ public class MainToDoController {
 		processInput(userInput);
 	}
 
-	// override
 	public void processInput(String userInput) {
 		CommandStatus status = appLogic.processCommand(userInput);
 
 		switch (status.getStatus()) {
 		case SUCCESS:
 			Map<DateCategory, List<ToDo>> newDisplayMap = appLogic
-					.getToDoMapDisplay();
+			.getToDoMapDisplay();
 			List<Object> newDisplayList = mapToList(newDisplayMap);
 
 			switch (appLogic.getLastCommand()) {
@@ -172,7 +174,7 @@ public class MainToDoController {
 				showPrompt("Deleted successfully", Status.SUCCESS);
 				break;
 
-			/* COMMAND THAT GIVES CUSTOMIZED VIEW */
+				/* COMMAND THAT GIVES CUSTOMIZED VIEW */
 			case VIEW:
 			case SEARCH:
 				updateUI(newDisplayMap);
@@ -207,7 +209,7 @@ public class MainToDoController {
 
 	private void highlightItem(int index) {
 		mainVBox.getChildren().get(index)
-				.setStyle("-fx-background-color: #E8F5E9;");
+		.setStyle("-fx-background-color: #E8F5E9;");
 	}
 
 	public void showPrompt(String str, Status status) {
@@ -265,18 +267,25 @@ public class MainToDoController {
 			}
 		}
 	}
-
+	
+	/**
+	 * Listens the change in CheckedProperty of the check box of each task and passes it as a command.
+	 * @param ToDoContainer which is a collection of fxml components of each task  
+	 */
 	private void detectCheckBoxChanges(ToDoContainer container) {
 		container.getCheckedProperty().addListener(
 				new ChangeListener<Boolean>() {
 					@Override
 					public void changed(ObservableValue<? extends Boolean> ov,
 							Boolean old_val, Boolean new_val) {
+						
+						
 						if (new_val) {
 							processInput("complete " + container.getID());
 						} else {
 							processInput("incomplete " + container.getID());
 						}
+						
 					}
 				});
 	}
