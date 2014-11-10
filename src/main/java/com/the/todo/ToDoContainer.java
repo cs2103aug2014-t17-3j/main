@@ -176,7 +176,9 @@ public class ToDoContainer extends AnchorPane {
 	}
 
 	private void setComplete(Boolean isCompleted){
-		completeChkBox.setSelected(isCompleted);	
+		completeChkBox.setSelected(isCompleted);
+		if (todo.isTimedToDo())
+			completeChkBox.setDisable(true);
 	}
 
 	
