@@ -32,8 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
@@ -46,7 +44,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -56,9 +53,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
-import org.joda.time.format.DateTimeFormat;
 
 import com.the.todo.Logic.DateCategory;
 import com.the.todo.command.CommandStatus;
@@ -67,28 +62,29 @@ import com.the.todo.model.ToDo;
 import com.the.todo.task.ReminderTask;
 
 public class MainToDoController {
-
-	@FXML
-	private Label promptLabel;
-	@FXML
-	private VBox mainVBox;
-	@FXML
-	private TextField mainInput;
-	@FXML
-	private ScrollPane mainScrollpane;
-	@FXML
-	private Button minimizeButton;
+	
 	@FXML
 	private BorderPane mainPane;
 	@FXML
-	private Label hintLabel;
-	@FXML
 	private Pane appTitleIcon;
+	@FXML
+	private Button minimizeButton;
+	@FXML
+	private ScrollPane mainScrollpane;
+	@FXML
+	private VBox mainVBox;
+	@FXML
+	private Label promptLabel;
+	@FXML
+	private TextField mainInput;
+	@FXML
+	private Label hintLabel;
+
 
 	private Logic appLogic = Logic.getInstance();
 	private CommandHistory commandHistory = new CommandHistory();
 	private FadeTransition fadeOut;
-	private ArrayList<Object> oldVBoxItems = new ArrayList<Object>();
+	private ArrayList<Object> oldItems = new ArrayList<Object>();
 
 	/************************ ALL HANDLERS ***************************/
 	private EventHandler<KeyEvent> ctrlUpHandler;
@@ -97,14 +93,16 @@ public class MainToDoController {
 	private EventHandler<KeyEvent> upHandler;
 	private EventHandler<KeyEvent> downHandler;
 	private ChangeListener<Boolean> mainInputFocusListener;
-	private ChangeListener<String> textChangeListener;
+	private ChangeListener<String> inputChangeListener;
 
 	@FXML
 	void initialize() {
 		mainPane.applyCss();
 		mainPane.layout();
+		
 		mainScrollpane.setFitToWidth(true);
 		appTitleIcon.minWidthProperty().bind(appTitleIcon.heightProperty());
+		
 		fadeOut = new FadeTransition(Duration.millis(1500), promptLabel);
 		fadeOut.setDelay(Duration.millis(2000));
 
@@ -116,14 +114,14 @@ public class MainToDoController {
 		mainInput.addEventFilter(KeyEvent.KEY_PRESSED, upHandler);
 		mainInput.addEventFilter(KeyEvent.KEY_PRESSED, downHandler);
 		mainInput.focusedProperty().addListener(mainInputFocusListener);
-		mainInput.textProperty().addListener(textChangeListener);
+		mainInput.textProperty().addListener(inputChangeListener);
 
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
 				mainInput.requestFocus();
 				updateUI(appLogic.getToDoMapDisplay());
-				oldVBoxItems.addAll(mapToList(appLogic.getToDoMapDisplay()));
+				oldItems.addAll(mapToList(appLogic.getToDoMapDisplay()));
 				scrollToToday();
 				generateAllReminders();
 			}
@@ -160,11 +158,13 @@ public class MainToDoController {
 			case UNDO:
 				ToDo lastChangedToDo = appLogic.getLastChangedToDo();
 				int changedPosition = newDisplayList.indexOf(lastChangedToDo);
+				
 				updateUI(newDisplayMap);
 				if (changedPosition != -1) {
 					scrollToIndex(changedPosition);
 					highlightItem(changedPosition);
 				}
+				
 				break;
 
 			case DELETE:
@@ -176,7 +176,7 @@ public class MainToDoController {
 			case VIEW:
 			case SEARCH:
 				updateUI(newDisplayMap);
-				mainScrollpane.setVvalue(0);
+				scrollToIndex(0);
 				break;
 
 			case INVALID:
@@ -184,8 +184,7 @@ public class MainToDoController {
 				break;
 			}
 
-			oldVBoxItems.clear();
-			oldVBoxItems.addAll(newDisplayList);
+			updateOldItems(newDisplayList);
 
 			break;
 
@@ -199,6 +198,11 @@ public class MainToDoController {
 			showPrompt(status.getMessage(), Status.INVALID);
 			break;
 		}
+	}
+
+	private void updateOldItems(List<Object> newDisplayList) {
+		oldItems.clear();
+		oldItems.addAll(newDisplayList);
 	}
 
 	private void highlightItem(int index) {
@@ -340,7 +344,7 @@ public class MainToDoController {
 	}
 
 	private void scrollToToday() {
-		int todayIndex = oldVBoxItems.indexOf(DateCategory.TODAY);
+		int todayIndex = oldItems.indexOf(DateCategory.TODAY);
 		if (todayIndex == -1) {
 			todayIndex = 0;
 		}
@@ -421,7 +425,7 @@ public class MainToDoController {
 			}
 		};
 
-		textChangeListener = new ChangeListener<String>() {
+		inputChangeListener = new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> ov,
 					String oldStr, String newStr) {
