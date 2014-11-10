@@ -161,3 +161,7 @@
 .check-box:selected .mark {
     -fx-background-color: white;
 }
+
+.check-box:disabled {
+	-fx-opacity: 1;
+}
